@@ -17,7 +17,7 @@ class Config(object):
             self.load(filename)
         if proyectoactivo:
             # permite cambiar el proyecto activo respecto al del archivo de configuración
-            self.proyectoactivo = proyectoactivo
+            self.proyectoactivo = os.path.join('..', 'proyectos', proyectoactivo)
         if not(os.path.isdir(self.proyectoactivo)):
             msg = "ERROR: No se localiza el directorio del proyecto activo: %s\n"
             sys.stderr.write(msg % self.proyectoactivo)
