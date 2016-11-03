@@ -1,0 +1,51 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Módulo de configuración
+#
+# DB-HE 2013
+#
+import sys
+import os.path
+import yaml
+
+class Config(object):
+    """Objeto de configuración global"""
+    def __init__(self, filename=None, proyectoactivo=None):
+        """Carga el archivo de configuración y fija el proyecto activo"""
+        if filename:
+            self.load(filename)
+        if proyectoactivo:
+            # permite cambiar el proyecto activo respecto al del archivo de configuración
+            self.proyectoactivo = proyectoactivo
+        if not(os.path.isdir(self.proyectoactivo)):
+            msg = "ERROR: No se localiza el directorio del proyecto activo: %s\n"
+            sys.stderr.write(msg % self.proyectoactivo)
+            sys.exit(1)
+
+    def load(self, filename):
+        if not filename:
+            filename = os.path.abspath(os.path.join(__file__, '..', 'config.yaml'))
+        try:
+            with open(filename, 'r') as configfile:
+                self._config = yaml.load(configfile)
+        except:
+            print "Archivo de configuración no encontrado: ", os.path.abspath(filename)
+        self.proyectoactivo = self._config['proyectoactivo']
+        self.escenarios = self._config['escenarios']
+
+    @property
+    def costespath(self):
+        return os.path.join(self.proyectoactivo, 'solucionescostes.yaml')
+
+    @property
+    def medicionespath(self):
+        return os.path.join(self.proyectoactivo, 'mediciones.yaml')
+
+    @property
+    def parametrospath(self):
+        return os.path.join(self.proyectoactivo, 'parametroscostes.yaml')
+
+    @property
+    def resultadospath(self):
+        return os.path.join(self.proyectoactivo,'resultados', 'resultados-costes.csv')

@@ -1,0 +1,15 @@
+# config cost-optimal
+
+#proyectoactivo: proyecto_puertoreal
+#proyectoactivo: proyecto_elviso
+#proyectoactivo: proyecto_arrahona
+#proyectoactivo: proyectoGirona
+#proyectoactivo: proyectoPPV
+#proyectoactivo: proyecto_exupery
+
+
+proyectoactivo: ../proyectos/proyectotest
+
+escenarios:
+  macro: [3, 4]
+  micro: [6, 10, 14]

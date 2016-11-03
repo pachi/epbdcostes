@@ -1,0 +1,14 @@
+Lista de tareas pendientes
+==========================
+
+- Usar el ejemplo de 2013 del Documento de Bases como proyecto test
+- Conversor de archivos .csv a formato de mediciones (mediciones.yaml), con cálculo de
+  indicadores energéticos con epbdcalc
+- Llevar el parser del .csv de epbdpanel a epbdcalc, con soporte de metadatos
+  (¿usar JSON como formato intermedio para poder usar Javascript también?)
+- Revisar el formato de mediciones para ver si tiene lo que necesitamos
+  (consumos de distintos combustibles)
+- Hacer archivos de costes (solucionescostes.yaml)
+- Decidir escenarios (MFOM) y definir precios energía (parametroscostes.yaml)
+- Los proyectos, incluido proyectotest, van a /proyectos
+- Poner en resultados-costes.csv también los indicadores energéticos (EP_ren, EP_nren)

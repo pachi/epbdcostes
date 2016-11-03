@@ -1,0 +1,117 @@
+# Costes de las MAE
+# directorio de proyecto: "./proyectotest/"
+#
+# desc: descripción de la MAE
+# vutil: vida útil de la MAE (años)
+# pmant: periodicidad del mantenimiento (años)
+# COSTES:
+# Para cada coste se deben aportar los costes:
+#  - para el cálculo macroeconómico (sin impuestos ni tasas)
+#  - para el cálculo financiero/microeconómico (con impuestos y tasas)
+#
+# cinicial: coste inicial (€/ud)
+# cmant: costes de mantenimiento (€/ud·año)
+#
+
+CUB1_ER_0.05:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CUB1_ER_0.10:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+F1_ER_0.05:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+F2_ER_0.05:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+F3_ER_0.05:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+VER_Con rotura de puente térmico entre 4 y 12 mm:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+VER_DB1_4-15-6:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+VER_DB1_4-6-4:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+VER_Normal sin rotura de puente térmico:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
