@@ -61,25 +61,38 @@ def generaArchivoMedidas(proyectoPath):#, destino, listaMedidas):
   salida = ''
   for clave in medidasSistemas['paquetes'].keys():
     for medida in medidas(medidasSistemas, clave):
-      salida = salida + ','.join([str(m) for m in medida])+'\n'
+      salida = salida + u", ".join([unicode(m) for m in medida]) + '\n'
   with codecs.open(destinoPath, 'w', 'UTF8') as f:
     f.writelines(salida)
   return True
 
 ###############################################################
 
+DICT_ESEN = {
+        u'CALEFACCIÓN': u'HEATING',
+        u'REFRIGERACIÓN': u'COOLING',
+        u'ACS': u'WATERSYSTEMS',
+        u'VENTILACIÓN': u'FANS'
+}
+
+DICT_ENES = {
+        u'HEATING': u'CALEFACCIÓN',
+        u'COOLING': u'REFRIGERACIÓN',
+        u'WATERSYSTEMS': u'ACS',
+        u'FANS': u'VENTILACIÓN'
+}
 
 ########### parte que genera las variantes ####################
 def renombrar(datastring):
-  datastring = datastring.replace(u'#CALEFACCIÓN', '#HEATING')
-  datastring = datastring.replace(u'#REFRIGERACIÓN', '#COOLING')
-  datastring = datastring.replace(u'#ACS', '#WATERSYSTEMS')
-  datastring = datastring.replace(u'#VENTILACIÓN', '#FANS')
+  datastring = datastring.replace(u'CALEFACCIÓN', u'HEATING')
+  datastring = datastring.replace(u'REFRIGERACIÓN', u'COOLING')
+  datastring = datastring.replace(u'ACS', u'WATERSYSTEMS')
+  datastring = datastring.replace(u'VENTILACIÓN', u'FANS')
   return datastring
 
 def readenergystring(datastring):
   salida = {'componentes': [], 'comentarios': []}
-  datalines = datastring.replace('\n\r', '\n').split('\n')
+  datalines = datastring.replace('\r\n', '\n').split('\n')
   componentlines = []
 
   for line in datalines:
@@ -94,10 +107,9 @@ def readenergystring(datastring):
 
   for line in componentlines:
     componente, comentario = (line + '#').split('#')[0:2]
-    componente = map(lambda x: x.strip(' '), componente.split(','))
+    componente = [x.strip(' ') for x in componente.split(',')]
     carrier, ctype, originoruse, values = componente[0], componente[1], componente[2], componente[3:]
-    values = [v.strip('" \r\n') for v in values]
-    values = map(float, values)
+    values = [float(v.strip('" \n')) for v in values]
     if '-->' in comentario:
       servicio, tecnologia, vectorOrigen, combustible, rendimiento = \
       [x.strip() for x in comentario.replace('-->', ',').split(',')]
@@ -123,17 +135,19 @@ def aplicarTecnologia(vector, medidas):
         rend1 = eval(rend1)
       if isinstance(rend2, unicode):
         rend2 = eval(rend2)
-      valoresTransformados = [round(v * cobertura / rend1 / rend2,2) for v in valores]
-      cadena = "%s,%s,%s,%s#%s,%s" % (vectorDestino,ctipo,src_dst,
-            ','.join([str(v) for v in valoresTransformados]),
-            servicioCubierto, comentario)
+      valoresTransformados = [round(v * cobertura / rend1 / rend2, 2) for v in valores]
+      cadena = "%s, %s, %s, %s # %s, %s" % (vectorDestino, ctipo, src_dst,
+            ', '.join([str(v) for v in valoresTransformados]),
+            DICT_ENES.get(servicioCubierto, servicioCubierto),
+            comentario)
       string_rows.append(cadena)
 
   if string_rows != []:
     return string_rows
   else:
-    cadena = "%s,%s,%s,%s#%s" % (vector['carrier'],vector['ctype'],vector['originoruse'],
-            ','.join([str(v) for v in valores]), servicioCubierto)
+    cadena = "%s, %s, %s, %s # %s" % (vector['carrier'],vector['ctype'],vector['originoruse'],
+            ', '.join([str(v) for v in valores]),
+            DICT_ENES.get(servicioCubierto, servicioCubierto))
     return [cadena]
 
 def aplicaMedidas(energias, medidas):
@@ -152,7 +166,7 @@ def aplicaMedidas(energias, medidas):
       [clave, servicio, cobertura, ctipo, src_dst, vectorDestino] = medida[:6]
       valores = [str(v) for v in medida[6:18]]
       comentario = medida[-1]
-      cadena = "%s,%s,%s,%s#%s" % (vectorDestino,ctipo,src_dst,','.join(valores), comentario)
+      cadena = "%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
       string_rows.append(cadena)
 
   return string_rows
@@ -179,7 +193,7 @@ def generaVariante(archivobase, archivomedida, medidaaplicada):
   medidaespecificada = seleccionarMedida(archivomedida, medidaaplicada)
 
   datastring = codecs.open(archivobase,'r', 'UTF8').read()
-  datastring = renombrar(datastring)
+  datastring = DICT_ESEN.get(datastring, datastring)
   objetos = readenergystring(datastring)
 
   string_rows = aplicaMedidas(objetos['componentes'], medidaespecificada)
@@ -187,7 +201,6 @@ def generaVariante(archivobase, archivomedida, medidaaplicada):
 
   return variante
 
-#~ def generaVariantes(proyectoPath, definicionvariantes):
 def generaVariantes(proyectoPath, archivoBase, claveMedida):
   medidaaplicada = claveMedida
   archivoBase = archivoBase.strip(' \n') + '.csv'
