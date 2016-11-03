@@ -25,6 +25,8 @@
 import codecs
 import os
 import yaml
+import argparse
+from costes import *
 
 ################## parte que genera el archivo de las tecnologias #####
 def generaFilasMedida(clave, medidasSistemas):
@@ -47,7 +49,7 @@ def medidas(medidasSistemas, clave):
     return generaFilasMedida(clave, medidasSistemas)
 
 def generaArchivoMedidas(proyectoPath):#, destino, listaMedidas):
-  
+
   medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
   if not os.path.isfile(medidasSistemasFile):
     print 'ERROR: este proyecto no tiene el archivo de definición de los sistemas'
@@ -55,7 +57,7 @@ def generaArchivoMedidas(proyectoPath):#, destino, listaMedidas):
 
   medidasSistemas = yaml.load(file(medidasSistemasFile, 'r'))
   destinoPath =  os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
-  
+
   salida = ''
   for clave in medidasSistemas['paquetes'].keys():
     for medida in medidas(medidasSistemas, clave):
@@ -175,7 +177,7 @@ def seleccionarMedida(archivomedida, medidaaplicada):
 
 def generaVariante(archivobase, archivomedida, medidaaplicada):
   medidaespecificada = seleccionarMedida(archivomedida, medidaaplicada)
-  
+
   datastring = codecs.open(archivobase,'r', 'UTF8').read()
   datastring = renombrar(datastring)
   objetos = readenergystring(datastring)
@@ -201,7 +203,7 @@ def generaVariantes(proyectoPath, archivoBase, claveMedida):
 def guardaVariantes(proyectoPath, variantes):
   for variante in variantes:
     basename = os.path.basename(variante['archivoBase']).split('.csv')[0]
-    filepath = os.path.join(proyectoPath, 'resultados', basename + "_%s_.csv" % variante['paqueteAplicado'])
+    filepath = os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % variante['paqueteAplicado'])
 
     outrows = variante['comentarios']
     outrows.append("vector,tipo,src_dst")
@@ -212,7 +214,7 @@ def guardaVariantes(proyectoPath, variantes):
 
 def procesaVariantes(proyectoPath):
   edificios = yaml.load(file(os.path.join(proyectoPath, 'medidasSistemas.yaml'), 'r'))['variantes']
-  
+
   variantesParaGuardar = []
   for variantes in edificios:
     archivoBase = variantes[0]
@@ -222,6 +224,36 @@ def procesaVariantes(proyectoPath):
       variantesParaGuardar.append(variante)
 
   guardaVariantes(proyectoPath, variantesParaGuardar)
-  
+
   return True
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Genera variantes aplicando medidas de sistema al caso base')
+    parser.add_argument('-v', action='store_true', dest='is_verbose', help='salida detallada')
+    parser.add_argument('-p', '--project', action='store', dest='proyectoactivo', metavar='PROYECTO')
+    parser.add_argument('-c', '--config', action='store', dest='configfile',
+                        default='./config.yaml',
+                        metavar='CONFIGFILE',
+                        help='usa el archivo de configuración CONFIGFILE')
+    parser.add_argument('--todas', action='store_true', dest='generarlas_todas', default=False)
+    args = parser.parse_args()
+    VERBOSE = args.is_verbose
+
+    if args.generarlas_todas:
+        proyectos = ['proyecto_puertoreal', 'proyecto_elviso', 'proyecto_arrahona', 'proyectoGirona', 'proyectoPPV', 'proyecto_exupery']
+        print 'Generando variantes con las medidas de sistemas para todos los proyectos', ', '.join(proyectos)
+        print
+    else:
+        proyectos = [args.proyectoactivo]
+        print 'Generando variantes con sistemas para el proyecto', args.proyectoactivo
+        print
+
+    for proyectoactivo in proyectos:
+        config = Config(args.configfile, proyectoactivo)
+
+        print "* Cálculo de variantes del proyecto %s *" % config.proyectoactivo
+        resultado = generaArchivoMedidas(config.proyectoactivo)
+        #~ print '_generados los paquetes de medidas_', resultado
+        resultado = procesaVariantes(config.proyectoactivo)
+        #~ print '_procesadas las variantes_', resultado
 
