@@ -30,214 +30,203 @@ from costes import *
 
 ################## parte que genera el archivo de las tecnologias #####
 def generaFilasMedida(clave, medidasSistemas):
-  paquete = medidasSistemas['paquetes'][clave]
-  tecnologias = medidasSistemas['tecnologias']
-  salida = []
-  for sistemaCobertura in paquete:
-    sistema = sistemaCobertura[0]
-    cobertura = sistemaCobertura[1]
-    for filaSistema in tecnologias[sistema]:
-      salida.append([clave] + [filaSistema[0]] + [cobertura] + filaSistema[1:])
-
-  return salida
-
-def medidas(medidasSistemas, clave):
-  if clave not in medidasSistemas['paquetes'].keys():
-    print('No se han encontrado medidas con la clave %s' % clave)
-    return False
-  else:
-    return generaFilasMedida(clave, medidasSistemas)
+    paquete = medidasSistemas['paquetes'][clave]
+    tecnologias = medidasSistemas['tecnologias']
+    salida = []
+    for sistema, cobertura in paquete:
+        for filaSistema in tecnologias[sistema]:
+            salida.append([clave] + [filaSistema[0]] + [cobertura] + filaSistema[1:])
+    return salida
 
 def generaArchivoMedidas(proyectoPath):
-  try:
-      medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
-      medidasSistemas = yaml.load(file(medidasSistemasFile, 'r'))
-  except:
-    print 'ERROR: este proyecto no tiene el archivo de definición de los sistemas'
-    exit()
+    try:
+        medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
+        medidasSistemas = yaml.load(file(medidasSistemasFile, 'r'))
+    except:
+        print('ERROR: este proyecto no tiene el archivo de definición de los sistemas')
+        exit()
 
-  destinoPath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
-  with codecs.open(destinoPath, 'w', 'UTF8') as f:
+    destinoPath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
+    with codecs.open(destinoPath, 'w', 'UTF8') as f:
+        salida = []
+        for clave in medidasSistemas['paquetes']:
+            for medida in generaFilasMedida(clave, medidasSistemas):
+                salida.append(u", ".join([unicode(m) for m in medida])+ u"\n")
 
-    salida = []
-    for clave in medidasSistemas['paquetes'].keys():
-        for medida in medidas(medidasSistemas, clave):
-          salida.append(u", ".join([unicode(m) for m in medida])+ u"\n")
-
-    f.writelines(salida)
+        f.writelines(salida)
 
 ###############################################################
 
 DICT_ESEN = {
-        u'CALEFACCIÓN': u'HEATING',
-        u'REFRIGERACIÓN': u'COOLING',
-        u'ACS': u'WATERSYSTEMS',
-        u'VENTILACIÓN': u'FANS'
+    u'CALEFACCIÓN': u'HEATING',
+    u'REFRIGERACIÓN': u'COOLING',
+    u'ACS': u'WATERSYSTEMS',
+    u'VENTILACIÓN': u'FANS'
 }
 
 DICT_ENES = {
-        u'HEATING': u'CALEFACCIÓN',
-        u'COOLING': u'REFRIGERACIÓN',
-        u'WATERSYSTEMS': u'ACS',
-        u'FANS': u'VENTILACIÓN'
+    u'HEATING': u'CALEFACCIÓN',
+    u'COOLING': u'REFRIGERACIÓN',
+    u'WATERSYSTEMS': u'ACS',
+    u'FANS': u'VENTILACIÓN'
 }
 
 ########### parte que genera las variantes ####################
 def renombrar(datastring):
-  datastring = datastring.replace(u'CALEFACCIÓN', u'HEATING')
-  datastring = datastring.replace(u'REFRIGERACIÓN', u'COOLING')
-  datastring = datastring.replace(u'ACS', u'WATERSYSTEMS')
-  datastring = datastring.replace(u'VENTILACIÓN', u'FANS')
-  return datastring
+    datastring = datastring.replace(u'CALEFACCIÓN', u'HEATING')
+    datastring = datastring.replace(u'REFRIGERACIÓN', u'COOLING')
+    datastring = datastring.replace(u'ACS', u'WATERSYSTEMS')
+    datastring = datastring.replace(u'VENTILACIÓN', u'FANS')
+    return datastring
 
 def readenergystring(datastring):
-  salida = {'componentes': [], 'comentarios': []}
-  componentlines = []
+    salida = {'componentes': [], 'comentarios': []}
+    componentlines = []
 
-  for line in datastring.splitlines():
-    line = line.strip()
+    for line in datastring.splitlines():
+        line = line.strip()
 
-    if (line == '') or line.startswith('vector') or line.startswith('"'):
-      continue
-    elif line.startswith('#'):
-      salida['comentarios'].append(line)
-    else:
-      componentlines.append(line)
+        if (line == '') or line.startswith('vector') or line.startswith('"'):
+            continue
+        elif line.startswith('#'):
+            salida['comentarios'].append(line)
+        else:
+            componentlines.append(line)
 
-  for line in componentlines:
-    componente, comentario = (line + '#').split('#')[0:2]
-    componente = [x.strip() for x in componente.split(',')]
-    carrier, ctype, originoruse, values = componente[0], componente[1], componente[2], componente[3:]
-    values = [float(v.strip()) for v in values]
-    if '-->' in comentario:
-      servicio, tecnologia, vectorOrigen, combustible, rendimiento = \
-      [x.strip() for x in comentario.replace('-->', ',').split(',')]
-    else:
-      servicio = comentario.split(',')[0]
-      tecnologia, vectorOrigen, combustible, rendimiento = None, None, None, None
+    for line in componentlines:
+        componente, comentario = (line + '#').split('#')[0:2]
+        componente = [x.strip() for x in componente.split(',')]
+        carrier, ctype, originoruse, values = componente[0], componente[1], componente[2], componente[3:]
+        values = [float(v.strip()) for v in values]
+        if '-->' in comentario:
+            servicio, tecnologia, vectorOrigen, combustible, rendimiento = \
+            [x.strip() for x in comentario.replace('-->', ',').split(',')]
+        else:
+            servicio = comentario.split(',')[0]
+            tecnologia, vectorOrigen, combustible, rendimiento = None, None, None, None
 
-    salida['componentes'].append({'carrier': carrier, 'ctype': ctype, 'originoruse': originoruse, \
-      'values': values, 'servicio': servicio, 'tecnologia': tecnologia, 'vectorOrigen': vectorOrigen, \
-      'combustible': combustible, 'rendimiento': rendimiento})
-  return salida
+        salida['componentes'].append(
+            {'carrier': carrier, 'ctype': ctype, 'originoruse': originoruse,
+             'values': values, 'servicio': servicio, 'tecnologia': tecnologia,
+             'vectorOrigen': vectorOrigen,
+             'combustible': combustible, 'rendimiento': rendimiento})
+    return salida
 
 def aplicarTecnologia(vector, medidas):
-  servicioCubierto = vector['servicio']
-  valores = vector['values']
-  string_rows = []
-  for medida in medidas:
-    if medida[1] == u'produccion':
-      continue
-    [clave, servicio, cobertura, ctipo, src_dst, vectorDestino, rend1, rend2, comentario] = medida
-    if servicio == servicioCubierto:
-      if isinstance(rend1, unicode):
-        rend1 = eval(rend1)
-      if isinstance(rend2, unicode):
-        rend2 = eval(rend2)
-      valoresTransformados = [round(v * cobertura / rend1 / rend2, 2) for v in valores]
-      cadena = "%s, %s, %s, %s # %s, %s" % (vectorDestino, ctipo, src_dst,
-            ', '.join([str(v) for v in valoresTransformados]),
-            DICT_ENES.get(servicioCubierto, servicioCubierto),
-            comentario)
-      string_rows.append(cadena)
-
-  if string_rows != []:
-    return string_rows
-  else:
-    cadena = "%s, %s, %s, %s # %s" % (vector['carrier'],vector['ctype'],vector['originoruse'],
-            ', '.join([str(v) for v in valores]),
-            DICT_ENES.get(servicioCubierto, servicioCubierto))
+    servicioCubierto = vector['servicio']
+    valores = vector['values']
+    string_rows = []
+    for medida in medidas:
+        if medida[1] == u'produccion':
+            continue
+        [clave, servicio, cobertura, ctipo, src_dst, vectorDestino, rend1, rend2, comentario] = medida
+        if servicio == servicioCubierto:
+            if isinstance(rend1, unicode):
+                rend1 = eval(rend1)
+            if isinstance(rend2, unicode):
+                rend2 = eval(rend2)
+            valoresTransformados = [round(v * cobertura / rend1 / rend2, 2) for v in valores]
+            cadena = u"%s, %s, %s, %s # %s, %s" % (vectorDestino, ctipo, src_dst,
+                                                  ', '.join([str(v) for v in valoresTransformados]),
+                                                  DICT_ENES.get(servicioCubierto, servicioCubierto),
+                                                  comentario)
+            string_rows.append(cadena)
+    if string_rows != []:
+        return string_rows
+    else:
+        cadena = u"%s, %s, %s, %s # %s" % (vector['carrier'],vector['ctype'],vector['originoruse'],
+                                          ', '.join([str(v) for v in valores]),
+                                          DICT_ENES.get(servicioCubierto, servicioCubierto))
     return [cadena]
 
 def aplicaMedidas(energias, medidas):
-  string_rows = []
+    string_rows = []
+    for vector in energias:
+        resultado = aplicarTecnologia(vector, medidas)
+        if isinstance(resultado, list):
+            for l in resultado:
+                string_rows.append(l)
+        else:
+            string_rows.append(resultado)
 
-  for vector in energias:
-    resultado = aplicarTecnologia(vector, medidas)
-    if isinstance(resultado, list):
-      for l in resultado:
-        string_rows.append(l)
-    else:
-      string_rows.append(resultado)
+    for medida in medidas:
+        if medida[1] == 'produccion':
+            [clave, servicio, cobertura, ctipo, src_dst, vectorDestino] = medida[:6]
+            valores = [str(v) for v in medida[6:18]]
+            comentario = medida[-1]
+            cadena = "%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
+            string_rows.append(cadena)
 
-  for medida in medidas:
-    if medida[1] == 'produccion':
-      [clave, servicio, cobertura, ctipo, src_dst, vectorDestino] = medida[:6]
-      valores = [str(v) for v in medida[6:18]]
-      comentario = medida[-1]
-      cadena = "%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
-      string_rows.append(cadena)
-
-  return string_rows
+    return string_rows
 
 def seleccionarMedida(archivomedida, medidaaplicada):
-  def esNumero(cadena):
-    cadena = cadena.strip()
-    try:
-      salida = float(cadena)
-    except:
-      salida = cadena
+    def esNumero(cadena):
+        cadena = cadena.strip()
+        try:
+            salida = float(cadena)
+        except:
+            salida = cadena
+        return salida
+
+    salida = []
+    with codecs.open(archivomedida, 'r', 'UTF8') as f:
+        lineas = f.readlines()
+    for l in lineas:
+        medida = [esNumero(e) for e in l.split(',')]
+        if medida[0] == medidaaplicada:
+            salida.append(medida)
     return salida
 
-  salida = []
-  with codecs.open(archivomedida, 'r', 'UTF8') as f:
-    lineas = f.readlines()
-  for l in lineas:
-    medida = [esNumero(e) for e in l.split(',')]
-    if medida[0] == medidaaplicada:
-      salida.append(medida)
-  return salida
-
 def generaVariante(archivobase, archivomedida, medidaaplicada):
-  medidaespecificada = seleccionarMedida(archivomedida, medidaaplicada)
+    medidaespecificada = seleccionarMedida(archivomedida, medidaaplicada)
 
-  datastring = codecs.open(archivobase,'r', 'UTF8').read()
-  datastring = DICT_ESEN.get(datastring, datastring)
-  objetos = readenergystring(datastring)
+    datastring = codecs.open(archivobase,'r', 'UTF8').read()
+    datastring = DICT_ESEN.get(datastring, datastring)
+    objetos = readenergystring(datastring)
 
-  string_rows = aplicaMedidas(objetos['componentes'], medidaespecificada)
-  variante = {'comentarios': objetos['comentarios'], 'componentes': string_rows}
+    string_rows = aplicaMedidas(objetos['componentes'], medidaespecificada)
+    variante = {'comentarios': objetos['comentarios'], 'componentes': string_rows}
 
-  return variante
+    return variante
 
 def generaVariantes(proyectoPath, archivoBase, claveMedida):
-  medidaaplicada = claveMedida
-  archivoBase = archivoBase.strip() + '.csv'
-  archivomedidas = os.path.join(proyectoPath, 'resultados',  'medidasSistemas.csv')
-  archivoBasePath = os.path.join(proyectoPath, archivoBase)
-  varianteOut = generaVariante(archivoBasePath, archivomedidas, medidaaplicada.strip())
-  varianteOut['archivoBase'] = archivoBase
-  varianteOut['paqueteAplicado'] = medidaaplicada.strip()
-  #~ variantesSalida.append(varianteOut)
+    medidaaplicada = claveMedida
+    archivoBase = archivoBase.strip() + '.csv'
+    archivomedidas = os.path.join(proyectoPath, 'resultados',  'medidasSistemas.csv')
+    archivoBasePath = os.path.join(proyectoPath, archivoBase)
+    varianteOut = generaVariante(archivoBasePath, archivomedidas, medidaaplicada.strip())
+    varianteOut['archivoBase'] = archivoBase
+    varianteOut['paqueteAplicado'] = medidaaplicada.strip()
+    #~ variantesSalida.append(varianteOut)
 
-  return varianteOut
+    return varianteOut
 
 def guardaVariantes(proyectoPath, variantes):
-  for variante in variantes:
-    basename = os.path.basename(variante['archivoBase']).split('.csv')[0]
-    filepath = os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % variante['paqueteAplicado'])
+    for variante in variantes:
+        basename = os.path.basename(variante['archivoBase']).split('.csv')[0]
+        filepath = os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % variante['paqueteAplicado'])
 
-    outrows = variante['comentarios']
-    outrows.append("vector,tipo,src_dst")
-    outrows = outrows + variante['componentes']
+        outrows = variante['comentarios']
+        outrows.append("vector,tipo,src_dst")
+        outrows = outrows + variante['componentes']
 
     with codecs.open(filepath, 'w', 'UTF8') as f:
-      f.writelines('\n'.join(outrows))
+        f.writelines('\n'.join(outrows))
 
 def procesaVariantes(proyectoPath):
-  edificios = yaml.load(file(os.path.join(proyectoPath, 'medidasSistemas.yaml'), 'r'))['variantes']
+    edificios = yaml.load(file(os.path.join(proyectoPath, 'medidasSistemas.yaml'), 'r'))['variantes']
 
-  variantesParaGuardar = []
-  for variantes in edificios:
-    archivoBase = variantes[0]
-    clavesMedidas = variantes[1]
-    for claveMedida in clavesMedidas:
-      variante = generaVariantes(proyectoPath, archivoBase, claveMedida)
-      variantesParaGuardar.append(variante)
+    variantesParaGuardar = []
+    for variantes in edificios:
+        archivoBase = variantes[0]
+        clavesMedidas = variantes[1]
+        for claveMedida in clavesMedidas:
+            variante = generaVariantes(proyectoPath, archivoBase, claveMedida)
+            variantesParaGuardar.append(variante)
 
-  guardaVariantes(proyectoPath, variantesParaGuardar)
+    guardaVariantes(proyectoPath, variantesParaGuardar)
 
-  return True
+    return True
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Genera variantes aplicando medidas de sistema al caso base')
@@ -253,19 +242,13 @@ if __name__ == "__main__":
 
     if args.generarlas_todas:
         proyectos = ['proyecto_puertoreal', 'proyecto_elviso', 'proyecto_arrahona', 'proyectoGirona', 'proyectoPPV', 'proyecto_exupery']
-        print 'Generando variantes con las medidas de sistemas para todos los proyectos', ', '.join(proyectos)
-        print
+        print(u'Generando variantes con las medidas de sistemas para todos los proyectos' + ', '.join(proyectos) + '\n')
     else:
         proyectos = [args.proyectoactivo]
-        print 'Generando variantes con sistemas para el proyecto', args.proyectoactivo
+        print(u'Generando variantes con sistemas para el proyecto %s' % args.proyectoactivo)
         print
-
     for proyectoactivo in proyectos:
         config = Config(args.configfile, proyectoactivo)
-
-        print "* Cálculo de variantes del proyecto %s *" % config.proyectoactivo
-        resultado = generaArchivoMedidas(config.proyectoactivo)
-        #~ print '_generados los paquetes de medidas_', resultado
-        resultado = procesaVariantes(config.proyectoactivo)
-        #~ print '_procesadas las variantes_', resultado
-
+        print(u"* Cálculo de variantes del proyecto %s *" % config.proyectoactivo)
+        generaArchivoMedidas(config.proyectoactivo)
+        procesaVariantes(config.proyectoactivo)
