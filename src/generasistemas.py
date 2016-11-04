@@ -48,23 +48,23 @@ def medidas(medidasSistemas, clave):
   else:
     return generaFilasMedida(clave, medidasSistemas)
 
-def generaArchivoMedidas(proyectoPath):#, destino, listaMedidas):
-
-  medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
-  if not os.path.isfile(medidasSistemasFile):
+def generaArchivoMedidas(proyectoPath):
+  try:
+      medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
+      medidasSistemas = yaml.load(file(medidasSistemasFile, 'r'))
+  except:
     print 'ERROR: este proyecto no tiene el archivo de definición de los sistemas'
     exit()
 
-  medidasSistemas = yaml.load(file(medidasSistemasFile, 'r'))
-  destinoPath =  os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
-
-  salida = ''
-  for clave in medidasSistemas['paquetes'].keys():
-    for medida in medidas(medidasSistemas, clave):
-      salida = salida + u", ".join([unicode(m) for m in medida]) + '\n'
+  destinoPath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
   with codecs.open(destinoPath, 'w', 'UTF8') as f:
+
+    salida = []
+    for clave in medidasSistemas['paquetes'].keys():
+        for medida in medidas(medidasSistemas, clave):
+          salida.append(u", ".join([unicode(m) for m in medida])+ u"\n")
+
     f.writelines(salida)
-  return True
 
 ###############################################################
 
@@ -92,11 +92,10 @@ def renombrar(datastring):
 
 def readenergystring(datastring):
   salida = {'componentes': [], 'comentarios': []}
-  datalines = datastring.replace('\r\n', '\n').split('\n')
   componentlines = []
 
-  for line in datalines:
-    line = line.strip(' ')
+  for line in datastring.splitlines():
+    line = line.strip()
 
     if (line == '') or line.startswith('vector') or line.startswith('"'):
       continue
@@ -107,9 +106,9 @@ def readenergystring(datastring):
 
   for line in componentlines:
     componente, comentario = (line + '#').split('#')[0:2]
-    componente = [x.strip(' ') for x in componente.split(',')]
+    componente = [x.strip() for x in componente.split(',')]
     carrier, ctype, originoruse, values = componente[0], componente[1], componente[2], componente[3:]
-    values = [float(v.strip('" \n')) for v in values]
+    values = [float(v.strip()) for v in values]
     if '-->' in comentario:
       servicio, tecnologia, vectorOrigen, combustible, rendimiento = \
       [x.strip() for x in comentario.replace('-->', ',').split(',')]
@@ -173,7 +172,7 @@ def aplicaMedidas(energias, medidas):
 
 def seleccionarMedida(archivomedida, medidaaplicada):
   def esNumero(cadena):
-    cadena = cadena.strip(' \n')
+    cadena = cadena.strip()
     try:
       salida = float(cadena)
     except:
@@ -203,12 +202,12 @@ def generaVariante(archivobase, archivomedida, medidaaplicada):
 
 def generaVariantes(proyectoPath, archivoBase, claveMedida):
   medidaaplicada = claveMedida
-  archivoBase = archivoBase.strip(' \n') + '.csv'
+  archivoBase = archivoBase.strip() + '.csv'
   archivomedidas = os.path.join(proyectoPath, 'resultados',  'medidasSistemas.csv')
   archivoBasePath = os.path.join(proyectoPath, archivoBase)
-  varianteOut = generaVariante(archivoBasePath, archivomedidas, medidaaplicada.strip(' \n'))
+  varianteOut = generaVariante(archivoBasePath, archivomedidas, medidaaplicada.strip())
   varianteOut['archivoBase'] = archivoBase
-  varianteOut['paqueteAplicado'] = medidaaplicada.strip(' \n')
+  varianteOut['paqueteAplicado'] = medidaaplicada.strip()
   #~ variantesSalida.append(varianteOut)
 
   return varianteOut
