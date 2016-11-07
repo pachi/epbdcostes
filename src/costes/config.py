@@ -19,7 +19,7 @@ class Config(object):
             # permite cambiar el proyecto activo respecto al del archivo de configuración
             self.proyectoactivo = os.path.join('..', 'proyectos', proyectoactivo)
         if not(os.path.isdir(self.proyectoactivo)):
-            msg = "ERROR: No se localiza el directorio del proyecto activo: %s\n"
+            msg = u"ERROR: No se localiza el directorio del proyecto activo: %s\n"
             sys.stderr.write(msg % self.proyectoactivo)
             sys.exit(1)
 
@@ -30,7 +30,7 @@ class Config(object):
             with open(filename, 'r') as configfile:
                 self._config = yaml.load(configfile)
         except:
-            print "Archivo de configuración no encontrado: ", os.path.abspath(filename)
+            print(u"Archivo de configuración no encontrado: ", os.path.abspath(filename))
         self.proyectoactivo = self._config['proyectoactivo']
         self.escenarios = self._config['escenarios']
 

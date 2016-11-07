@@ -12,8 +12,8 @@ try:
 except ImportError:
     from yaml import Loader, Dumper
 from collections import OrderedDict, defaultdict, namedtuple
-import costeslogging
-from utils import memoize, cached_property, memoizefunc
+from . import costeslogging
+from .utils import memoize, cached_property, memoizefunc
 
 logger = costeslogging.setup()
 debug, info, warn, error, critical = logger.debug, logger.info, logger.warn, logger.error, logger.critical
@@ -53,10 +53,10 @@ class Solucion(object):
         """Coste de mantenimiento de la solución en el año iyear"""
         if self.cmant[tipo] == 0 or self.pmant == 0:
             cmanti = 0.0
-            warn("Periodo o coste de mantenimiento no definido para %s" % self.nombre)
+            warn(u"Periodo o coste de mantenimiento no definido para %s" % self.nombre)
         else:
             cmanti = self.cmant[tipo] if ((iyear+1) % self.pmant == 0) else 0.0
-            _msg = "Coste de mantenimiento (solución '%s', año %2i, periodicidad %2i): %.3f"
+            _msg = u"Coste de mantenimiento (solución '%s', año %2i, periodicidad %2i): %.3f"
             info(_msg % (self.nombre, iyear, self.pmant, cmanti))
         return cmanti
 
@@ -69,10 +69,10 @@ class Solucion(object):
         """Coste de reposición de la solución en el año iyear"""
         if self.costereposicion(tipo) == 0 or self.vutil == 0:
             creposicioni = 0.0
-            warn("Periodo o coste de reposición no definido para %s", self.nombre)
+            warn(u"Periodo o coste de reposición no definido para %s", self.nombre)
         else:
             creposicioni = self.costereposicion(tipo) if ((iyear+1) % self.vutil == 0) else 0.0
-            _msg = "Coste de reposición (solución '%s', año %2i, periodicidad %2i): %.3f"
+            _msg = u"Coste de reposición (solución '%s', año %2i, periodicidad %2i): %.3f"
             info(_msg % (self.nombre, iyear, self.vutil, creposicioni))
         return creposicioni
 
@@ -121,8 +121,8 @@ class Solucion(object):
   cmant:\n\
     macro: %s #€/m2\n\
     micro: %s #€/m2\n'
-        print self.nombre
-        print 'nombre %s' % self.nombre#, self.desc, self.vutil, self.pmant, self.cinicial['macro'], self.cinicial['micro'], self.creposicion['macro'], self.creposicion['micro'], self.cmant['macro'], self.cmant['micro']
+        print(self.nombre)
+        print(u'nombre %s' % self.nombre)#, self.desc, self.vutil, self.pmant, self.cinicial['macro'], self.cinicial['micro'], self.creposicion['macro'], self.creposicion['micro'], self.cmant['macro'], self.cmant['micro']
 
 
         return stryaml % (self.nombre, self.desc, self.vutil, self.pmant,

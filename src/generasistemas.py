@@ -39,20 +39,19 @@ def generaFilasMedida(clave, medidasSistemas):
     return salida
 
 def generaArchivoMedidas(proyectoPath):
-    try:
-        medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
-        medidasSistemas = yaml.load(file(medidasSistemasFile, 'r'))
-    except:
-        print('ERROR: este proyecto no tiene el archivo de definición de los sistemas')
-        exit()
+    #try:
+    medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
+    medidasSistemas = yaml.load(open(medidasSistemasFile, 'r'))
+    #except:
+    #    print('ERROR: este proyecto no tiene el archivo de definición de los sistemas')
+    #    exit()
 
     destinoPath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
     with codecs.open(destinoPath, 'w', 'UTF8') as f:
         salida = []
         for clave in medidasSistemas['paquetes']:
             for medida in generaFilasMedida(clave, medidasSistemas):
-                salida.append(u", ".join([unicode(m) for m in medida])+ u"\n")
-
+                salida.append(u", ".join([u"%s" % m for m in medida])+ u"\n")
         f.writelines(salida)
 
 ###############################################################
@@ -121,9 +120,9 @@ def aplicarTecnologia(vector, medidas):
             continue
         [clave, servicio, cobertura, ctipo, src_dst, vectorDestino, rend1, rend2, comentario] = medida
         if servicio == servicioCubierto:
-            if isinstance(rend1, unicode):
+            if not isinstance(rend1, (float, int)):
                 rend1 = eval(rend1)
-            if isinstance(rend2, unicode):
+            if not isinstance(rend2, (float, int)):
                 rend2 = eval(rend2)
             valoresTransformados = [round(v * cobertura / rend1 / rend2, 2) for v in valores]
             cadena = u"%s, %s, %s, %s # %s, %s" % (vectorDestino, ctipo, src_dst,
@@ -152,9 +151,9 @@ def aplicaMedidas(energias, medidas):
     for medida in medidas:
         if medida[1] == 'produccion':
             [clave, servicio, cobertura, ctipo, src_dst, vectorDestino] = medida[:6]
-            valores = [str(v) for v in medida[6:18]]
+            valores = [u"%s" % v for v in medida[6:18]]
             comentario = medida[-1]
-            cadena = "%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
+            cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
             string_rows.append(cadena)
 
     return string_rows
@@ -214,7 +213,7 @@ def guardaVariantes(proyectoPath, variantes):
         f.writelines('\n'.join(outrows))
 
 def procesaVariantes(proyectoPath):
-    edificios = yaml.load(file(os.path.join(proyectoPath, 'medidasSistemas.yaml'), 'r'))['variantes']
+    edificios = yaml.load(open(os.path.join(proyectoPath, 'medidasSistemas.yaml'), 'r'))['variantes']
 
     variantesParaGuardar = []
     for variantes in edificios:

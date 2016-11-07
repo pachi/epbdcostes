@@ -17,8 +17,8 @@ def setup(logfilename='costes.log', name='costes'):
     filelog.setLevel(logging.WARN)
     conlog.setLevel(logging.ERROR)
 
-    _fmt = "%(asctime)s - %(levelname)s: %(message)s"
-    _datefmt = "%Y-%m-%d %H:%M:%S"
+    _fmt = u"%(asctime)s - %(levelname)s: %(message)s"
+    _datefmt = u"%Y-%m-%d %H:%M:%S"
     formatter = logging.Formatter(_fmt, _datefmt)
     conlog.setFormatter(formatter)
     filelog.setFormatter(formatter)
