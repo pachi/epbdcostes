@@ -39,12 +39,12 @@ def generaFilasMedida(clave, medidasSistemas):
     return salida
 
 def generaArchivoMedidas(proyectoPath):
-    #try:
-    medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
-    medidasSistemas = yaml.load(open(medidasSistemasFile, 'r'))
-    #except:
-    #    print('ERROR: este proyecto no tiene el archivo de definición de los sistemas')
-    #    exit()
+    try:
+        medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
+        medidasSistemas = yaml.load(open(medidasSistemasFile, 'r'))
+    except:
+        print('ERROR: este proyecto no tiene el archivo de definición de los sistemas')
+        exit()
 
     destinoPath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
     with codecs.open(destinoPath, 'w', 'UTF8') as f:
@@ -196,7 +196,6 @@ def generaVariantes(proyectoPath, archivoBase, claveMedida):
     varianteOut = generaVariante(archivoBasePath, archivomedidas, medidaaplicada.strip())
     varianteOut['archivoBase'] = archivoBase
     varianteOut['paqueteAplicado'] = medidaaplicada.strip()
-    #~ variantesSalida.append(varianteOut)
 
     return varianteOut
 
