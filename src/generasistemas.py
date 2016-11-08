@@ -29,6 +29,15 @@ import argparse
 import costes
 
 ################## parte que genera el archivo de las tecnologias #####
+def getMedidasSistemas(proyectoPath):
+    try:
+        medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
+        medidasSistemas = yaml.load(open(medidasSistemasFile, 'r'))
+    except:
+        print('ERROR: este proyecto no tiene el archivo de definición de los sistemas')
+        exit()
+    return medidasSistemas
+
 def generaFilasMedida(clave, medidasSistemas):
     paquete = medidasSistemas['paquetes'][clave]
     tecnologias = medidasSistemas['tecnologias']
@@ -39,13 +48,7 @@ def generaFilasMedida(clave, medidasSistemas):
     return salida
 
 def generaArchivoMedidas(proyectoPath):
-    try:
-        medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
-        medidasSistemas = yaml.load(open(medidasSistemasFile, 'r'))
-    except:
-        print('ERROR: este proyecto no tiene el archivo de definición de los sistemas')
-        exit()
-
+    medidasSistemas = getMedidasSistemas(proyectoPath)
     destinoPath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
     with codecs.open(destinoPath, 'w', 'UTF8') as f:
         salida = []
@@ -79,37 +82,31 @@ def renombrar(datastring):
     return datastring
 
 def readenergystring(datastring):
-    salida = {'componentes': [], 'comentarios': []}
-    componentlines = []
-
+    components, meta = [], []
     for line in datastring.splitlines():
         line = line.strip()
-
-        if (line == '') or line.startswith('vector') or line.startswith('"'):
+        if (line == '') or line.startswith('vector'):
             continue
         elif line.startswith('#'):
-            salida['comentarios'].append(line)
+            meta.append(line)
         else:
-            componentlines.append(line)
+            fields = line.split('#', 1)
+            data = [x.strip() for x in fields[0].split(',')]
+            comment = fields[1] if len(fields) > 1 else ''
+            carrier, ctype, originoruse = data[0:3]
+            values = [float(v.strip()) for v in data[3:]]
 
-    for line in componentlines:
-        componente, comentario = (line + '#').split('#')[0:2]
-        componente = [x.strip() for x in componente.split(',')]
-        carrier, ctype, originoruse, values = componente[0], componente[1], componente[2], componente[3:]
-        values = [float(v.strip()) for v in values]
-        if '-->' in comentario:
-            servicio, tecnologia, vectorOrigen, combustible, rendimiento = \
-            [x.strip() for x in comentario.replace('-->', ',').split(',')]
-        else:
-            servicio = comentario.split(',')[0]
-            tecnologia, vectorOrigen, combustible, rendimiento = None, None, None, None
+            if '-->' in comment:
+                servicio, tecnologia, vectorOrigen, combustible, rendimiento = [x.strip() for x in comment.replace('-->', ',').split(',')]
+            else:
+                servicio = comment.split(',')[0]
+                tecnologia, vectorOrigen, combustible, rendimiento = None, None, None, None
 
-        salida['componentes'].append(
-            {'carrier': carrier, 'ctype': ctype, 'originoruse': originoruse,
-             'values': values, 'servicio': servicio, 'tecnologia': tecnologia,
-             'vectorOrigen': vectorOrigen,
-             'combustible': combustible, 'rendimiento': rendimiento})
-    return salida
+            components.append(
+                {'carrier': carrier, 'ctype': ctype, 'originoruse': originoruse, 'values': values, 'comment': comment,
+                 'servicio': servicio, 'tecnologia': tecnologia, 'vectorOrigen': vectorOrigen,
+                 'combustible': combustible, 'rendimiento': rendimiento})
+    return {'componentes': components, 'meta': meta}
 
 def aplicarTecnologia(vector, medidas):
     servicioCubierto = vector['servicio']
@@ -184,7 +181,7 @@ def generaVariante(archivobase, archivomedida, medidaaplicada):
     objetos = readenergystring(datastring)
 
     string_rows = aplicaMedidas(objetos['componentes'], medidaespecificada)
-    variante = {'comentarios': objetos['comentarios'], 'componentes': string_rows}
+    variante = {'meta': objetos['meta'], 'componentes': string_rows}
 
     return variante
 
@@ -204,7 +201,7 @@ def guardaVariantes(proyectoPath, variantes):
         basename = os.path.basename(variante['archivoBase']).split('.csv')[0]
         filepath = os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % variante['paqueteAplicado'])
 
-        outrows = variante['comentarios']
+        outrows = variante['meta']
         outrows.append("vector,tipo,src_dst")
         outrows = outrows + variante['componentes']
 
@@ -212,7 +209,8 @@ def guardaVariantes(proyectoPath, variantes):
         f.writelines('\n'.join(outrows))
 
 def procesaVariantes(proyectoPath):
-    edificios = yaml.load(open(os.path.join(proyectoPath, 'medidasSistemas.yaml'), 'r'))['variantes']
+    medidasSistemas = getMedidasSistemas(proyectoPath)
+    edificios = medidasSistemas['variantes']
 
     variantesParaGuardar = []
     for variantes in edificios:
