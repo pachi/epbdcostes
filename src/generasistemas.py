@@ -234,19 +234,11 @@ if __name__ == "__main__":
                         default='./config.yaml',
                         metavar='CONFIGFILE',
                         help='usa el archivo de configuración CONFIGFILE')
-    parser.add_argument('--todas', action='store_true', dest='generarlas_todas', default=False)
     args = parser.parse_args()
     VERBOSE = args.is_verbose
 
-    if args.generarlas_todas:
-        proyectos = ['proyecto_puertoreal', 'proyecto_elviso', 'proyecto_arrahona', 'proyectoGirona', 'proyectoPPV', 'proyecto_exupery']
-        print(u'Generando variantes con las medidas de sistemas para todos los proyectos' + ', '.join(proyectos) + '\n')
-    else:
-        proyectos = [args.proyectoactivo]
-        print(u'Generando variantes con sistemas para el proyecto %s' % args.proyectoactivo)
-        print
-    for proyectoactivo in proyectos:
-        config = costes.Config(args.configfile, proyectoactivo)
-        print(u"* Cálculo de variantes del proyecto %s *" % config.proyectoactivo)
-        generaArchivoMedidas(config.proyectoactivo)
-        procesaVariantes(config.proyectoactivo)
+    config = costes.Config(args.configfile, args.proyectoactivo)
+    projectpath = config.proyectoactivo
+    print(u"* Generando variantes con sistemas de %s *" % projectpath)
+    generaArchivoMedidas(projectpath)
+    procesaVariantes(projectpath)
