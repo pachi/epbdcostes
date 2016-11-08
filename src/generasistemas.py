@@ -96,6 +96,7 @@ def readenergystring(datastring):
             carrier, ctype, originoruse = data[0:3]
             values = [float(v.strip()) for v in data[3:]]
 
+            #TODO: este parsing del comentario es mejor hacerlo en los puntos de uso final, no aquí
             if '-->' in comment:
                 servicio, tecnologia, vectorOrigen, combustible, rendimiento = [x.strip() for x in comment.replace('-->', ',').split(',')]
             else:
@@ -104,6 +105,7 @@ def readenergystring(datastring):
 
             components.append(
                 {'carrier': carrier, 'ctype': ctype, 'originoruse': originoruse, 'values': values, 'comment': comment,
+                 #TODO: buscar el uso de estas claves
                  'servicio': servicio, 'tecnologia': tecnologia, 'vectorOrigen': vectorOrigen,
                  'combustible': combustible, 'rendimiento': rendimiento})
     return {'componentes': components, 'meta': meta}
@@ -166,11 +168,10 @@ def seleccionarMedida(archivomedida, medidaaplicada):
 
     salida = []
     with codecs.open(archivomedida, 'r', 'UTF8') as f:
-        lineas = f.readlines()
-    for l in lineas:
-        medida = [esNumero(e) for e in l.split(',')]
-        if medida[0] == medidaaplicada:
-            salida.append(medida)
+        for l in f:
+            medida = [esNumero(e) for e in l.split(',')]
+            if medida[0] == medidaaplicada.strip():
+                salida.append(medida)
     return salida
 
 def generaVariante(archivobase, archivomedida, medidaaplicada):
@@ -185,44 +186,26 @@ def generaVariante(archivobase, archivomedida, medidaaplicada):
 
     return variante
 
-def generaVariantes(proyectoPath, archivoBase, claveMedida):
-    medidaaplicada = claveMedida
-    archivoBase = archivoBase.strip() + '.csv'
-    archivomedidas = os.path.join(proyectoPath, 'resultados',  'medidasSistemas.csv')
-    archivoBasePath = os.path.join(proyectoPath, archivoBase)
-    varianteOut = generaVariante(archivoBasePath, archivomedidas, medidaaplicada.strip())
-    varianteOut['archivoBase'] = archivoBase
-    varianteOut['paqueteAplicado'] = medidaaplicada.strip()
-
-    return varianteOut
-
-def guardaVariantes(proyectoPath, variantes):
-    for variante in variantes:
-        basename = os.path.basename(variante['archivoBase']).split('.csv')[0]
-        filepath = os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % variante['paqueteAplicado'])
-
+def procesaVariantes(proyectoPath):
+    medidasSistemas = getMedidasSistemas(proyectoPath)
+    # Genera archivos de variantes
+    variantes = []
+    for (archivoBase, clavesMedidas) in medidasSistemas['variantes']:
+        archivomedidas = os.path.join(proyectoPath, 'resultados',  'medidasSistemas.csv')
+        archivoSalidaPath = os.path.join(proyectoPath, archivoBase + '.csv')
+        for claveMedida in clavesMedidas:
+            variante = generaVariante(archivoSalidaPath, archivomedidas, claveMedida)
+            variantes.append([archivoBase, claveMedida, variante])
+    # Genera registro de variantes
+    for (kk, (archivoBase, claveMedida, variante)) in enumerate(variantes):
+        basename = os.path.basename(archivoBase)
+        filepath = os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % claveMedida)
         outrows = variante['meta']
         outrows.append("vector,tipo,src_dst")
         outrows = outrows + variante['componentes']
-
-    with codecs.open(filepath, 'w', 'UTF8') as f:
-        f.writelines('\n'.join(outrows))
-
-def procesaVariantes(proyectoPath):
-    medidasSistemas = getMedidasSistemas(proyectoPath)
-    edificios = medidasSistemas['variantes']
-
-    variantesParaGuardar = []
-    for variantes in edificios:
-        archivoBase = variantes[0]
-        clavesMedidas = variantes[1]
-        for claveMedida in clavesMedidas:
-            variante = generaVariantes(proyectoPath, archivoBase, claveMedida)
-            variantesParaGuardar.append(variante)
-
-    guardaVariantes(proyectoPath, variantesParaGuardar)
-
-    return True
+        with codecs.open(filepath, 'w', 'UTF8') as f:
+            f.writelines('\n'.join(outrows))
+    print(u"* Guardadas %i variantes" % (kk + 1))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Genera variantes aplicando medidas de sistema al caso base')
