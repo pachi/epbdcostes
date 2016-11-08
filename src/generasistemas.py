@@ -26,7 +26,7 @@ import codecs
 import os
 import yaml
 import argparse
-from costes import *
+import costes
 
 ################## parte que genera el archivo de las tecnologias #####
 def generaFilasMedida(clave, medidasSistemas):
@@ -246,7 +246,7 @@ if __name__ == "__main__":
         print(u'Generando variantes con sistemas para el proyecto %s' % args.proyectoactivo)
         print
     for proyectoactivo in proyectos:
-        config = Config(args.configfile, proyectoactivo)
+        config = costes.Config(args.configfile, proyectoactivo)
         print(u"* Cálculo de variantes del proyecto %s *" % config.proyectoactivo)
         generaArchivoMedidas(config.proyectoactivo)
         procesaVariantes(config.proyectoactivo)
