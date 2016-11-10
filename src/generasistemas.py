@@ -72,7 +72,7 @@ def generaMedidas(proyectoPath, sistemasDefs):
     return medidas
 
 def readenergystring(datastring):
-    """Genera lista de componentes a partir de cadena con componentes EPBD"""    
+    """Genera lista de componentes a partir de cadena csv con componentes EPBD"""    
     components, meta = [], []
     for line in datastring.splitlines():
         line = line.strip()
