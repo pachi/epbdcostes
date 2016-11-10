@@ -28,34 +28,6 @@ import yaml
 import argparse
 import costes
 
-################## parte que genera el archivo de las tecnologias #####
-def getMedidasSistemas(proyectoPath):
-    try:
-        medidasSistemasFile = os.path.join(proyectoPath, 'medidasSistemas.yaml')
-        medidasSistemas = yaml.load(open(medidasSistemasFile, 'r'))
-    except:
-        print('ERROR: este proyecto no tiene el archivo de definición de los sistemas')
-        exit()
-    return medidasSistemas
-
-def generaLogMedidas(proyectoPath):
-    medidasSistemas = getMedidasSistemas(proyectoPath)
-    paquetes = medidasSistemas['paquetes']
-    tecnologias = medidasSistemas['tecnologias']
-    
-    destinoPath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
-
-    paquetesnames = sorted(paquetes.keys())
-    with codecs.open(destinoPath, 'w', 'UTF8') as f:
-        salida = []
-        for clave in paquetesnames:
-            for sistema, cobertura in paquetes[clave]:
-                for datos in tecnologias[sistema]:
-                    salida.append(u"%s, %s, %s, %s\n" % (
-                        clave, datos[0], cobertura,
-                        ", ".join(u"%s" % val for val in datos[1:])))
-        f.writelines(salida)
-
 ###############################################################
 
 DICT_ESEN = {
@@ -73,12 +45,43 @@ DICT_ENES = {
 }
 
 ########### parte que genera las variantes ####################
-def renombrar(datastring):
-    datastring = datastring.replace(u'CALEFACCIÓN', u'HEATING')
-    datastring = datastring.replace(u'REFRIGERACIÓN', u'COOLING')
-    datastring = datastring.replace(u'ACS', u'WATERSYSTEMS')
-    datastring = datastring.replace(u'VENTILACIÓN', u'FANS')
-    return datastring
+def getDefinicionSistemas(proyectoPath):
+    """Lee archivo de definición de sistemas del proyecto"""
+    try:
+        path = os.path.join(proyectoPath, 'definicionSistemas.yaml')
+        definicionSistemas = yaml.load(open(path, 'r'))
+    except:
+        print('ERROR: no se encuentra el archivo de definición de sistemas %s' % path)
+        exit()
+    return definicionSistemas
+
+def generaMedidas(proyectoPath, sistemasDefs):
+    """Genera registro de variantes generadas"""
+    paquetes = sistemasDefs['paquetes']
+    tecnologias = sistemasDefs['tecnologias']
+
+    # Genera registro de variantes para cada paquete
+    with codecs.open(os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv'),
+                     'w', 'UTF8') as ff:
+        salida = []
+        for clave in sorted(paquetes.keys()):
+            for sistema, cobertura in paquetes[clave]:
+                for datos in tecnologias[sistema]:
+                    salida.append(u"%s, %s, %s, %s\n" % (
+                        clave, datos[0], cobertura,
+                        ", ".join(u"%s" % val for val in datos[1:])))
+        ff.writelines(salida)
+
+    # Genera definición de medidas por paquete de las variantes
+    def parse(cadena):
+        cadena = cadena.strip()
+        try:
+            salida = float(cadena)
+        except:
+            salida = cadena
+        return salida
+
+    return [[parse(e) for e in linea.split(',')] for linea in salida]
 
 def readenergystring(datastring):
     components, meta = [], []
@@ -142,17 +145,18 @@ def aplicarTecnologia(vector, medidas):
                                           DICT_ENES.get(servicioCubierto, servicioCubierto))
     return [cadena]
 
-def aplicaMedidas(energias, medidas):
+def getComponentesPaquete(componentes, medidas, paquete):
+    medidaspaquete = [medida for medida in medidas if medida[0] == paquete.strip()]
     string_rows = []
-    for vector in energias:
-        resultado = aplicarTecnologia(vector, medidas)
+    for vector in componentes:
+        resultado = aplicarTecnologia(vector, medidaspaquete)
         if isinstance(resultado, list):
             for l in resultado:
                 string_rows.append(l)
         else:
             string_rows.append(resultado)
 
-    for medida in medidas:
+    for medida in medidaspaquete:
         if medida[1] == 'produccion':
             clave, servicio, cobertura, ctipo, src_dst, vectorDestino = medida[:6]
             valores = [u"%s" % v for v in medida[6:-1]]
@@ -162,50 +166,21 @@ def aplicaMedidas(energias, medidas):
 
     return string_rows
 
-def seleccionaMedidas(archivomedidas, paquete):
-    def parse(cadena):
-        cadena = cadena.strip()
-        try:
-            salida = float(cadena)
-        except:
-            salida = cadena
-        return salida
-
-    with codecs.open(archivomedidas, 'r', 'UTF8') as ff:
-        medidas = [[parse(e) for e in linea.split(',')] for linea in ff]
-        salida = [medida for medida in medidas if medida[0] == paquete.strip()]
-    return salida
-
-def generaVariante(archivobase, archivomedidas, paquete):
-        
-    medidas = seleccionaMedidas(archivomedidas, paquete)
-
-    datastring = codecs.open(archivobase,'r', 'UTF8').read()
-    data = readenergystring(datastring)
-    variante = { 'meta': data['meta'],
-                 'componentes': aplicaMedidas(data['componentes'], medidas) }
-
-    return variante
-
-def procesaVariantes(proyectoPath):
-    medidasSistemas = getMedidasSistemas(proyectoPath)
-    archivomedidas = os.path.join(proyectoPath, 'resultados',  'medidasSistemas.csv')
-    # Genera archivos de variantes
+def generaVariantes(proyectoPath, variantesdefs, medidas):
+    # Genera variantes
     variantes = []
-    for (archivoBase, clavesPaquetes) in medidasSistemas['variantes']:
-        basepath = os.path.join(proyectoPath, archivoBase + '.csv')
-        for clavePaquete in clavesPaquetes:
-            variante = generaVariante(basepath, archivomedidas, clavePaquete)
-            variantes.append([archivoBase, clavePaquete, variante])
-    # Genera registro de variantes
-    for (kk, (archivoBase, claveMedida, variante)) in enumerate(variantes):
-        basename = os.path.basename(archivoBase)
-        filepath = os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % claveMedida)
-        outrows = variante['meta']
-        outrows.append("vector,tipo,src_dst")
-        outrows = outrows + variante['componentes']
-        with codecs.open(filepath, 'w', 'UTF8') as f:
-            f.writelines('\n'.join(outrows))
+    for (basename, paquetesids) in variantesdefs:
+        datastring = codecs.open(os.path.join(proyectoPath, basename + '.csv'), 'r', 'UTF8').read()
+        data = readenergystring(datastring)
+        for paqueteid in paquetesids:          
+            variante = { 'meta': data['meta'],
+                         'componentes': getComponentesPaquete(data['componentes'], medidas, paqueteid) }
+            variantes.append([basename, paqueteid, variante])
+    # Guarda archivos de variantes
+    for (kk, (basename, paqueteid, variante)) in enumerate(variantes):
+        with codecs.open(os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % paqueteid),
+                         'w', 'UTF8') as ff:
+            ff.writelines(u'\n'.join(variante['meta'] + ["vector,tipo,src_dst"] + variante['componentes']))
     print(u"* Guardadas %i variantes" % (kk + 1))
 
 if __name__ == "__main__":
@@ -222,5 +197,6 @@ if __name__ == "__main__":
     config = costes.Config(args.configfile, args.proyectoactivo)
     projectpath = config.proyectoactivo
     print(u"* Generando variantes con sistemas de %s *" % projectpath)
-    generaLogMedidas(projectpath)
-    procesaVariantes(projectpath)
+    sistemas = getDefinicionSistemas(projectpath)
+    medidas = generaMedidas(projectpath, sistemas)
+    generaVariantes(projectpath, sistemas['variantes'], medidas)
