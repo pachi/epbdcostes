@@ -56,34 +56,23 @@ def getDefinicionSistemas(proyectoPath):
     return definicionSistemas
 
 def generaMedidas(proyectoPath, sistemasDefs):
-    """Genera registro de variantes generadas"""
+    """Genera lista de definición de medidas por variante y paquete"""
     paquetes = sistemasDefs['paquetes']
     tecnologias = sistemasDefs['tecnologias']
-
-    def parse(cadena):
-        cadena = cadena.strip()
-        try:
-            salida = float(cadena)
-        except:
-            salida = cadena
-        return salida
-
-    # Genera registro de variantes para cada paquete
-    with codecs.open(os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv'),
-                     'w', 'UTF8') as ff:
-        salida = []
-        for clave in sorted(paquetes.keys()):
-            for sistema, cobertura in paquetes[clave]:
-                for datos in tecnologias[sistema]:
-                    
-                    salida.append(u"%s, %s, %s\n" % (clave, cobertura, ", ".join(u"%s" % val for val in datos)))
-        ff.writelines(salida)
-
     # Genera definición de medidas por paquete de las variantes
-
-    return [[parse(e) for e in linea.split(',')] for linea in salida]
+    medidas = []
+    for clave in sorted(paquetes.keys()):
+        for sistema, cobertura in paquetes[clave]:
+            for datos in tecnologias[sistema]:
+                if datos[0] != 'BYVALUE':
+                    rend1, rend2 = datos[4:6]
+                    datos[4] = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
+                    datos[5] = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
+                medidas.append([clave, cobertura] + datos)
+    return medidas
 
 def readenergystring(datastring):
+    """Genera lista de componentes a partir de cadena con componentes EPBD"""    
     components, meta = [], []
     for line in datastring.splitlines():
         line = line.strip()
@@ -102,73 +91,84 @@ def readenergystring(datastring):
                                 'values': values, 'comment': comment })
     return {'componentes': components, 'meta': meta}
 
-def aplicarTecnologia(vector, medidas):
+def transformaVector(vector, medidas):
+    """Transforma vector aplicando un conjunto de medidas
+
+    Si la medida se aplica al servicio del vector, se aplica
+    Si no se aplica ninguna medida, se devuelve el vector
+    """
     servicioCubierto = vector['comment'].split(',')[0].strip()    
     valores = vector['values']
     
     string_rows = []
     for medida in medidas:
-        if medida[2] == u'produccion':
-            continue
-        # TODO: hacer el eval al generar las medidas
-        clave, cobertura, servicio, ctipo, src_dst, vectorDestino, rend1, rend2, comentario = medida
+        clave, cobertura, servicio = medida[0:3]
         if servicio == servicioCubierto:
-            if not isinstance(rend1, (float, int)):
-                rend1 = eval(rend1)
-            if not isinstance(rend2, (float, int)):
-                rend2 = eval(rend2)
-            valoresTransformados = [round(v * cobertura / rend1 / rend2, 2) for v in valores]
-            cadena = u"%s, %s, %s, %s # %s, %s" % (vectorDestino, ctipo, src_dst,
+            ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[3:]
+            valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
+            cadena = u"%s, %s, %s, %s # %s, %s" % (vectordestino, ctipo, src_dst,
                                                   u", ".join([str(v) for v in valoresTransformados]),
                                                   DICT_ENES.get(servicioCubierto, servicioCubierto),
                                                   comentario)
             string_rows.append(cadena)
-    if string_rows != []:
-        return string_rows
-    else:
-        cadena = u"%s, %s, %s, %s # %s" % (vector['carrier'],vector['ctype'],vector['originoruse'],
-                                          u", ".join([str(v) for v in valores]),
-                                          DICT_ENES.get(servicioCubierto, servicioCubierto))
-    return [cadena]
+    # No hay medidas definidas para el servicio cubierto por el vector
+    # XXX: no se preserva el comentario completo, solo el servicio        
+    if string_rows == []:
+        string_rows = [u"%s, %s, %s, %s # %s" % (vector['carrier'], vector['ctype'], vector['originoruse'],
+                                                 u", ".join([str(v) for v in valores]),
+                                                 DICT_ENES.get(servicioCubierto, servicioCubierto))]
+    return string_rows
 
-def getComponentesPaquete(componentes, medidas, paquete):
-    medidaspaquete = [medida for medida in medidas if medida[0] == paquete.strip()]
-    string_rows = []
+def aplicaMedidas(componentes, medidas):
+    """Transforma componentes aplicando un conjunto de medidas"""
+    newvectors = []
+    # Vectores de salida ligados a vectores de entrada
     for vector in componentes:
-        resultado = aplicarTecnologia(vector, medidaspaquete)
-        if isinstance(resultado, list):
-            for l in resultado:
-                string_rows.append(l)
-        else:
-            string_rows.append(resultado)
-
-    for medida in medidaspaquete:
-        if medida[2] == 'produccion':
+        for newvec in transformaVector(vector, medidas):
+            newvectors.append(newvec)
+    # Vectores de salida que no están ligadas a un vector de entrada (p.e. generación fotovoltaica)
+    for medida in medidas:
+        if medida[2] == 'BYVALUE':
             clave, cobertura, servicio, ctipo, src_dst, vectorDestino = medida[:6]
             valores = [u"%s" % v for v in medida[6:-1]]
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
-            string_rows.append(cadena)
+            newvectors.append(cadena)
+    return newvectors
 
-    return string_rows
+def generaVariantes(proyectoPath, sistemas):
+    """Genera archivos con variantes a partir de definición de sistemas
 
-def generaVariantes(proyectoPath, variantesdefs, medidas):
+    La definición de sistemas incluye la definición de las tecnologías,
+    los paquetes, los casos base y los paquetes que se aplican a cada
+    caso base.
+    """
+    variantesdefs = sistemas['variantes']
+    medidas = generaMedidas(proyectoPath, sistemas)
+
+    # Escribe registro de medidas por variante y paquete
+    medidaslogpath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
+    with codecs.open(medidaslogpath, 'w', 'UTF8') as ff:
+        ff.writelines(", ".join(u"%s" % val for val in medida) + u"\n" for medida in medidas)
+
     # Genera variantes
     variantes = []
     for (basename, paquetesids) in variantesdefs:
         datastring = codecs.open(os.path.join(proyectoPath, basename + '.csv'), 'r', 'UTF8').read()
         data = readenergystring(datastring)
-        for paqueteid in paquetesids:          
+        for paqueteid in paquetesids:
+            medidaspaquete = [medida for medida in medidas if medida[0] == paqueteid.strip()]
             variante = { 'meta': data['meta'],
-                         'componentes': getComponentesPaquete(data['componentes'], medidas, paqueteid) }
+                         'componentes': aplicaMedidas(data['componentes'], medidaspaquete) }
             variantes.append([basename, paqueteid, variante])
-    # Guarda archivos de variantes
+    # Archivos de variantes
     for (kk, (basename, paqueteid, variante)) in enumerate(variantes):
-        with codecs.open(os.path.join(proyectoPath, 'resultados', basename + "_%s.csv" % paqueteid),
+        with codecs.open(os.path.join(proyectoPath, 'resultados', "%s_%s.csv" % (basename, paqueteid)),
                          'w', 'UTF8') as ff:
             ff.writelines(u'\n'.join(variante['meta'] + ["vector,tipo,src_dst"] + variante['componentes']))
     print(u"* Guardadas %i variantes" % (kk + 1))
-
+    return variantes
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Genera variantes aplicando medidas de sistema al caso base')
     parser.add_argument('-v', action='store_true', dest='is_verbose', help='salida detallada')
@@ -184,5 +184,4 @@ if __name__ == "__main__":
     projectpath = config.proyectoactivo
     print(u"* Generando variantes con sistemas de %s *" % projectpath)
     sistemas = getDefinicionSistemas(projectpath)
-    medidas = generaMedidas(projectpath, sistemas)
-    generaVariantes(projectpath, sistemas['variantes'], medidas)
+    variantes = generaVariantes(projectpath, sistemas)

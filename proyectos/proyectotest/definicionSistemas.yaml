@@ -24,7 +24,7 @@ tecnologias:
     - ['WATERSYSTEMS', 'CONSUMO', 'EPB', 'GASNATURAL', 0.55, 0.82, 'Cogeneracion n_th=0.55 n_el=0.25 n_dist=0.83']
     - ['WATERSYSTEMS', 'PRODUCCION', 'COGEN', 'ELECTRICIDAD', 0.55/0.25, 0.82, 'Cogeneracion n_th=0.55 n_el=0.25 n_dist=0.83']
   PV_8130:
-    - ['produccion', 'PRODUCCION', 'INSITU', 'ELECTRICIDAD', 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5,
+    - ['BYVALUE', 'PRODUCCION', 'INSITU', 'ELECTRICIDAD', 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5,
        'paneles fotovoltaicos 50m2 5kWp']
 
 
