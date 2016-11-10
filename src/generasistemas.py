@@ -38,23 +38,22 @@ def getMedidasSistemas(proyectoPath):
         exit()
     return medidasSistemas
 
-def generaFilasMedida(clave, medidasSistemas):
-    paquete = medidasSistemas['paquetes'][clave]
-    tecnologias = medidasSistemas['tecnologias']
-    salida = []
-    for sistema, cobertura in paquete:
-        for filaSistema in tecnologias[sistema]:
-            salida.append([clave] + [filaSistema[0]] + [cobertura] + filaSistema[1:])
-    return salida
-
-def generaArchivoMedidas(proyectoPath):
+def generaLogMedidas(proyectoPath):
     medidasSistemas = getMedidasSistemas(proyectoPath)
+    paquetes = medidasSistemas['paquetes']
+    tecnologias = medidasSistemas['tecnologias']
+    
     destinoPath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
+
+    paquetesnames = sorted(paquetes.keys())
     with codecs.open(destinoPath, 'w', 'UTF8') as f:
         salida = []
-        for clave in medidasSistemas['paquetes']:
-            for medida in generaFilasMedida(clave, medidasSistemas):
-                salida.append(u", ".join([u"%s" % m for m in medida])+ u"\n")
+        for clave in paquetesnames:
+            for sistema, cobertura in paquetes[clave]:
+                for datos in tecnologias[sistema]:
+                    salida.append(u"%s, %s, %s, %s\n" % (
+                        clave, datos[0], cobertura,
+                        ", ".join(u"%s" % val for val in datos[1:])))
         f.writelines(salida)
 
 ###############################################################
@@ -113,11 +112,17 @@ def readenergystring(datastring):
 def aplicarTecnologia(vector, medidas):
     servicioCubierto = vector['servicio']
     valores = vector['values']
+    
     string_rows = []
     for medida in medidas:
         if medida[1] == u'produccion':
+            # clave, servicio, cobertura, ctipo, src_dst, vectorDestino = medida[:6]
+            # valores = [u"%s" % v for v in medida[6:-1]]
+            # comentario = medida[-1]
+            # cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
+            # string_rows.append(cadena)
             continue
-        [clave, servicio, cobertura, ctipo, src_dst, vectorDestino, rend1, rend2, comentario] = medida
+        clave, servicio, cobertura, ctipo, src_dst, vectorDestino, rend1, rend2, comentario = medida
         if servicio == servicioCubierto:
             if not isinstance(rend1, (float, int)):
                 rend1 = eval(rend1)
@@ -125,7 +130,7 @@ def aplicarTecnologia(vector, medidas):
                 rend2 = eval(rend2)
             valoresTransformados = [round(v * cobertura / rend1 / rend2, 2) for v in valores]
             cadena = u"%s, %s, %s, %s # %s, %s" % (vectorDestino, ctipo, src_dst,
-                                                  ', '.join([str(v) for v in valoresTransformados]),
+                                                  u", ".join([str(v) for v in valoresTransformados]),
                                                   DICT_ENES.get(servicioCubierto, servicioCubierto),
                                                   comentario)
             string_rows.append(cadena)
@@ -133,7 +138,7 @@ def aplicarTecnologia(vector, medidas):
         return string_rows
     else:
         cadena = u"%s, %s, %s, %s # %s" % (vector['carrier'],vector['ctype'],vector['originoruse'],
-                                          ', '.join([str(v) for v in valores]),
+                                          u", ".join([str(v) for v in valores]),
                                           DICT_ENES.get(servicioCubierto, servicioCubierto))
     return [cadena]
 
@@ -149,16 +154,16 @@ def aplicaMedidas(energias, medidas):
 
     for medida in medidas:
         if medida[1] == 'produccion':
-            [clave, servicio, cobertura, ctipo, src_dst, vectorDestino] = medida[:6]
-            valores = [u"%s" % v for v in medida[6:18]]
+            clave, servicio, cobertura, ctipo, src_dst, vectorDestino = medida[:6]
+            valores = [u"%s" % v for v in medida[6:-1]]
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
             string_rows.append(cadena)
 
     return string_rows
 
-def seleccionarMedida(archivomedida, medidaaplicada):
-    def esNumero(cadena):
+def seleccionaMedidas(archivomedidas, paquete):
+    def parse(cadena):
         cadena = cadena.strip()
         try:
             salida = float(cadena)
@@ -166,36 +171,32 @@ def seleccionarMedida(archivomedida, medidaaplicada):
             salida = cadena
         return salida
 
-    salida = []
-    with codecs.open(archivomedida, 'r', 'UTF8') as f:
-        for l in f:
-            medida = [esNumero(e) for e in l.split(',')]
-            if medida[0] == medidaaplicada.strip():
-                salida.append(medida)
+    with codecs.open(archivomedidas, 'r', 'UTF8') as ff:
+        medidas = [[parse(e) for e in linea.split(',')] for linea in ff]
+        salida = [medida for medida in medidas if medida[0] == paquete.strip()]
     return salida
 
-def generaVariante(archivobase, archivomedida, medidaaplicada):
-    medidaespecificada = seleccionarMedida(archivomedida, medidaaplicada)
+def generaVariante(archivobase, archivomedidas, paquete):
+        
+    medidas = seleccionaMedidas(archivomedidas, paquete)
 
     datastring = codecs.open(archivobase,'r', 'UTF8').read()
-    datastring = DICT_ESEN.get(datastring, datastring)
-    objetos = readenergystring(datastring)
-
-    string_rows = aplicaMedidas(objetos['componentes'], medidaespecificada)
-    variante = {'meta': objetos['meta'], 'componentes': string_rows}
+    data = readenergystring(datastring)
+    variante = { 'meta': data['meta'],
+                 'componentes': aplicaMedidas(data['componentes'], medidas) }
 
     return variante
 
 def procesaVariantes(proyectoPath):
     medidasSistemas = getMedidasSistemas(proyectoPath)
+    archivomedidas = os.path.join(proyectoPath, 'resultados',  'medidasSistemas.csv')
     # Genera archivos de variantes
     variantes = []
-    for (archivoBase, clavesMedidas) in medidasSistemas['variantes']:
-        archivomedidas = os.path.join(proyectoPath, 'resultados',  'medidasSistemas.csv')
-        archivoSalidaPath = os.path.join(proyectoPath, archivoBase + '.csv')
-        for claveMedida in clavesMedidas:
-            variante = generaVariante(archivoSalidaPath, archivomedidas, claveMedida)
-            variantes.append([archivoBase, claveMedida, variante])
+    for (archivoBase, clavesPaquetes) in medidasSistemas['variantes']:
+        basepath = os.path.join(proyectoPath, archivoBase + '.csv')
+        for clavePaquete in clavesPaquetes:
+            variante = generaVariante(basepath, archivomedidas, clavePaquete)
+            variantes.append([archivoBase, clavePaquete, variante])
     # Genera registro de variantes
     for (kk, (archivoBase, claveMedida, variante)) in enumerate(variantes):
         basename = os.path.basename(archivoBase)
@@ -221,5 +222,5 @@ if __name__ == "__main__":
     config = costes.Config(args.configfile, args.proyectoactivo)
     projectpath = config.proyectoactivo
     print(u"* Generando variantes con sistemas de %s *" % projectpath)
-    generaArchivoMedidas(projectpath)
+    generaLogMedidas(projectpath)
     procesaVariantes(projectpath)
