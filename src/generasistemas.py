@@ -60,19 +60,6 @@ def generaMedidas(proyectoPath, sistemasDefs):
     paquetes = sistemasDefs['paquetes']
     tecnologias = sistemasDefs['tecnologias']
 
-    # Genera registro de variantes para cada paquete
-    with codecs.open(os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv'),
-                     'w', 'UTF8') as ff:
-        salida = []
-        for clave in sorted(paquetes.keys()):
-            for sistema, cobertura in paquetes[clave]:
-                for datos in tecnologias[sistema]:
-                    salida.append(u"%s, %s, %s, %s\n" % (
-                        clave, datos[0], cobertura,
-                        ", ".join(u"%s" % val for val in datos[1:])))
-        ff.writelines(salida)
-
-    # Genera definición de medidas por paquete de las variantes
     def parse(cadena):
         cadena = cadena.strip()
         try:
@@ -80,6 +67,19 @@ def generaMedidas(proyectoPath, sistemasDefs):
         except:
             salida = cadena
         return salida
+
+    # Genera registro de variantes para cada paquete
+    with codecs.open(os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv'),
+                     'w', 'UTF8') as ff:
+        salida = []
+        for clave in sorted(paquetes.keys()):
+            for sistema, cobertura in paquetes[clave]:
+                for datos in tecnologias[sistema]:
+                    
+                    salida.append(u"%s, %s, %s\n" % (clave, cobertura, ", ".join(u"%s" % val for val in datos)))
+        ff.writelines(salida)
+
+    # Genera definición de medidas por paquete de las variantes
 
     return [[parse(e) for e in linea.split(',')] for linea in salida]
 
@@ -97,35 +97,21 @@ def readenergystring(datastring):
             comment = fields[1] if len(fields) > 1 else ''
             carrier, ctype, originoruse = data[0:3]
             values = [float(v.strip()) for v in data[3:]]
-
-            #TODO: este parsing del comentario es mejor hacerlo en los puntos de uso final, no aquí
-            if '-->' in comment:
-                servicio, tecnologia, vectorOrigen, combustible, rendimiento = [x.strip() for x in comment.replace('-->', ',').split(',')]
-            else:
-                servicio = comment.split(',')[0]
-                tecnologia, vectorOrigen, combustible, rendimiento = None, None, None, None
-
-            components.append(
-                {'carrier': carrier, 'ctype': ctype, 'originoruse': originoruse, 'values': values, 'comment': comment,
-                 #TODO: buscar el uso de estas claves
-                 'servicio': servicio, 'tecnologia': tecnologia, 'vectorOrigen': vectorOrigen,
-                 'combustible': combustible, 'rendimiento': rendimiento})
+            components.append({ 'carrier': carrier, 'ctype': ctype,
+                                'originoruse': originoruse,
+                                'values': values, 'comment': comment })
     return {'componentes': components, 'meta': meta}
 
 def aplicarTecnologia(vector, medidas):
-    servicioCubierto = vector['servicio']
+    servicioCubierto = vector['comment'].split(',')[0].strip()    
     valores = vector['values']
     
     string_rows = []
     for medida in medidas:
-        if medida[1] == u'produccion':
-            # clave, servicio, cobertura, ctipo, src_dst, vectorDestino = medida[:6]
-            # valores = [u"%s" % v for v in medida[6:-1]]
-            # comentario = medida[-1]
-            # cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
-            # string_rows.append(cadena)
+        if medida[2] == u'produccion':
             continue
-        clave, servicio, cobertura, ctipo, src_dst, vectorDestino, rend1, rend2, comentario = medida
+        # TODO: hacer el eval al generar las medidas
+        clave, cobertura, servicio, ctipo, src_dst, vectorDestino, rend1, rend2, comentario = medida
         if servicio == servicioCubierto:
             if not isinstance(rend1, (float, int)):
                 rend1 = eval(rend1)
@@ -157,8 +143,8 @@ def getComponentesPaquete(componentes, medidas, paquete):
             string_rows.append(resultado)
 
     for medida in medidaspaquete:
-        if medida[1] == 'produccion':
-            clave, servicio, cobertura, ctipo, src_dst, vectorDestino = medida[:6]
+        if medida[2] == 'produccion':
+            clave, cobertura, servicio, ctipo, src_dst, vectorDestino = medida[:6]
             valores = [u"%s" % v for v in medida[6:-1]]
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
