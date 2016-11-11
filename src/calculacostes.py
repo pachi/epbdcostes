@@ -27,25 +27,25 @@ def checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
 
 def calculacostes(config, costes, mediciones, escenarios):
     """Calcula costes para la configuración y los escenarios indicados"""
-    txt = ("\tCoste (%s, %i%%): %.2f, Coste inicial: %.2f, Cmant: %.2f, "
-           "Crepo: %.2f, Cop: %.2f, Copgas: %.2f, Copele: %.2f, CCO2: %.2f, Vresidual: %.2f, periodo: %i")
-    ftxt = "%s, %s, %i, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %i\n"
+    txt = (u"\tCoste (%s, %i%%): %.2f, Coste inicial: %.2f, Cmant: %.2f, "
+           u"Crepo: %.2f, Cop: %.2f, Copgas: %.2f, Copele: %.2f, CCO2: %.2f, Vresidual: %.2f, periodo: %i")
+    ftxt = u"%s, %s, %i, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %i\n"
     reslines = []
-    reslines.append("# Resultados de cálculos de costes\n")
-    reslines.append("# variante_id, escenario, tasa, coste, costeinicial, "
-                    "costemantenimiento, costereposicion, operacion, "
-                    "operaciongasoleoc, operacionelec, costeco2, vresidual, periodo\n")
+    reslines.append(u"# Resultados de cálculos de costes\n")
+    reslines.append(u"# variante_id, escenario, tasa, coste, costeinicial, "
+                    u"costemantenimiento, costereposicion, operacion, "
+                    u"operaciongasoleoc, operacionelec, costeco2, vresidual, periodo\n")
     for variante in mediciones:
         if VERBOSE:
-            print "\n* Variante (id=%s)" % variante.id
+            print u"\n* Variante (id=%s)" % variante.id
         for escenario in escenarios:
             cv = coste(variante, escenario, costes)
             civ = costeinicial(variante, escenario, costes)
             cmv = costemantenimiento(variante, escenario, costes)
             crv = costereposicion(variante, escenario, costes)
             copv = costesoperacion(variante, escenario)
-            copgas = copv['gasoleoc']
-            copele = copv['electricidad']
+            copgas = copv[u'gasoleoc']
+            copele = copv[u'electricidad']
             cop = sum(copv[combustible] for combustible in copv)
             vresidual = valorresidual(variante, escenario, costes)
             coco2 = costeco2(variante, escenario)
@@ -55,7 +55,7 @@ def calculacostes(config, costes, mediciones, escenarios):
                 print escenario
                 print txt % (escenario.tipo, escenario.tasa,
                              cv, civ, cmv, crv, cop, copgas,
-                             copele, coco2, vresidual, periodo), "\nCoste CO2:", coco2
+                             copele, coco2, vresidual, periodo), u"\nCoste CO2:", coco2
                 raise
             if VERBOSE:
                 print txt % (escenario.tipo, escenario.tasa,
@@ -73,40 +73,40 @@ def calculacostes(config, costes, mediciones, escenarios):
     return len(reslines)-2
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Calcula costes del proyecto activo para los escenarios configurados')
+    parser = argparse.ArgumentParser(description=u'Calcula costes del proyecto activo para los escenarios configurados')
     parser.add_argument('-v', action='store_true', dest='is_verbose', help='salida detallada')
     parser.add_argument('-p', '--project', action='store', dest='proyectoactivo', metavar='PROYECTO')
     parser.add_argument('-c', '--config', action='store', dest='configfile',
                         default='./config.yaml',
                         metavar='CONFIGFILE',
-                        help='usa el archivo de configuración CONFIGFILE')
+                        help=u'usa el archivo de configuración CONFIGFILE')
     parser.add_argument('--todas', action='store_true', dest='generarlas_todas', default=False)
     args = parser.parse_args()
     VERBOSE = args.is_verbose
 
     if args.generarlas_todas:
         proyectos = ['proyecto_puertoreal', 'proyecto_elviso', 'proyecto_arrahona', 'proyectoGirona', 'proyectoPPV', 'proyecto_exupery']
-        print 'Generando archivo de costes para todos los proyectos', ', '.join(proyectos)
+        print u'Generando archivo de costes para todos los proyectos', ', '.join(proyectos)
         print
     else:
         proyectos = [args.proyectoactivo]
-        print 'Generando archivo de costes para el proyecto', args.proyectoactivo
+        print u'Generando archivo de costes para el proyecto', args.proyectoactivo
         print
 
     for proyectoactivo in proyectos:
         config = Config(args.configfile, proyectoactivo)
 
-        print "* Cálculo de costes del proyecto %s *" % config.proyectoactivo
-        print "\tCargando costes: ", config.costespath
+        print u"* Cálculo de costes del proyecto %s *" % config.proyectoactivo
+        print u"\tCargando costes: ", config.costespath
         costes = cargacostes(config.costespath)
-        print "\tCargando mediciones: ", config.medicionespath
+        print u"\tCargando mediciones: ", config.medicionespath
         mediciones = cargamediciones(config.medicionespath, costes)
         escenarios = [Escenario(tipo, tasa, config.parametrospath)
                       for tipo in config.escenarios
                       for tasa in config.escenarios[tipo]]
-        print "\tDefinidos %i escenarios" % len(escenarios)
-        print "\tCalculando costes..."
+        print u"\tDefinidos %i escenarios" % len(escenarios)
+        print u"\tCalculando costes..."
         numcasos = calculacostes(config, costes, mediciones, escenarios)
-        print "Calculados %i casos del proyecto activo: %s" % (numcasos,
-                                                               config.proyectoactivo)
+        print u"Calculados %i casos del proyecto activo: %s" % (numcasos,
+                                                                config.proyectoactivo)
 
