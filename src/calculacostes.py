@@ -8,6 +8,7 @@
 #
 """Generación de archivos de costes para estudio de coste óptimo"""
 
+import io
 import os.path
 import argparse
 from costes import *
@@ -67,7 +68,7 @@ def calculacostes(config, costes, mediciones, escenarios):
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
-    with open(config.resultadospath, 'w') as resfile:
+    with io.open(config.resultadospath, 'w', encoding='utf-8') as resfile:
         resfile.writelines(reslines)
     # Devuelve número de casos calculados
     return len(reslines)-2

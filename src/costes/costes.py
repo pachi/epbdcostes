@@ -6,6 +6,7 @@
 # DB-HE 2013
 #
 
+import io
 import yaml
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
@@ -27,8 +28,8 @@ class Solucion(object):
     para un periodo.
     """
     def __init__(self, name, data):
-        self.nombre = unicode(name).encode('utf-8')
-        self.desc = unicode(data.get('desc', "")).encode('utf-8')
+        self.nombre = name
+        self.desc = data.get('desc', "")
         self.vutil = data.get('vutil', 0.0)
         self.pmant = data.get('pmant', 0.0)
         self.cinicial = data.get('cinicial', {'macro':0.0, 'micro':0.0})
@@ -143,7 +144,7 @@ class Escenario(object):
         TODO: No descontar aquí los valores de CO2 o energía
         """
         def _cargaparametros(filename):
-            with open(filename, 'r') as parametrosfile:
+            with io.open(filename, 'r', encoding='utf-8') as parametrosfile:
                 parametros = yaml.load(parametrosfile, Loader=Loader)
             return parametros
 
@@ -344,7 +345,7 @@ def descuenta(costlist, rate):
     return [factordescuento(i, rate) * cost for i, cost in enumerate(costlist)]
 
 def cargacostes(filename='solucionescostes.yaml'):
-    with open(filename,'r') as costesfile:
+    with io.open(filename, 'r', encoding='utf-8') as costesfile:
         costesdata = yaml.load(costesfile, Loader=Loader)
         costes = OrderedDict()
         for name in costesdata:
@@ -353,7 +354,7 @@ def cargacostes(filename='solucionescostes.yaml'):
 
 def cargamediciones(filename='mediciones.yaml', solucionesdefinidas=None):
     mediciones = []
-    with open(filename,'r') as medicionesfile:
+    with io.open(filename, 'r', encoding='utf-8') as medicionesfile:
         medicionesdata = yaml.load(medicionesfile, Loader=Loader)
         for linea in medicionesdata:
             variante = Variante._make(linea)
@@ -362,7 +363,7 @@ def cargamediciones(filename='mediciones.yaml', solucionesdefinidas=None):
                 for solucion in variante.soluciones:
                     if solucion not in solucionesdefinidas:
                         msg = ("Solución '%s' no presupuestada en el caso %s"
-                               % (unicode(solucion).encode('utf8'), variante.id))
+                               % (solucion, variante.id))
                         critical(msg)
                         raise KeyError(msg)
     return mediciones

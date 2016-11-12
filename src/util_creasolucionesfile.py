@@ -11,6 +11,7 @@ Toma un archivo de mediciones del proyecto activo y genera un archivo
 plantilla de costes de soluciones.
 """
 
+import io
 import os.path
 from costes import *
 
@@ -54,13 +55,12 @@ solstr = """%s:
 """
 
 res = []
-with open(solpath, 'w') as ofile:
+with io.open(solpath, 'w', encoding='utf-8') as ofile:
     res.append(solstrhdr)
     for solucion in sorted(solucionesmedidas):
-        solucionutf8 = unicode(solucion).encode('utf-8')
         if solucion not in costes:
-            print "Solución no encontrada: %s" % solucionutf8
-        res.append(solstr % solucionutf8)
+            print "Solución no encontrada: %s" % solucion
+        res.append(solstr % solucion)
     ofile.writelines(res)
 
 print ("Archivo %s generado con %i soluciones distintas a partir "
