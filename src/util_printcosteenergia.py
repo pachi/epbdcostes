@@ -9,7 +9,7 @@
 import os.path
 from costes import *
 
-parametrospath = 'proyecto_arrahona/parametroscostes.yaml'
+parametrospath = '../proyectos/proyectotest/parametroscostes.yaml'
 
 e10f = Escenario('micro', 10, parametrospath)
 e10m = Escenario('macro', 10, parametrospath)
