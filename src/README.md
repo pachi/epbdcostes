@@ -16,3 +16,14 @@ Para ejecutar este scrip es necesiario que en el directorio del proyecto se encu
 - el tercer apartado indica las combinaciones entre archivos base y paquetes de media que se le aplican
 
 para ejecutarlo: ./generasistemas.py -p <nombre del proyecto>
+
+generaindicadores
+-----------------
+
+Script que guarda como metadatos los indicadores de energía y emisiones de
+variantes en formato EPPBDcalc.
+
+Las variantes se localizan como archivos .csv en un directorio de proyecto.
+
+para ejecutarlo: ./generaindicadores.py -p <nombre del proyecto>
+
