@@ -63,7 +63,7 @@ def generaIndicadores(proyectoPath, fpeppath, fpco2path):
         meta[u"CO2"] = CO2['EP']['nren'] + CO2['EP']['ren']
         meta[u"CO2A"] = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
         timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
-        meta[u"Datetime"] = timestamp
+        #meta[u"Datetime"] = timestamp
         saveenergyfile(filepath, meta, data)
         variantes.append([timestamp, os.path.basename(filepath)])
 
