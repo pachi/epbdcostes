@@ -147,7 +147,7 @@ def generaVariantes(proyectoPath, sistemas):
     medidas = generaMedidas(proyectoPath, sistemas)
 
     # Escribe registro de medidas por variante y paquete
-    medidaslogpath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.csv')
+    medidaslogpath = os.path.join(proyectoPath, 'resultados', 'medidasSistemas.log')
     with codecs.open(medidaslogpath, 'w', 'UTF8') as ff:
         ff.writelines(", ".join(u"%s" % val for val in medida) + u"\n" for medida in medidas)
 
