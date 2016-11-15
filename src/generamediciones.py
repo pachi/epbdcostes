@@ -29,12 +29,13 @@ import os
 import yaml
 import argparse
 import costes
-from pyepbd import readenergyfile, saveenergyfile, readfactors, weighted_energy
+from pyepbd import readenergyfile, saveenergyfile, readfactors
+from pyepbd import compute_balance, weighted_energy
 
 ###############################################################
 
-def generaIndicadores(proyectoPath, fpeppath, fpco2path):
-    """Guarda indicadores energéticos y de emisiones de variantes
+def generaMediciones(proyectoPath, fpeppath, fpco2path):
+    """Guarda mediciones, con indicadores energéticos y de emisiones de variantes
 
     Toma los archivos de factores de paso y los factores de exportación
     y resuministro de los datos del proyecto.
@@ -50,29 +51,45 @@ def generaIndicadores(proyectoPath, fpeppath, fpco2path):
     filepaths = [filepath for filepath in filepaths if 'medidasSistemas' not in filepath]
     for filepath in filepaths:
         meta, data = readenergyfile(filepath)
-        EP = weighted_energy(data, fp_ep, k_rdel, k_exp)
-        CO2 = weighted_energy(data, fp_co2, k_rdel, k_exp)
+
+        # Soluciones constructivas y paquete de sistemas
+        soluciones = {}
+        if u'PaqueteSistemas' in meta:
+            soluciones[meta[u'PaqueteSistemas']] = 1
+        for clave in meta:
+            if clave.startswith(u'medicion') and not clave.startswith(u'medicion_PT_'):
+                soluciones[clave] = meta[clave][0]
+        
+        # Consumos
+        balance = compute_balance(data, k_rdel)
+        consumos = { carrier: balance[carrier]['annual']['grid']['input']
+                     for carrier in balance if carrier != 'MEDIOAMBIENTE' }
+
+        # Energía primaria
         # TODO: guardar valores por m2?
         # EP_nren_m2 = EP_nren / A_ref
-        meta[u"EP_nren"] = EP['EP']['nren']
-        meta[u"EP_ren"] = EP['EP']['ren']
-        meta[u"EP_tot"] = EP['EP']['nren'] + EP['EP']['ren']
-        meta[u"EPA_nren"] = EP['EPpasoA']['nren']
-        meta[u"EPA_ren"] = EP['EPpasoA']['ren']
-        meta[u"EPA_tot"] = EP['EPpasoA']['nren'] + EP['EPpasoA']['ren']
-        meta[u"CO2"] = CO2['EP']['nren'] + CO2['EP']['ren']
-        meta[u"CO2A"] = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
+        EP = weighted_energy(balance, fp_ep, k_exp)
+        epnren, epren = EP['EP']['nren'], EP['EP']['ren']
+        epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
+        eprimaria = { u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
+                      u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren }
+
+        # Emisiones
+        CO2 = weighted_energy(balance, fp_co2, k_exp)
+        co2 = CO2['EP']['nren'] + CO2['EP']['ren']
+        co2a = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
+        emisiones = { u"CO2": co2, u"CO2A": co2a }
+
         timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
-        #meta[u"Datetime"] = timestamp
-        saveenergyfile(filepath, meta, data)
-        variantes.append([timestamp, os.path.basename(filepath)])
-
-    # Registro de medidas por variante y paquete
-    logpath = os.path.join(proyectoPath, 'resultados', 'generaindicadores.log')
-    with codecs.open(logpath, 'w', 'utf-8') as ff:
-        ff.write("\n".join(u"%s, %s" % (timestamp, filepath) for (timestamp, filepath) in variantes))
-
-    print(u"* Revisadas %i variantes" % len(filepaths))
+        variantes.append({ 'timestamp': timestamp,
+                           'proyecto': os.path.basename(os.path.normpath(proyectoPath)),
+                           'archivo': os.path.basename(filepath),
+                           'soluciones': soluciones,
+                           'consumos': consumos,
+                           'eprimaria': eprimaria,
+                           'emisiones': emisiones
+                       })
+    return variantes
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Guarda indicadores energéticos y de emisiones en variantes')
@@ -89,4 +106,17 @@ if __name__ == "__main__":
     fpeppath = os.path.join(projectpath, 'factores_paso_EP.csv')
     fpco2path = os.path.join(projectpath, 'factores_paso_CO2.csv')
     print(u"* Generando indicadores energéticos y de emisiones de %s *" % projectpath)
-    generaIndicadores(projectpath, fpeppath, fpco2path)
+    mediciones = generaMediciones(projectpath, fpeppath, fpco2path)
+
+    # Registro de medidas por variante y paquete
+    logpath = os.path.join(projectpath, 'resultados', 'generamediciones.log')
+    with codecs.open(logpath, 'w', 'utf-8') as ff:
+        ff.write("\n".join(u"%s, %s, %s" % (datadict['timestamp'],
+                                        datadict['proyecto'],
+                                        datadict['archivo']) for datadict in mediciones))
+
+    medicionespath = os.path.join(projectpath, 'resultados', 'mediciones.yaml')
+    with codecs.open(medicionespath, 'w', 'utf-8') as outfile:
+        yaml.safe_dump(mediciones, outfile, default_flow_style=False)
+
+    print(u"* Revisadas %i variantes" % len(mediciones))
