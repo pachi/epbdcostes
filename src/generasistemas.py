@@ -112,7 +112,7 @@ def transformaVector(vector, medidas):
                                                   comentario)
             string_rows.append(cadena)
     # No hay medidas definidas para el servicio cubierto por el vector
-    # XXX: no se preserva el comentario completo, solo el servicio        
+    # XXX: no se preserva el comentario completo, solo el servicio
     if string_rows == []:
         string_rows = [u"%s, %s, %s, %s # %s" % (vector['carrier'], vector['ctype'], vector['originoruse'],
                                                  u", ".join([str(v) for v in valores]),
@@ -158,17 +158,17 @@ def generaVariantes(proyectoPath, sistemas):
         data = readenergystring(datastring)
         for paqueteid in paquetesids:
             medidaspaquete = [medida for medida in medidas if medida[0] == paqueteid.strip()]
+            data['meta'].append(u'#CTE_PaqueteSistemas: %s' % paqueteid)
             variante = { 'meta': data['meta'],
                          'componentes': aplicaMedidas(data['componentes'], medidaspaquete) }
             variantes.append([basename, paqueteid, variante])
     # Archivos de variantes
-    for (kk, (basename, paqueteid, variante)) in enumerate(variantes):
+    for (basename, paqueteid, variante) in variantes:
         with codecs.open(os.path.join(proyectoPath, 'resultados', "%s_%s.csv" % (basename, paqueteid)),
                          'w', 'UTF8') as ff:
             ff.writelines(u'\n'.join(variante['meta'] + ["vector,tipo,src_dst"] + variante['componentes']))
-    print(u"* Guardadas %i variantes" % (kk + 1))
     return variantes
-    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Genera variantes aplicando medidas de sistema al caso base')
     parser.add_argument('-v', action='store_true', dest='is_verbose', help='salida detallada')
@@ -185,3 +185,4 @@ if __name__ == "__main__":
     print(u"* Generando variantes con sistemas de %s *" % projectpath)
     sistemas = getDefinicionSistemas(projectpath)
     variantes = generaVariantes(projectpath, sistemas)
+    print(u"* Guardadas %i variantes" % len(variantes))
