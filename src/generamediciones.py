@@ -107,6 +107,7 @@ if __name__ == "__main__":
     fpco2path = os.path.join(projectpath, 'factores_paso_CO2.csv')
     print(u"* Generando indicadores energéticos y de emisiones de %s *" % projectpath)
     mediciones = generaMediciones(projectpath, fpeppath, fpco2path)
+    print(u"* Revisadas %i variantes" % len(mediciones))
 
     # Registro de medidas por variante y paquete
     logpath = os.path.join(projectpath, 'resultados', 'generamediciones.log')
@@ -114,9 +115,7 @@ if __name__ == "__main__":
         ff.write("\n".join(u"%s, %s, %s" % (datadict['timestamp'],
                                         datadict['proyecto'],
                                         datadict['archivo']) for datadict in mediciones))
-
+    # Archivo de mediciones en yaml
     medicionespath = os.path.join(projectpath, 'resultados', 'mediciones.yaml')
     with codecs.open(medicionespath, 'w', 'utf-8') as outfile:
         yaml.safe_dump(mediciones, outfile, default_flow_style=False)
-
-    print(u"* Revisadas %i variantes" % len(mediciones))
