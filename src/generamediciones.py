@@ -65,30 +65,32 @@ def generaMediciones(proyectoPath, fpeppath, fpco2path):
         consumos = { carrier: balance[carrier]['annual']['grid']['input']
                      for carrier in balance if carrier != 'MEDIOAMBIENTE' }
 
-        # Energía primaria
-        # TODO: guardar valores por m2?
-        # EP_nren_m2 = EP_nren / A_ref
-        EP = weighted_energy(balance, fp_ep, k_exp)
-        epnren, epren = EP['EP']['nren'], EP['EP']['ren']
-        epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
-        eprimaria = { u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
-                      u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren }
+        # # Energía primaria
+        # # TODO: guardar valores por m2?
+        # # EP_nren_m2 = EP_nren / A_ref
+        # EP = weighted_energy(balance, fp_ep, k_exp)
+        # epnren, epren = EP['EP']['nren'], EP['EP']['ren']
+        # epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
+        # eprimaria = { u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
+        #               u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren }
 
         # Emisiones
         CO2 = weighted_energy(balance, fp_co2, k_exp)
         co2 = CO2['EP']['nren'] + CO2['EP']['ren']
-        co2a = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
-        emisiones = { u"CO2": co2, u"CO2A": co2a }
+        # co2a = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
+        emisiones = { u"CO2": co2 } # , u"CO2A": co2a }
 
-        timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
-        variantes.append({ 'timestamp': timestamp,
-                           'proyecto': os.path.basename(os.path.normpath(proyectoPath)),
-                           'archivo': os.path.basename(filepath),
-                           'soluciones': soluciones,
-                           'consumos': consumos,
-                           'eprimaria': eprimaria,
-                           'emisiones': emisiones
-                       })
+        # timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
+        variantes.append(
+            [ # 'timestamp': timestamp,
+                # os.path.basename(os.path.normpath(proyectoPath)),
+                os.path.basename(filepath),
+                soluciones,
+                emisiones,
+                consumos
+                # 'eprimaria': eprimaria,
+            ]
+        )
     return variantes
 
 if __name__ == "__main__":
@@ -102,6 +104,8 @@ if __name__ == "__main__":
 
     config = costes.Config(args.configfile, args.proyectoactivo)
     projectpath = config.proyectoactivo
+    proyecto = os.path.basename(os.path.normpath(projectpath))
+    timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
     # TODO: hacer a través de config
     fpeppath = os.path.join(projectpath, 'factores_paso_EP.csv')
     fpco2path = os.path.join(projectpath, 'factores_paso_CO2.csv')
@@ -112,10 +116,27 @@ if __name__ == "__main__":
     # Registro de medidas por variante y paquete
     logpath = os.path.join(projectpath, 'resultados', 'generamediciones.log')
     with codecs.open(logpath, 'w', 'utf-8') as ff:
-        ff.write("\n".join(u"%s, %s, %s" % (datadict['timestamp'],
-                                        datadict['proyecto'],
-                                        datadict['archivo']) for datadict in mediciones))
+        ff.write("\n".join(u"%s, %s, %s" % (timestamp, proyecto, archivo)
+                           for (archivo, soluciones, consumos, emisiones) in mediciones))
     # Archivo de mediciones en yaml
-    medicionespath = os.path.join(projectpath, 'resultados', 'mediciones.yaml')
+    medicionespath = os.path.join(projectpath, 'mediciones.yaml')
     with codecs.open(medicionespath, 'w', 'utf-8') as outfile:
-        yaml.safe_dump(mediciones, outfile, default_flow_style=False)
+        header = u"""# Mediciones de soluciones constructivas, emisiones y consumos de combustible
+#
+# - [id_variante, {soluciones aplicadas}, {emisiones}, {consumos}]
+#
+# Las emisiones y consumos son los valores totales anuales de
+# la variante, no anuales por m2.
+#
+# CO2 - emisiones de CO2 (kgCO2e/año)
+# Se consideran consumos anuales para los usos de combustible
+# gasoleoc - consumo de gasoleoc (kWhf/año)
+# glp - consumo de glp (kWhf/año)
+# electricidad - consumo de electricidad (kWhf/año)
+# biomasa - consumo de biomasa (kWhf/año)
+#
+# Generado: %s
+# Proyecto: %s
+""" % (timestamp, proyecto)
+        data = yaml.safe_dump(mediciones, default_flow_style=False)
+        outfile.write(header + u"\n" + data)
