@@ -12,7 +12,7 @@ def setup(logfilename='costes.log', name='costes'):
     logger = logging.getLogger(name)
     logger.setLevel(logging.WARN)
 
-    filelog = logging.FileHandler(logfilename, 'a')
+    filelog = logging.FileHandler(logfilename, 'a', encoding = "utf-8")
     conlog = logging.StreamHandler()
     filelog.setLevel(logging.WARN)
     conlog.setLevel(logging.ERROR)

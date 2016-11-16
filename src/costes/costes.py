@@ -362,7 +362,7 @@ def cargamediciones(filename='mediciones.yaml', solucionesdefinidas=None):
             if solucionesdefinidas:
                 for solucion in variante.soluciones:
                     if solucion not in solucionesdefinidas:
-                        msg = ("Solución '%s' no presupuestada en el caso %s"
+                        msg = (u"Solución '%s' no presupuestada en el caso %s"
                                % (solucion, variante.id))
                         critical(msg)
                         raise KeyError(msg)
