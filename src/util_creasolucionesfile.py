@@ -11,23 +11,8 @@ Toma un archivo de mediciones del proyecto activo y genera un archivo
 plantilla de costes de soluciones.
 """
 
-import io
-import os.path
-from costes import *
-
-config = Config('./config.yaml')
-mediciones = cargamediciones(config.medicionespath)
-if os.path.exists(config.costespath):
-    costes = cargacostes(config.costespath)
-else:
-    costes = {}
-
-solucionesmedidas = set([solucion for medicion in mediciones for solucion in medicion.soluciones])
-
-solpath = os.path.join(config.proyectoactivo, 'solucionescostes-plantilla.yaml')
-
-solstrhdr = """# Costes de las MAE
-# directorio de proyecto: "./%s/"
+solstrhdr = u"""# Costes de las MAE
+# directorio de proyecto: "%s"
 #
 # desc: descripción de la MAE
 # vutil: vida útil de la MAE (años)
@@ -39,9 +24,9 @@ solstrhdr = """# Costes de las MAE
 #
 # cinicial: coste inicial (€/ud)
 # cmant: costes de mantenimiento (€/ud·año)
-#\n\n""" % config.proyectoactivo
+#\n\n""" # % config.proyectoactivo
 
-solstr = """%s:
+solstr = u"""%s:
   desc: Descripción de la solución
   vutil: 50 #años
   pmant: 10 #años
@@ -54,14 +39,42 @@ solstr = """%s:
 
 """
 
-res = []
-with io.open(solpath, 'w', encoding='utf-8') as ofile:
-    res.append(solstrhdr)
-    for solucion in sorted(solucionesmedidas):
-        if solucion not in costes:
-            print "Solución no encontrada: %s" % solucion
-        res.append(solstr % solucion)
-    ofile.writelines(res)
+if __name__ == "__main__":
+    import argparse
+    import io
+    import os
+    import costes
+    
+    parser = argparse.ArgumentParser(description='Genera plantilla de costes de soluciones del proyecto')
+    parser.add_argument('-p', '--project', action='store', dest='proyectoactivo', metavar='PROYECTO')
+    parser.add_argument('-c', '--config', action='store', dest='configfile',
+                        default='./config.yaml',
+                        metavar='CONFIGFILE',
+                        help='usa el archivo de configuración CONFIGFILE')
+    args = parser.parse_args()
 
-print ("Archivo %s generado con %i soluciones distintas a partir "
-       "de %i variantes" % (solpath, len(solucionesmedidas), len(mediciones)))
+    config = costes.Config(args.configfile, args.proyectoactivo)
+    projectpath = config.proyectoactivo
+    print(u"* Generando archivo de soluciones del proyecto %s *" % projectpath)
+
+    mediciones = costes.cargamediciones(config.medicionespath)
+    if os.path.exists(config.costespath):
+        costesdict = costes.cargacostes(config.costespath)
+    else:
+        costesdict = {}
+
+    solucionesmedidas = set([solucion for medicion in mediciones for solucion in medicion.soluciones])
+    
+    res = []
+    
+    solpath = os.path.join(projectpath, 'solucionescostes-plantilla.yaml')
+    with io.open(solpath, 'w', encoding='utf-8') as ofile:
+        res.append(solstrhdr % projectpath)
+        for solucion in sorted(solucionesmedidas):
+            if solucion not in costesdict:
+                print u"Solución no encontrada: %s" % solucion
+            res.append(solstr % solucion)
+        ofile.writelines(res)
+
+    print (u"Archivo %s generado con %i soluciones distintas a partir "
+           u"de %i variantes" % (solpath, len(solucionesmedidas), len(mediciones)))
