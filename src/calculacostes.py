@@ -11,10 +11,9 @@
 import io
 import os.path
 import argparse
-from costes import *
+import costes
 
 VERBOSE = False
-config = Config('./config.yaml')
 
 def checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
     """comprobación para verificar que todos los costes suman bien"""
@@ -26,65 +25,51 @@ def checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
     else:
         return True
 
-def calculacostes(config, costes, mediciones, escenarios):
+def calculacostes(config, costesdata, mediciones, escenarios):
     """Calcula costes para la configuración y los escenarios indicados"""
     reslines = []
     reslines.append(u"# Resultados de cálculos de costes\n")
-    reslines.append(u"# variante_id, escenario, tasa, periodo, costetotal, costeinicial, "
+    reslines.append(u"variante_id, superficie, volumen, eptot, epnren, epren, escenario, tasa, periodo, costetotal, costeinicial, "
                     u"costemantenimiento, costereposicion, costeoperacion, costeco2, vresidual,"
                     u"cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, "
                     u"cELECTRICIDADCEUTAMELILLA, cBIOCARBURANTE, cBIOMASA, "
                     u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2\n")
-    for variante in mediciones:
+    for variante in sorted(mediciones):
         if VERBOSE:
             print u"\n* Variante (id=%s)" % variante.id
         for escenario in escenarios:
-            ctotal = coste(variante, escenario, costes)
-            civ = costeinicial(variante, escenario, costes)
-            cmv = costemantenimiento(variante, escenario, costes)
-            crv = costereposicion(variante, escenario, costes)
-            copv = costesoperacion(variante, escenario)
+            ctotal = costes.coste(variante, escenario, costesdata)
+            civ = costes.costeinicial(variante, escenario, costesdata)
+            cmv = costes.costemantenimiento(variante, escenario, costesdata)
+            crv = costes.costereposicion(variante, escenario, costesdata)
+            copv = costes.costesoperacion(variante, escenario)
             cop = sum(copv[combustible] for combustible in copv)
-            coco2 = costeco2(variante, escenario)
-            vresidual = valorresidual(variante, escenario, costes)
-            cGASNATURAL = copv[u'GASNATURAL']
-            cELECTRICIDAD = copv[u'ELECTRICIDAD']
-            cELECTRICIDADBALEARES = copv[u'ELECTRICIDADBALEARES']
-            cELECTRICIDADCANARIAS = copv[u'ELECTRICIDADCANARIAS']
-            cELECTRICIDADCEUTAMELILLA = copv[u'ELECTRICIDADCEUTAMELILLA']
-            cBIOCARBURANTE = copv[u'BIOCARBURANTE']
-            cBIOMASA = copv[u'BIOMASA']
-            cBIOMASADENSIFICADA = copv[u'BIOMASADENSIFICADA']
-            cCARBON = copv[u'CARBON']
-            cFUELOIL = copv[u'FUELOIL']
-            cGASOLEO = copv[u'GASOLEO']
-            cGLP = copv[u'GLP']
-            cRED1 = copv[u'RED1']
-            cRED2 = copv[u'RED2']
-
+            coco2 = costes.costeco2(variante, escenario)
+            vresidual = costes.valorresidual(variante, escenario, costesdata)
             if not checksum(ctotal, civ, cmv, crv, cop, coco2, vresidual):
                 print variante
                 print escenario
                 raise Exception("La suma de costes no coincide con el total ctotal != civ + cmv + crv + cop + coco2 - vresidual !!")
             if VERBOSE:
-                msg = (u"\tCoste total (%s, %i%%, %i años): %.2f, Coste inicial: %.2f, Cmant: %.2f, "
-                       u"Crepo: %.2f, Cop: %.2f, CosteCO2: %.2f, Vresidual: %.2f\n"
-                       u"cGASNATURAL: %.2f, cELECTRICIDAD: %.2f, "
-                       u"cELECTRICIDADBALEARES: %.2f, cELECTRICIDADCANARIAS: %.2f, cELECTRICIDADCEUTAMELILLA: %.2f, "
-                       u"cBIOCARBURANTE: %.2f, cBIOMASA: %.2f, cBIOMASADENSIFICADA: %.2f, cCARBON: %.2f, "
-                       u"cFUELOIL: %.2f, cGASOLEO: %.2f, cGLP: %.2f, cRED1: %.2f, cRED2: %.2f") % (
-                           escenario.tipo, escenario.tasa, escenario.periodo,
-                           ctotal, civ, cmv, crv, cop, coco2, vresidual,
-                           cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
-                           cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2
-                       )
+                msg = (u"\tCoste total ({escenario.tipo}, {escenario.tasa:.2f}%, {escenario.periodo:d} años): {ctotal:.2f}, "
+                       u"Coste inicial: {civ:.2f}, Cmant: {cmv:.2f}, "
+                       u"Crepo: {crv:.2f}, Cop: {cop:.2f}, CosteCO2: {coco2:.2f}, Vresidual: {vresidual:.2f}\n"
+                       u"cGASNATURAL: {copv[GASNATURAL]:.2f}, cELECTRICIDAD: {copv[ELECTRICIDAD]:.2f}, "
+                       u"cELECTRICIDADBALEARES: {copv[ELECTRICIDADBALEARES]:.2f}, cELECTRICIDADCANARIAS: {copv[ELECTRICIDADCANARIAS]:.2f}, "
+                       u"cELECTRICIDADCEUTAMELILLA: {copv[ELECTRICIDADCEUTAMELILLA]:.2f}, "
+                       u"cBIOCARBURANTE: {copv[BIOCARBURANTE]:.2f}, cBIOMASA: {copv[BIOMASA]:.2f}, cBIOMASADENSIFICADA: {copv[BIOMASADENSIFICADA]:.2f}, "
+                       u"cCARBON: {copv[CARBON]:.2f}, cFUELOIL: {copv[FUELOIL]:.2f}, cGASOLEO: {copv[GASOLEO]:.2f}, cGLP: {copv[GLP]:.2f}, "
+                       u"cRED1: {copv[RED1]:.2f}, cRED2: {copv[RED2]:.2f}"
+                   ).format(escenario=escenario, ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv)
                 print(msg)
-            dataline = u"%s, %s, %i, %i, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f\n" % (
-                variante.id, escenario.tipo, escenario.tasa, escenario.periodo,
-                ctotal, civ, cmv, crv, cop, coco2, vresidual,
-                cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
-                cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2
-            )
+            dataline = (u"{variante.id}, {variante.metadatos[superficie]:.2f}, {variante.metadatos[volumen]:.2f}, "
+                        u"{variante.eprimaria[EP_tot]:.2f}, {variante.eprimaria[EP_nren]:.2f}, {variante.eprimaria[EP_ren]:.2f}, "
+                        u"{escenario.tipo}, {escenario.tasa:.2f}, {escenario.periodo:d}, "
+                        u"{ctotal:.2f}, {civ:.2f}, {cmv:.2f}, {crv:.2f}, {cop:.2f}, {coco2:.2f}, {vresidual:.2f}, "
+                        u"{copv[GASNATURAL]:.2f}, {copv[ELECTRICIDAD]:.2f}, {copv[ELECTRICIDADBALEARES]:.2f}, {copv[ELECTRICIDADCANARIAS]:.2f}, {copv[ELECTRICIDADCEUTAMELILLA]:.2f}, "
+                        u"{copv[BIOCARBURANTE]:.2f}, {copv[BIOMASA]:.2f}, {copv[BIOMASADENSIFICADA]:.2f}, {copv[CARBON]:.2f}, "
+                        u"{copv[FUELOIL]:.2f}, {copv[GASOLEO]:.2f}, {copv[GLP]:.2f}, {copv[RED1]:.2f}, {copv[RED2]:.2f}\n"
+            ).format (variante=variante, escenario=escenario, ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv)
             reslines.append(dataline)
 
     with io.open(os.path.join(config.basedir, 'resultados-costes.csv'), 'w', encoding='utf-8') as resfile:
@@ -114,19 +99,19 @@ if __name__ == "__main__":
         print
 
     for proyectoactivo in proyectos:
-        config = Config(args.configfile, proyectoactivo)
+        config = costes.Config(args.configfile, proyectoactivo)
 
         print u"* Cálculo de costes del proyecto %s *" % config.proyectoactivo
         print u"\tCargando costes: ", config.costespath
-        costes = cargacostes(config.costespath)
+        costesdata = costes.cargacostes(config.costespath)
         print u"\tCargando mediciones: ", config.medicionespath
-        mediciones = cargamediciones(config.medicionespath, costes)
-        escenarios = [Escenario(tipo, tasa, config.costesconfigpath)
+        mediciones = costes.cargamediciones(config.medicionespath, costesdata)
+        escenarios = [costes.Escenario(tipo, tasa, config.costesconfigpath)
                       for tipo in config.escenarios
                       for tasa in config.escenarios[tipo]]
         print u"\tDefinidos %i escenarios" % len(escenarios)
         print u"\tCalculando costes..."
-        numcasos = calculacostes(config, costes, mediciones, escenarios)
+        numcasos = calculacostes(config, costesdata, mediciones, escenarios)
         print u"Calculados %i casos del proyecto activo: %s" % (numcasos,
                                                                 config.proyectoactivo)
 

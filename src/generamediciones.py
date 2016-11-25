@@ -124,7 +124,7 @@ if __name__ == "__main__":
     with codecs.open(config.medicionespath, 'w', 'utf-8') as outfile:
         header = u"""# Mediciones de soluciones constructivas, emisiones y consumos de combustible
 #
-# - [id_variante, {soluciones aplicadas}, {emisiones}, {consumos}]
+# - ['id', 'soluciones', 'emisiones', 'consumos', 'eprimaria', 'metadatos']
 #
 # Las emisiones y consumos son los valores totales anuales de
 # la variante, no anuales por m2.
