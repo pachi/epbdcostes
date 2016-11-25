@@ -135,6 +135,9 @@ def generaVariantes(config):
     caso base.
     """
     proyectoPath = config.proyectoactivo
+    logsdir = config.logsdir
+    resultsdir = config.resultadosdir
+
     try:
         path = os.path.join(proyectoPath, 'definicionSistemas.yaml')
         sistemas = yaml.load(open(path, 'r'))
@@ -146,7 +149,7 @@ def generaVariantes(config):
     medidas = generaMedidas(sistemas)
 
     # Escribe registro de medidas por variante y paquete
-    medidaslogpath = os.path.join(proyectoPath, 'resultados', 'aplicasistemas.log')
+    medidaslogpath = os.path.join(logsdir, 'aplicasistemas.log')
     with codecs.open(medidaslogpath, 'w', 'UTF8') as ff:
         ff.writelines(", ".join(u"%s" % val for val in medida) + u"\n" for medida in medidas)
 
@@ -163,7 +166,7 @@ def generaVariantes(config):
             variantes.append([basename, paqueteid, variante])
     # Archivos de variantes
     for (basename, paqueteid, variante) in variantes:
-        with codecs.open(os.path.join(proyectoPath, 'resultados', "%s_%s.csv" % (basename, paqueteid)),
+        with codecs.open(os.path.join(resultsdir, "%s_%s.csv" % (basename, paqueteid)),
                          'w', 'UTF8') as ff:
             ff.writelines(u'\n'.join(variante['meta'] + ["vector,tipo,src_dst"] + variante['componentes']))
     return variantes
