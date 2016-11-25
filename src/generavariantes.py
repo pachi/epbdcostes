@@ -135,27 +135,26 @@ def generaVariantes(config):
     caso base.
     """
     proyectoPath = config.proyectoactivo
-    logsdir = config.logsdir
-    resultsdir = config.resultadosdir
 
     try:
-        path = os.path.join(proyectoPath, 'definicionSistemas.yaml')
+        path = config.sistemaspath
         sistemas = yaml.load(open(path, 'r'))
     except:
         print('ERROR: no se encuentra el archivo de definición de sistemas %s' % path)
         exit()
-    variantesdefs = sistemas['variantes']
-
     medidas = generaMedidas(sistemas)
 
     # Escribe registro de medidas por variante y paquete
-    medidaslogpath = os.path.join(logsdir, 'aplicasistemas.log')
+    logsdir = config.logsdir
+    if not os.path.exists(logsdir):
+        os.makedirs(logsdir)
+    medidaslogpath = os.path.join(logsdir, 'generamedidas.log')
     with codecs.open(medidaslogpath, 'w', 'UTF8') as ff:
         ff.writelines(", ".join(u"%s" % val for val in medida) + u"\n" for medida in medidas)
 
     # Genera variantes
     variantes = []
-    for (basename, paquetesids) in variantesdefs:
+    for (basename, paquetesids) in sistemas['variantes']:
         datastring = codecs.open(os.path.join(proyectoPath, basename + '.csv'), 'r', 'UTF8').read()
         data = readenergystring(datastring)
         for paqueteid in paquetesids:
@@ -164,9 +163,13 @@ def generaVariantes(config):
             variante = { 'meta': data['meta'],
                          'componentes': aplicaMedidas(data['componentes'], medidaspaquete) }
             variantes.append([basename, paqueteid, variante])
+
     # Archivos de variantes
+    variantesdir = config.variantesdir
+    if not os.path.exists(variantesdir):
+        os.makedirs(variantesdir)
     for (basename, paqueteid, variante) in variantes:
-        with codecs.open(os.path.join(resultsdir, "%s_%s.csv" % (basename, paqueteid)),
+        with codecs.open(os.path.join(variantesdir, "%s_%s.csv" % (basename, paqueteid)),
                          'w', 'UTF8') as ff:
             ff.writelines(u'\n'.join(variante['meta'] + ["vector,tipo,src_dst"] + variante['componentes']))
     return variantes

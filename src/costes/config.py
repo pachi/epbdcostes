@@ -36,6 +36,7 @@ class Config(object):
         self.proyectoactivo = self._config['proyectoactivo']
         self.escenarios = self._config['escenarios']
 
+    # directorios generales
     @property
     def basedir(self):
         return self.proyectoactivo
@@ -45,12 +46,17 @@ class Config(object):
         return os.path.join(self.proyectoactivo,'variantes')
 
     @property
-    def resultadosdir(self):
-        return os.path.join(self.proyectoactivo,'resultados')
-
-    @property
     def logsdir(self):
         return os.path.join(self.proyectoactivo,'logs')
+
+    # archivos específicos
+    @property
+    def sistemaspath(self):
+        return os.path.join(self.proyectoactivo, 'sistemas.yaml')
+
+    @property
+    def parametrospath(self):
+        return os.path.join(self.proyectoactivo, 'parametroscostes.yaml')
 
     @property
     def costespath(self):
@@ -58,12 +64,8 @@ class Config(object):
 
     @property
     def medicionespath(self):
-        return os.path.join(self.proyectoactivo, 'mediciones.yaml')
-
-    @property
-    def parametrospath(self):
-        return os.path.join(self.proyectoactivo, 'parametroscostes.yaml')
+        return os.path.join(self.proyectoactivo, 'resultados_mediciones.yaml')
 
     @property
     def resultadospath(self):
-        return os.path.join(self.resultadosdir, 'resultados-costes.csv')
+        return os.path.join(self.proyectoactivo, 'resultados_costes.csv')

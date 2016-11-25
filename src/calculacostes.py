@@ -89,11 +89,7 @@ def calculacostes(config, costes, mediciones, escenarios):
                                     cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
                                     cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2))
 
-    dirname = os.path.dirname(config.resultadospath)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-
-    with io.open(config.resultadospath, 'w', encoding='utf-8') as resfile:
+    with io.open(os.path.join(config.basedir, 'resultados-costes.csv'), 'w', encoding='utf-8') as resfile:
         resfile.writelines(reslines)
     # Devuelve número de casos calculados
     return len(reslines)-2

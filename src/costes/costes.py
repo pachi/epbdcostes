@@ -19,7 +19,7 @@ from .utils import memoize, cached_property, memoizefunc
 logger = costeslogging.setup()
 debug, info, warn, error, critical = logger.debug, logger.info, logger.warn, logger.error, logger.critical
 
-Variante = namedtuple('Variante', ['id', 'soluciones', 'emisiones', 'consumos'])
+Variante = namedtuple('Variante', ['id', 'soluciones', 'emisiones', 'consumos', 'eprimaria', 'metadatos'])
 
 class Solucion(object):
     """Solución constructiva

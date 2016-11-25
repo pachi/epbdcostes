@@ -34,20 +34,20 @@ from pyepbd import compute_balance, weighted_energy
 
 ###############################################################
 
-def generaMediciones(proyectoPath, fpeppath, fpco2path):
+def generaMediciones(config):
     """Guarda mediciones, con indicadores energéticos y de emisiones de variantes
 
     Toma los archivos de factores de paso y los factores de exportación
     y resuministro de los datos del proyecto.
     """
-    fp_ep = readfactors(fpeppath)
-    fp_co2 = readfactors(fpco2path)
+    fp_ep = readfactors(os.path.join(config.basedir, 'factores_paso_EP.csv'))
+    fp_co2 = readfactors(os.path.join(config.basedir, 'factores_paso_CO2.csv'))
     k_rdel = 0.0
     k_exp = 0.0
 
     # Genera variantes
     variantes = []
-    filepaths = glob.glob(os.path.join(proyectoPath, 'resultados', '*.csv'))
+    filepaths = glob.glob(os.path.join(config.variantesdir, '*.csv'))
     filepaths = [filepath for filepath in filepaths if 'medidasSistemas' not in filepath]
     for filepath in filepaths:
         meta, data = readenergyfile(filepath)
@@ -65,20 +65,24 @@ def generaMediciones(proyectoPath, fpeppath, fpco2path):
         consumos = { carrier: balance[carrier]['annual']['grid']['input']
                      for carrier in balance if carrier != 'MEDIOAMBIENTE' }
 
-        # # Energía primaria
-        # # TODO: guardar valores por m2?
-        # # EP_nren_m2 = EP_nren / A_ref
-        # EP = weighted_energy(balance, fp_ep, k_exp)
-        # epnren, epren = EP['EP']['nren'], EP['EP']['ren']
-        # epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
-        # eprimaria = { u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
-        #               u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren }
+        # Energía primaria
+        EP = weighted_energy(balance, fp_ep, k_exp)
+        epnren, epren = EP['EP']['nren'], EP['EP']['ren']
+        #epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
+        eprimaria = { u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
+                      #u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren
+        }
 
         # Emisiones
         CO2 = weighted_energy(balance, fp_co2, k_exp)
         co2 = CO2['EP']['nren'] + CO2['EP']['ren']
         # co2a = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
         emisiones = { u"CO2": co2 } # , u"CO2A": co2a }
+
+        # Metadatos de area y volumen
+        area = meta.get('Area_ref', 1)
+        volumen = meta.get('Vol_ref', 1)
+        meta = {'superficie': area, 'volumen': volumen}
 
         # timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
         variantes.append(
@@ -87,8 +91,9 @@ def generaMediciones(proyectoPath, fpeppath, fpco2path):
                 os.path.basename(filepath),
                 soluciones,
                 emisiones,
-                consumos
-                # 'eprimaria': eprimaria,
+                consumos,
+                eprimaria,
+                meta
             ]
         )
     return variantes
@@ -107,20 +112,16 @@ if __name__ == "__main__":
     proyecto = os.path.basename(os.path.normpath(projectpath))
     timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
     # TODO: hacer a través de config
-    fpeppath = os.path.join(projectpath, 'factores_paso_EP.csv')
-    fpco2path = os.path.join(projectpath, 'factores_paso_CO2.csv')
     print(u"* Generando indicadores energéticos y de emisiones de %s *" % projectpath)
-    mediciones = generaMediciones(projectpath, fpeppath, fpco2path)
+    mediciones = generaMediciones(config)
     print(u"* Revisadas %i variantes" % len(mediciones))
 
     # Registro de medidas por variante y paquete
-    logpath = os.path.join(projectpath, 'resultados', 'generamediciones.log')
+    logpath = os.path.join(config.logsdir, 'generamediciones.log')
     with codecs.open(logpath, 'w', 'utf-8') as ff:
-        ff.write("\n".join(u"%s, %s, %s" % (timestamp, proyecto, archivo)
-                           for (archivo, soluciones, consumos, emisiones) in mediciones))
+        ff.write("\n".join(u"%s, %s, %s" % (timestamp, proyecto, caso[0]) for caso in mediciones))
     # Archivo de mediciones en yaml
-    medicionespath = os.path.join(projectpath, 'mediciones.yaml')
-    with codecs.open(medicionespath, 'w', 'utf-8') as outfile:
+    with codecs.open(config.medicionespath, 'w', 'utf-8') as outfile:
         header = u"""# Mediciones de soluciones constructivas, emisiones y consumos de combustible
 #
 # - [id_variante, {soluciones aplicadas}, {emisiones}, {consumos}]
