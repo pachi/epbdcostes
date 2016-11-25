@@ -1,0 +1,70 @@
+# Costes de las MAE
+# directorio de proyecto: "./proyecto_arrahona/"
+#
+# desc: descripción de la MAE
+# vutil: vida útil de la MAE (años)
+# pmant: periodicidad del mantenimiento (años)
+# COSTES:
+# Para cada coste se deben aportar los costes:
+#  - para el cálculo macroeconómico (sin impuestos ni tasas)
+#  - para el cálculo financiero/microeconómico (con impuestos y tasas)
+#
+# cinicial: coste inicial (€/ud)
+# cmant: costes de mantenimiento (€/ud·año)
+#
+
+CTE_2013_CUBIERTA_ZONA D:
+  desc: Cubiewrta zona D
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 45 # €/m2
+    micro: 90 # €/m2
+  cmant:
+    macro: 1.0 # €/m2
+    micro: 2.0 # €/m2
+
+CTE_2013_MURO EXTERIOR_ZONA D:
+  desc: Muro exterior zona D
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 71.2 # €/m2
+    micro: 142.4 # €/m2
+  cmant:
+    macro: 3.0 # €/m2
+    micro: 6.0 # €/m2
+
+CTE_2013_HUECOS_ZONA D:
+  desc: Huecos zona D
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 410.0 # €/m2
+    micro: 820.0 # €/m2
+  cmant:
+    macro: 40.0 # €/m2
+    micro: 80.0 # €/m2
+
+CTE_2013_SUELO_ZONA D:
+  desc: Suelo zona D
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 70.0 # €/m2
+    micro: 140.0 # €/m2
+  cmant:
+    macro: 3.5 # €/m2
+    micro: 7.0 # €/m2
+
+S4:
+  desc: Sistemas 4
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 3000.0 # €/m2
+    micro: 6000.0 # €/m2
+  cmant:
+    macro: 300.0 # €/m2
+    micro: 600.0 # €/m2
+

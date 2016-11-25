@@ -19,10 +19,10 @@ tecnologias:
     - ['WATERSYSTEMS', 'CONSUMO', 'EPB', 'ELECTRICIDAD', 3.0, 0.82, 'BdC aire-aire n_gen=3.0 n_dist+em=0.82']
   cogen_gas_calef:
     - ['HEATING', 'CONSUMO', 'EPB', 'GASNATURAL', 0.55, 0.83, 'Cogeneracion n_th=0.55 n_el=0.25 n_dist=0.83']
-    - ['HEATING', 'PRODUCCION', 'COGEN', 'ELECTRICIDAD', 0.55/0.25, 0.83, 'Cogeneracion n_th=0.55 n_el=0.25 n_dist=0.83']
+    - ['HEATING', 'PRODUCCION', 'COGENERACION', 'ELECTRICIDAD', 0.55/0.25, 0.83, 'Cogeneracion n_th=0.55 n_el=0.25 n_dist=0.83']
   cogen_gas_ACS:
     - ['WATERSYSTEMS', 'CONSUMO', 'EPB', 'GASNATURAL', 0.55, 0.82, 'Cogeneracion n_th=0.55 n_el=0.25 n_dist=0.83']
-    - ['WATERSYSTEMS', 'PRODUCCION', 'COGEN', 'ELECTRICIDAD', 0.55/0.25, 0.82, 'Cogeneracion n_th=0.55 n_el=0.25 n_dist=0.83']
+    - ['WATERSYSTEMS', 'PRODUCCION', 'COGENERACION', 'ELECTRICIDAD', 0.55/0.25, 0.82, 'Cogeneracion n_th=0.55 n_el=0.25 n_dist=0.83']
   PV_8130:
     - ['BYVALUE', 'PRODUCCION', 'INSITU', 'ELECTRICIDAD', 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5,
        'paneles fotovoltaicos 50m2 5kWp']
