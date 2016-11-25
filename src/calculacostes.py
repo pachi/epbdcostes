@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Cálculo de costes para estudio de coste óptimo
-# 2013 Rafael Villar Burke, <pachi@ietcc.csic.es>
+# 2013-2016 Rafael Villar Burke, <pachi@ietcc.csic.es>
 #
 # DB-HE 2013
 #
@@ -28,41 +28,66 @@ def checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
 
 def calculacostes(config, costes, mediciones, escenarios):
     """Calcula costes para la configuración y los escenarios indicados"""
-    txt = (u"\tCoste (%s, %i%%): %.2f, Coste inicial: %.2f, Cmant: %.2f, "
-           u"Crepo: %.2f, Cop: %.2f, Copgas: %.2f, Copele: %.2f, CCO2: %.2f, Vresidual: %.2f, periodo: %i")
-    ftxt = u"%s, %s, %i, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %i\n"
+    txt = (u"\tCoste total (%s, %i%%, %i años): %.2f, Coste inicial: %.2f, Cmant: %.2f, "
+           u"Crepo: %.2f, Cop: %.2f, CosteCO2: %.2f, Vresidual: %.2f\n"
+           u"cGASNATURAL: %.2f, cELECTRICIDAD: %.2f, "
+           u"cELECTRICIDADBALEARES: %.2f, cELECTRICIDADCANARIAS: %.2f, cELECTRICIDADCEUTAMELILLA: %.2f, "
+           u"cBIOCARBURANTE: %.2f, cBIOMASA: %.2f, cBIOMASADENSIFICADA: %.2f, cCARBON: %.2f, "
+           u"cFUELOIL: %.2f, cGASOLEO: %.2f, cGLP: %.2f, cRED1: %.2f, cRED2: %.2f")
+
+    ftxt = u"%s, %s, %i, %i, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f\n"
+
     reslines = []
     reslines.append(u"# Resultados de cálculos de costes\n")
-    reslines.append(u"# variante_id, escenario, tasa, coste, costeinicial, "
-                    u"costemantenimiento, costereposicion, operacion, "
-                    u"operaciongasoleoc, operacionelec, costeco2, vresidual, periodo\n")
+    reslines.append(u"# variante_id, escenario, tasa, periodo, costetotal, costeinicial, "
+                    u"costemantenimiento, costereposicion, costeoperacion, costeco2, vresidual,"
+                    u"cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, "
+                    u"cELECTRICIDADCEUTAMELILLA, cBIOCARBURANTE, cBIOMASA, "
+                    u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2\n")
     for variante in mediciones:
         if VERBOSE:
             print u"\n* Variante (id=%s)" % variante.id
         for escenario in escenarios:
-            cv = coste(variante, escenario, costes)
+            ctotal = coste(variante, escenario, costes)
             civ = costeinicial(variante, escenario, costes)
             cmv = costemantenimiento(variante, escenario, costes)
             crv = costereposicion(variante, escenario, costes)
             copv = costesoperacion(variante, escenario)
-            copgas = copv[u'gasoleoc']
-            copele = copv[u'electricidad']
             cop = sum(copv[combustible] for combustible in copv)
-            vresidual = valorresidual(variante, escenario, costes)
             coco2 = costeco2(variante, escenario)
-            periodo = escenario.periodo # duración del periodo de cálculo
-            if not checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
+            vresidual = valorresidual(variante, escenario, costes)
+            cGASNATURAL = copv[u'GASNATURAL']
+            cELECTRICIDAD = copv[u'ELECTRICIDAD']
+            cELECTRICIDADBALEARES = copv[u'ELECTRICIDADBALEARES']
+            cELECTRICIDADCANARIAS = copv[u'ELECTRICIDADCANARIAS']
+            cELECTRICIDADCEUTAMELILLA = copv[u'ELECTRICIDADCEUTAMELILLA']
+            cBIOCARBURANTE = copv[u'BIOCARBURANTE']
+            cBIOMASA = copv[u'BIOMASA']
+            cBIOMASADENSIFICADA = copv[u'BIOMASADENSIFICADA']
+            cCARBON = copv[u'CARBON']
+            cFUELOIL = copv[u'FUELOIL']
+            cGASOLEO = copv[u'GASOLEO']
+            cGLP = copv[u'GLP']
+            cRED1 = copv[u'RED1']
+            cRED2 = copv[u'RED2']
+
+            if not checksum(ctotal, civ, cmv, crv, cop, coco2, vresidual):
                 print variante
                 print escenario
-                print txt % (escenario.tipo, escenario.tasa,
-                             cv, civ, cmv, crv, cop, copgas,
-                             copele, coco2, vresidual, periodo), u"\nCoste CO2:", coco2
-                raise
+                print txt % (escenario.tipo, escenario.tasa, escenario.periodo,
+                             ctotal, civ, cmv, crv, cop, coco2, vresidual,
+                             cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
+                             cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2)
+                raise Exception("Suma de costes no coincide con total ctotal != civ + cmv + crv + cop + coco2 - vresidual !!")
             if VERBOSE:
-                print txt % (escenario.tipo, escenario.tasa,
-                             cv, civ, cmv, crv, cop, copgas, copele, coco2, vresidual, periodo)
-            reslines.append(ftxt % (variante.id, escenario.tipo, escenario.tasa,
-                                    cv, civ, cmv, crv, cop, copgas, copele, coco2, vresidual, periodo))
+                print txt % (escenario.tipo, escenario.tasa, escenario.periodo,
+                             ctotal, civ, cmv, crv, cop, coco2, vresidual,
+                             cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
+                             cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2)
+            reslines.append(ftxt % (variante.id, escenario.tipo, escenario.tasa, escenario.periodo,
+                                    ctotal, civ, cmv, crv, cop, coco2, vresidual,
+                                    cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
+                                    cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2))
 
     dirname = os.path.dirname(config.resultadospath)
     if not os.path.exists(dirname):
