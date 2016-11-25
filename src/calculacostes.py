@@ -28,15 +28,6 @@ def checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
 
 def calculacostes(config, costes, mediciones, escenarios):
     """Calcula costes para la configuración y los escenarios indicados"""
-    txt = (u"\tCoste total (%s, %i%%, %i años): %.2f, Coste inicial: %.2f, Cmant: %.2f, "
-           u"Crepo: %.2f, Cop: %.2f, CosteCO2: %.2f, Vresidual: %.2f\n"
-           u"cGASNATURAL: %.2f, cELECTRICIDAD: %.2f, "
-           u"cELECTRICIDADBALEARES: %.2f, cELECTRICIDADCANARIAS: %.2f, cELECTRICIDADCEUTAMELILLA: %.2f, "
-           u"cBIOCARBURANTE: %.2f, cBIOMASA: %.2f, cBIOMASADENSIFICADA: %.2f, cCARBON: %.2f, "
-           u"cFUELOIL: %.2f, cGASOLEO: %.2f, cGLP: %.2f, cRED1: %.2f, cRED2: %.2f")
-
-    ftxt = u"%s, %s, %i, %i, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f\n"
-
     reslines = []
     reslines.append(u"# Resultados de cálculos de costes\n")
     reslines.append(u"# variante_id, escenario, tasa, periodo, costetotal, costeinicial, "
@@ -74,20 +65,27 @@ def calculacostes(config, costes, mediciones, escenarios):
             if not checksum(ctotal, civ, cmv, crv, cop, coco2, vresidual):
                 print variante
                 print escenario
-                print txt % (escenario.tipo, escenario.tasa, escenario.periodo,
-                             ctotal, civ, cmv, crv, cop, coco2, vresidual,
-                             cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
-                             cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2)
-                raise Exception("Suma de costes no coincide con total ctotal != civ + cmv + crv + cop + coco2 - vresidual !!")
+                raise Exception("La suma de costes no coincide con el total ctotal != civ + cmv + crv + cop + coco2 - vresidual !!")
             if VERBOSE:
-                print txt % (escenario.tipo, escenario.tasa, escenario.periodo,
-                             ctotal, civ, cmv, crv, cop, coco2, vresidual,
-                             cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
-                             cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2)
-            reslines.append(ftxt % (variante.id, escenario.tipo, escenario.tasa, escenario.periodo,
-                                    ctotal, civ, cmv, crv, cop, coco2, vresidual,
-                                    cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
-                                    cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2))
+                msg = (u"\tCoste total (%s, %i%%, %i años): %.2f, Coste inicial: %.2f, Cmant: %.2f, "
+                       u"Crepo: %.2f, Cop: %.2f, CosteCO2: %.2f, Vresidual: %.2f\n"
+                       u"cGASNATURAL: %.2f, cELECTRICIDAD: %.2f, "
+                       u"cELECTRICIDADBALEARES: %.2f, cELECTRICIDADCANARIAS: %.2f, cELECTRICIDADCEUTAMELILLA: %.2f, "
+                       u"cBIOCARBURANTE: %.2f, cBIOMASA: %.2f, cBIOMASADENSIFICADA: %.2f, cCARBON: %.2f, "
+                       u"cFUELOIL: %.2f, cGASOLEO: %.2f, cGLP: %.2f, cRED1: %.2f, cRED2: %.2f") % (
+                           escenario.tipo, escenario.tasa, escenario.periodo,
+                           ctotal, civ, cmv, crv, cop, coco2, vresidual,
+                           cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
+                           cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2
+                       )
+                print(msg)
+            dataline = u"%s, %s, %i, %i, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f\n" % (
+                variante.id, escenario.tipo, escenario.tasa, escenario.periodo,
+                ctotal, civ, cmv, crv, cop, coco2, vresidual,
+                cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, cELECTRICIDADCEUTAMELILLA,
+                cBIOCARBURANTE, cBIOMASA, cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2
+            )
+            reslines.append(dataline)
 
     with io.open(os.path.join(config.basedir, 'resultados-costes.csv'), 'w', encoding='utf-8') as resfile:
         resfile.writelines(reslines)
