@@ -59,7 +59,7 @@ def generaMediciones(proyectoPath, fpeppath, fpco2path):
         for clave in meta:
             if clave.startswith(u'medicion_') and not clave.startswith(u'medicion_PT_'):
                 soluciones[clave[len(u'medicion_'):]] = meta[clave][0]
-        
+
         # Consumos
         balance = compute_balance(data, k_rdel)
         consumos = { carrier: balance[carrier]['annual']['grid']['input']
