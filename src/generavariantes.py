@@ -45,17 +45,8 @@ DICT_ENES = {
 }
 
 ########### parte que genera las variantes ####################
-def getDefinicionSistemas(proyectoPath):
-    """Lee archivo de definición de sistemas del proyecto"""
-    try:
-        path = os.path.join(proyectoPath, 'definicionSistemas.yaml')
-        definicionSistemas = yaml.load(open(path, 'r'))
-    except:
-        print('ERROR: no se encuentra el archivo de definición de sistemas %s' % path)
-        exit()
-    return definicionSistemas
 
-def generaMedidas(proyectoPath, sistemasDefs):
+def generaMedidas(sistemasDefs):
     """Genera lista de definición de medidas por variante y paquete"""
     paquetes = sistemasDefs['paquetes']
     tecnologias = sistemasDefs['tecnologias']
@@ -136,15 +127,23 @@ def aplicaMedidas(componentes, medidas):
             newvectors.append(cadena)
     return newvectors
 
-def generaVariantes(proyectoPath, sistemas):
+def generaVariantes(config):
     """Genera archivos con variantes a partir de definición de sistemas
 
     La definición de sistemas incluye la definición de las tecnologías,
     los paquetes, los casos base y los paquetes que se aplican a cada
     caso base.
     """
+    proyectoPath = config.proyectoactivo
+    try:
+        path = os.path.join(proyectoPath, 'definicionSistemas.yaml')
+        sistemas = yaml.load(open(path, 'r'))
+    except:
+        print('ERROR: no se encuentra el archivo de definición de sistemas %s' % path)
+        exit()
     variantesdefs = sistemas['variantes']
-    medidas = generaMedidas(proyectoPath, sistemas)
+
+    medidas = generaMedidas(sistemas)
 
     # Escribe registro de medidas por variante y paquete
     medidaslogpath = os.path.join(proyectoPath, 'resultados', 'aplicasistemas.log')
@@ -183,6 +182,5 @@ if __name__ == "__main__":
     config = costes.Config(args.configfile, args.proyectoactivo)
     projectpath = config.proyectoactivo
     print(u"* Generando variantes con sistemas de %s *" % projectpath)
-    sistemas = getDefinicionSistemas(projectpath)
-    variantes = generaVariantes(projectpath, sistemas)
+    variantes = generaVariantes(config)
     print(u"* Guardadas %i variantes" % len(variantes))
