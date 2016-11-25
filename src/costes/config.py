@@ -52,15 +52,15 @@ class Config(object):
     # archivos específicos
     @property
     def sistemaspath(self):
-        return os.path.join(self.proyectoactivo, 'sistemas.yaml')
+        return os.path.join(self.proyectoactivo, 'variantes_sistemas.yaml')
 
     @property
-    def parametrospath(self):
-        return os.path.join(self.proyectoactivo, 'parametroscostes.yaml')
+    def costesconfigpath(self):
+        return os.path.join(self.proyectoactivo, 'costes_config.yaml')
 
     @property
     def costespath(self):
-        return os.path.join(self.proyectoactivo, 'solucionescostes.yaml')
+        return os.path.join(self.proyectoactivo, 'costes_soluciones.yaml')
 
     @property
     def medicionespath(self):

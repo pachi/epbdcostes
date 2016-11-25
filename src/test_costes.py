@@ -92,8 +92,8 @@ if __name__ == "__main__":
     mediciones = cargamediciones(config.medicionespath, costes)
     variante = mediciones[0]
 
-    escenario1 = Escenario('macro', 3, config.parametrospath)
-    escenario2 = Escenario('micro', 3, config.parametrospath)
+    escenario1 = Escenario('macro', 3, config.costesconfigpath)
+    escenario2 = Escenario('micro', 3, config.costesconfigpath)
 
     solucion1 = costes['CUB1_ER_0.05']
     solucion2 = costes['F1_ER_0.15']

@@ -67,7 +67,7 @@ if __name__ == "__main__":
     
     res = []
     
-    solpath = os.path.join(projectpath, 'solucionescostes-plantilla.yaml')
+    solpath = os.path.join(projectpath, 'costes_soluciones-plantilla.yaml')
     with io.open(solpath, 'w', encoding='utf-8') as ofile:
         res.append(solstrhdr % projectpath)
         for solucion in sorted(solucionesmedidas):

@@ -123,7 +123,7 @@ if __name__ == "__main__":
         costes = cargacostes(config.costespath)
         print u"\tCargando mediciones: ", config.medicionespath
         mediciones = cargamediciones(config.medicionespath, costes)
-        escenarios = [Escenario(tipo, tasa, config.parametrospath)
+        escenarios = [Escenario(tipo, tasa, config.costesconfigpath)
                       for tipo in config.escenarios
                       for tasa in config.escenarios[tipo]]
         print u"\tDefinidos %i escenarios" % len(escenarios)
