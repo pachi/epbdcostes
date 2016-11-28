@@ -191,6 +191,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Genera variantes aplicando medidas de sistema al caso base')
     parser.add_argument('-v', action='store_true', dest='is_verbose', help='salida detallada')
     parser.add_argument('-p', '--project', action='store', dest='proyectoactivo', metavar='PROYECTO')
+    parser.add_argument('--cleardir', action='store_true', dest='cleardir', help='elimina variantes preexistentes' )
     parser.add_argument('-c', '--config', action='store', dest='configfile',
                         default='./config.yaml',
                         metavar='CONFIGFILE',
@@ -199,7 +200,11 @@ if __name__ == "__main__":
     VERBOSE = args.is_verbose
 
     config = costes.Config(args.configfile, args.proyectoactivo)
-    projectpath = config.proyectoactivo
-    print(u"* Generando variantes con sistemas de %s *" % projectpath)
+    if args.cleardir:
+        existingfiles = [gg for gg in glob.glob(os.path.join(config.variantesdir, '*')) if os.path.isfile(gg)]
+        print(u"* Eliminando %i variantes existentes" % len(existingfiles))
+        for f in existingfiles:
+            os.remove(f)
+    print(u"* Generando variantes con sistemas de %s" % config.proyectoactivo)
     variantes = generaVariantes(config)
     print(u"* Guardadas %i variantes" % len(variantes))
