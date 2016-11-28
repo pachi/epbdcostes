@@ -23,7 +23,9 @@
 # SOFTWARE.
 
 import codecs
+import glob
 import os
+import re
 import yaml
 import argparse
 import costes
@@ -136,6 +138,7 @@ def generaVariantes(config):
     """
     proyectoPath = config.proyectoactivo
 
+    # Genera sistemas y medidas
     try:
         path = config.sistemaspath
         sistemas = yaml.load(open(path, 'r'))
@@ -152,9 +155,19 @@ def generaVariantes(config):
     with codecs.open(medidaslogpath, 'w', 'UTF8') as ff:
         ff.writelines(", ".join(u"%s" % val for val in medida) + u"\n" for medida in medidas)
 
-    # Genera variantes
+    # Genera lista de variantes y paquetes a partir de regex y lista de paquetes para cada regex
+    #    variantes: [[regex1, [paquete1, ..., paqueten]]... ]
+    allfiles = [os.path.splitext(os.path.basename(pathentry))[0]
+                for pathentry in glob.glob(os.path.join(proyectoPath, '*'))
+                if os.path.isfile(pathentry)]
+    basesypaquetes = []
+    for (regexstring, paquetes) in sistemas['variantes']:
+        basenames = [name for name in allfiles if re.search(regexstring, name) is not None]
+        basesypaquetes.extend([[basename, paquetes] for basename in basenames])
+
+    # Aplica lista de paquetes a cada variante base
     variantes = []
-    for (basename, paquetesids) in sistemas['variantes']:
+    for (basename, paquetesids) in basesypaquetes:
         datastring = codecs.open(os.path.join(proyectoPath, basename + '.csv'), 'r', 'UTF8').read()
         data = readenergystring(datastring)
         for paqueteid in paquetesids:
