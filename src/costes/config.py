@@ -39,33 +39,48 @@ class Config(object):
     # directorios generales
     @property
     def basedir(self):
+        "Directorio base del proyecto"
         return self.proyectoactivo
 
     @property
+    def variantesbasedir(self):
+        "Directorio de variantes base"
+        return os.path.join(self.proyectoactivo,'variantesbase')
+
+    @property
     def variantesdir(self):
+        "Directorio de variantes generadas"
         return os.path.join(self.proyectoactivo,'variantes')
+
 
     @property
     def logsdir(self):
+        "Directorio de registros de actividad (logs)"
         return os.path.join(self.proyectoactivo,'logs')
 
     # archivos específicos
     @property
     def sistemaspath(self):
+        "Ruta de archivo de definición de sistemas y paquetes de sistemas"
         return os.path.join(self.proyectoactivo, 'variantes_sistemas.yaml')
 
     @property
     def costesconfigpath(self):
+        "Ruta de archivo de configuración general de costes (escenarios, precios energía"
         return os.path.join(self.proyectoactivo, 'costes_config.yaml')
 
     @property
     def costespath(self):
+        "Ruta de archivo de costes de soluciones constructivas y sistemas del proyecto"
         return os.path.join(self.proyectoactivo, 'costes_soluciones.yaml')
 
     @property
     def medicionespath(self):
+        "Ruta del archivo de resultados de mediciones"
         return os.path.join(self.proyectoactivo, 'resultados_mediciones.yaml')
 
     @property
     def resultadospath(self):
+        "Ruta del archivo de resultados del cálculo de costes"
         return os.path.join(self.proyectoactivo, 'resultados_costes.csv')
+
