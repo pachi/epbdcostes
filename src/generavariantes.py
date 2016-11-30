@@ -65,7 +65,7 @@ def generaMedidas(sistemasDefs):
     return medidas
 
 def readenergystring(datastring):
-    """Genera lista de componentes a partir de cadena csv con componentes EPBD"""    
+    """Genera lista de componentes a partir de cadena csv con componentes EPBD"""
     components, meta = [], []
     for line in datastring.splitlines():
         line = line.strip()
@@ -90,9 +90,9 @@ def transformaVector(vector, medidas):
     Si la medida se aplica al servicio del vector, se aplica
     Si no se aplica ninguna medida, se devuelve el vector
     """
-    servicioCubierto = vector['comment'].split(',')[0].strip()    
+    servicioCubierto = vector['comment'].split(',')[0].strip()
     valores = vector['values']
-    
+
     string_rows = []
     for medida in medidas:
         clave, cobertura, servicio = medida[0:3]
@@ -136,8 +136,6 @@ def generaVariantes(config):
     los paquetes, los casos base y los paquetes que se aplican a cada
     caso base.
     """
-    proyectoPath = config.proyectoactivo
-
     # Genera sistemas y medidas
     try:
         path = config.sistemaspath
@@ -158,7 +156,7 @@ def generaVariantes(config):
     # Genera lista de variantes y paquetes a partir de regex y lista de paquetes para cada regex
     #    variantes: [[regex1, [paquete1, ..., paqueten]]... ]
     allfiles = [os.path.splitext(os.path.basename(pathentry))[0]
-                for pathentry in glob.glob(os.path.join(proyectoPath, '*'))
+                for pathentry in glob.glob(os.path.join(config.variantesbasedir, '*'))
                 if os.path.isfile(pathentry)]
     basesypaquetes = []
     for (regexstring, paquetes) in sistemas['variantes']:
@@ -168,7 +166,7 @@ def generaVariantes(config):
     # Aplica lista de paquetes a cada variante base
     variantes = []
     for (basename, paquetesids) in basesypaquetes:
-        datastring = codecs.open(os.path.join(proyectoPath, basename + '.csv'), 'r', 'UTF8').read()
+        datastring = codecs.open(os.path.join(config.variantesbasedir, basename + '.csv'), 'r', 'UTF8').read()
         data = readenergystring(datastring)
         for paqueteid in paquetesids:
             medidaspaquete = [medida for medida in medidas if medida[0] == paqueteid.strip()]
