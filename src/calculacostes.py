@@ -20,7 +20,7 @@ def checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
     calc1 = (civ + cmv + crv + cop + coco2 - vresidual)
     dif = cv - calc1
     if abs(dif) > 0.1:
-        print "Error al calcular costes, diferencia injustificada:", dif
+        print(u"Error al calcular costes, diferencia injustificada: %s" % dif)
         return False
     else:
         return True
@@ -28,7 +28,6 @@ def checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
 def calculacostes(config, costesdata, mediciones, escenarios):
     """Calcula costes para la configuración y los escenarios indicados"""
     reslines = []
-    reslines.append(u"# Resultados de cálculos de costes\n")
     reslines.append(u"variante_id, superficie, volumen, eptot, epnren, epren, escenario, tasa, periodo, costetotal, costeinicial, "
                     u"costemantenimiento, costereposicion, costeoperacion, costeco2, vresidual,"
                     u"cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, "
@@ -36,7 +35,7 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                     u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2\n")
     for variante in sorted(mediciones):
         if VERBOSE:
-            print u"\n* Variante (id=%s)" % variante.id
+            print(u"\n* Variante (id=%s)" % variante.id)
         for escenario in escenarios:
             ctotal = costes.coste(variante, escenario, costesdata)
             civ = costes.costeinicial(variante, escenario, costesdata)
@@ -47,8 +46,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
             coco2 = costes.costeco2(variante, escenario)
             vresidual = costes.valorresidual(variante, escenario, costesdata)
             if not checksum(ctotal, civ, cmv, crv, cop, coco2, vresidual):
-                print variante
-                print escenario
+                print(variante)
+                print(escenario)
                 raise Exception("La suma de costes no coincide con el total ctotal != civ + cmv + crv + cop + coco2 - vresidual !!")
             if VERBOSE:
                 msg = (u"\tCoste total ({escenario.tipo}, {escenario.tasa:.2f}%, {escenario.periodo:d} años): {ctotal:.2f}, "
@@ -91,27 +90,27 @@ if __name__ == "__main__":
 
     if args.generarlas_todas:
         proyectos = ['proyecto_puertoreal', 'proyecto_elviso', 'proyecto_arrahona', 'proyectoGirona', 'proyectoPPV', 'proyecto_exupery']
-        print u'Generando archivo de costes para todos los proyectos', ', '.join(proyectos)
-        print
+        print(u'Generando archivo de costes para todos los proyectos', ', '.join(proyectos))
+        print()
     else:
         proyectos = [args.proyectoactivo]
-        print u'Generando archivo de costes para el proyecto', args.proyectoactivo
-        print
+        print(u'Generando archivo de costes para el proyecto', args.proyectoactivo)
+        print()
 
     for proyectoactivo in proyectos:
         config = costes.Config(args.configfile, proyectoactivo)
 
-        print u"* Cálculo de costes del proyecto %s *" % config.proyectoactivo
-        print u"\tCargando costes: ", config.costespath
+        print(u"* Cálculo de costes del proyecto %s *" % config.proyectoactivo)
+        print(u"\tCargando costes: ", config.costespath)
         costesdata = costes.cargacostes(config.costespath)
-        print u"\tCargando mediciones: ", config.medicionespath
+        print(u"\tCargando mediciones: ", config.medicionespath)
         mediciones = costes.cargamediciones(config.medicionespath, costesdata)
         escenarios = [costes.Escenario(tipo, tasa, config.costesconfigpath)
                       for tipo in config.escenarios
                       for tasa in config.escenarios[tipo]]
-        print u"\tDefinidos %i escenarios" % len(escenarios)
-        print u"\tCalculando costes..."
+        print(u"\tDefinidos %i escenarios" % len(escenarios))
+        print(u"\tCalculando costes...")
         numcasos = calculacostes(config, costesdata, mediciones, escenarios)
-        print u"Calculados %i casos del proyecto activo: %s" % (numcasos,
-                                                                config.proyectoactivo)
+        print(u"Calculados %i casos del proyecto activo: %s" % (numcasos,
+                                                                config.proyectoactivo))
 
