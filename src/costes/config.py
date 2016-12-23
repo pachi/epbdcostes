@@ -5,6 +5,8 @@
 #
 # DB-HE 2013
 #
+
+from __future__ import print_function
 import sys
 import os.path
 import yaml

@@ -8,6 +8,7 @@
 #
 """Generación de archivos de costes para estudio de coste óptimo"""
 
+from __future__ import print_function
 import io
 import os.path
 import argparse
