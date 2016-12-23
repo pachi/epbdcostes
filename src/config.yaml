@@ -12,4 +12,4 @@ proyectoactivo: ../proyectos/proyectotest
 
 escenarios:
   macro: [3, 4]
-  micro: [6, 10, 14]
+  micro: [7, 10]
