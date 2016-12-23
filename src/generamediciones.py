@@ -62,25 +62,32 @@ def generaMediciones(config):
                 soluciones[clave[len(u'medicion_'):]] = meta[clave][0]
 
         # Metadatos generales (fecha, area, volumen, zc, peninsularidad)
-        fechacalculo = meta.get('Datetime', '')
-        tipoedificio = meta.get('Tipo_edificio', '')
-        usoedificio = meta.get('Uso_edificio', '')
-        area = meta.get('Area_ref', 1)
-        volumen = meta.get('Vol_ref', 1)
+        arearef = float(meta.get('Area_ref', 1.0))
         weatherfile = meta.get('Weather_file', '').split('_')
         pen = 2 if len(weatherfile) < 2 else (1 if weatherfile[1].startswith('pen') else 0)
-        areavol = {'fechacalculo': fechacalculo,
-                   'tipoedificio': tipoedificio, 'usoedificio': usoedificio,
-                   'superficie': area, 'volumen': volumen,
-                   'zc': weatherfile[0], 'peninsular': pen }
+        metadata = {
+            'name': meta.get('Name', ''),
+            'fechacalculo': meta.get('Datetime', ''),
+            'tipoedificio': meta.get('Tipo_edificio', ''),
+            'usoedificio': meta.get('Uso_edificio', ''),
+            'superficie': arearef,
+            'volumen': meta.get('Vol_ref', 1.0),
+            'zc': weatherfile[0],
+            'peninsular': pen,
+            'sistemas': meta.get('PaqueteSistemas', ''),
+            'envolvente': meta.get('ConstructionSet', ''),
+            'phuecos': meta.get('Permeabilidad_ventanas', ''),
+            'ventdiseno': meta.get('Design_flow_rate', 0.0),
+            'efrecup': meta.get('Heat_recovery', 0.0)
+        }
 
-        # Demandas
+        # Demandas, ya por m2 de superficie
         dems = ['Demanda_calefaccion', 'Demanda_refrigeracion', 'Demanda_iluminacion_interior',
                 'Demanda_iluminacion_exterior', 'Demanda_equipos_interiores', 'Demanda_equipos_exteriores',
                 'Demanda_ventiladores', 'Demanda_bombas', 'Demanda_disipacion_calor', 'Demanda_humidificacion',
                 'Demanda_recuperacion_calor', 'Demanda_sistemas_agua', 'Demanda_equipos_frigorificos',
                 'Demanda_equipos_generacion']
-        demanda = {clave: meta.get(clave, 0.0) for clave in dems}
+        demanda = {clave: 1.0 * meta.get(clave, 0.0) / arearef for clave in dems}
 
         # Consumos
         balance = compute_balance(data, k_rdel)
@@ -92,6 +99,7 @@ def generaMediciones(config):
         epnren, epren = EP['EP']['nren'], EP['EP']['ren']
         #epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
         eprimaria = {u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
+                     u"EP_nren_m2": epnren / arearef , u"EP_ren_m2": epren / arearef, u"EP_tot_m2": (epren + epnren) / arearef,
                      #u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren
         }
 
@@ -107,7 +115,7 @@ def generaMediciones(config):
                 # os.path.basename(os.path.normpath(proyectoPath)),
                 os.path.basename(filepath),
                 soluciones,
-                areavol,
+                metadata,
                 eprimaria,
                 emisiones,
                 demanda,
