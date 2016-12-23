@@ -39,8 +39,6 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                     u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, "
                     u"cRED1, cRED2\n")
     for variante in sorted(mediciones):
-        if VERBOSE:
-            print(u"\n* Variante (id=%s)" % variante.id)
         for escenario in escenarios:
             ctotal = costes.coste(variante, escenario, costesdata)
             civ = costes.costeinicial(variante, escenario, costesdata)
@@ -54,19 +52,6 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                 print(variante)
                 print(escenario)
                 raise Exception("La suma de costes no coincide con el total ctotal != civ + cmv + crv + cop + coco2 - vresidual !!")
-            if VERBOSE:
-                msg = (u"\tCoste total ({escenario.tipo}, {escenario.tasa:.2f}%, {escenario.periodo:d} años): {ctotal:.2f}, "
-                       u"Coste inicial: {civ:.2f}, Cmant: {cmv:.2f}, "
-                       u"Crepo: {crv:.2f}, Cop: {cop:.2f}, CosteCO2: {coco2:.2f}, Vresidual: {vresidual:.2f}\n"
-                       u"cGASNATURAL: {copv[GASNATURAL]:.2f}, cELECTRICIDAD: {copv[ELECTRICIDAD]:.2f}, "
-                       u"cELECTRICIDADBALEARES: {copv[ELECTRICIDADBALEARES]:.2f}, cELECTRICIDADCANARIAS: {copv[ELECTRICIDADCANARIAS]:.2f}, "
-                       u"cELECTRICIDADCEUTAMELILLA: {copv[ELECTRICIDADCEUTAMELILLA]:.2f}, "
-                       u"cBIOCARBURANTE: {copv[BIOCARBURANTE]:.2f}, cBIOMASA: {copv[BIOMASA]:.2f}, "
-                       u"cBIOMASADENSIFICADA: {copv[BIOMASADENSIFICADA]:.2f}, cCARBON: {copv[CARBON]:.2f}, "
-                       u"cFUELOIL: {copv[FUELOIL]:.2f}, cGASOLEO: {copv[GASOLEO]:.2f}, cGLP: {copv[GLP]:.2f}, "
-                       u"cRED1: {copv[RED1]:.2f}, cRED2: {copv[RED2]:.2f}"
-                   ).format(escenario=escenario, ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv)
-                print(msg)
             dataline = (u"{variante.id}, {variante.metadatos[fechacalculo]}, {variante.metadatos[tipoedificio]}, {variante.metadatos[usoedificio]}, "
                         u"{variante.metadatos[superficie]:.2f}, {variante.metadatos[volumen]:.2f}, {variante.metadatos[zc]}, {variante.metadatos[peninsular]}, "
                         u"{variante.eprimaria[EP_tot]:.2f}, {variante.eprimaria[EP_nren]:.2f}, {variante.eprimaria[EP_ren]:.2f}, "
@@ -88,7 +73,6 @@ def calculacostes(config, costesdata, mediciones, escenarios):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=u'Calcula costes del proyecto activo para los escenarios configurados')
-    parser.add_argument('-v', action='store_true', dest='is_verbose', help='salida detallada')
     parser.add_argument('-p', '--project', action='store', dest='proyectoactivo', metavar='PROYECTO')
     parser.add_argument('-c', '--config', action='store', dest='configfile',
                         default='./config.yaml',
@@ -96,7 +80,6 @@ if __name__ == "__main__":
                         help=u'usa el archivo de configuración CONFIGFILE')
     parser.add_argument('--todas', action='store_true', dest='generarlas_todas', default=False)
     args = parser.parse_args()
-    VERBOSE = args.is_verbose
 
     if args.generarlas_todas:
         proyectos = ['proyecto_puertoreal', 'proyecto_elviso', 'proyecto_arrahona', 'proyectoGirona', 'proyectoPPV', 'proyecto_exupery']
