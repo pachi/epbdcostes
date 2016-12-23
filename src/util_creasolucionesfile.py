@@ -44,7 +44,7 @@ if __name__ == "__main__":
     import io
     import os
     import costes
-    
+
     parser = argparse.ArgumentParser(description='Genera plantilla de costes de soluciones del proyecto')
     parser.add_argument('-p', '--project', action='store', dest='proyectoactivo', metavar='PROYECTO')
     parser.add_argument('-c', '--config', action='store', dest='configfile',
@@ -64,9 +64,9 @@ if __name__ == "__main__":
         costesdict = {}
 
     solucionesmedidas = set([solucion for medicion in mediciones for solucion in medicion.soluciones])
-    
+
     res = []
-    
+
     solpath = os.path.join(projectpath, 'costes_soluciones-plantilla.yaml')
     with io.open(solpath, 'w', encoding='utf-8') as ofile:
         res.append(solstrhdr % projectpath)
