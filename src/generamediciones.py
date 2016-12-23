@@ -61,32 +61,40 @@ def generaMediciones(config):
             if clave.startswith(u'medicion_') and not clave.startswith(u'medicion_PT_'):
                 soluciones[clave[len(u'medicion_'):]] = meta[clave][0]
 
-        # Metadatos de area y volumen
+        # Metadatos generales (fecha, area, volumen, zc, peninsularidad)
+        fechacalculo = meta.get('Datetime', '')
+        tipoedificio = meta.get('Tipo_edificio', '')
+        usoedificio = meta.get('Uso_edificio', '')
         area = meta.get('Area_ref', 1)
         volumen = meta.get('Vol_ref', 1)
-        meta = {'superficie': area, 'volumen': volumen}
+        weatherfile = meta.get('Weather_file', '').split('_')
+        pen = 2 if len(weatherfile) < 2 else (1 if weatherfile[1].startswith('pen') else 0)
+        areavol = {'fechacalculo': fechacalculo,
+                   'tipoedificio': tipoedificio, 'usoedificio': usoedificio,
+                   'superficie': area, 'volumen': volumen,
+                   'zc': weatherfile[0], 'peninsular': pen }
 
         # Demandas
-        demanda = {}
-        
+        demanda = {clave: meta[clave] for clave in meta if clave.startswith('Demanda')}
+
         # Consumos
         balance = compute_balance(data, k_rdel)
-        consumos = { carrier: balance[carrier]['annual']['grid']['input']
-                     for carrier in balance if carrier != 'MEDIOAMBIENTE' }
+        consumos = {carrier: balance[carrier]['annual']['grid']['input']
+                    for carrier in balance if carrier != 'MEDIOAMBIENTE'}
 
         # Energía primaria
         EP = weighted_energy(balance, fp_ep, k_exp)
         epnren, epren = EP['EP']['nren'], EP['EP']['ren']
         #epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
-        eprimaria = { u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
-                      #u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren
+        eprimaria = {u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
+                     #u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren
         }
 
         # Emisiones
         CO2 = weighted_energy(balance, fp_co2, k_exp)
         co2 = CO2['EP']['nren'] + CO2['EP']['ren']
         # co2a = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
-        emisiones = { u"CO2": co2 } # , u"CO2A": co2a }
+        emisiones = {u"CO2": co2} # , u"CO2A": co2a }
 
         # timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
         variantes.append(
@@ -94,7 +102,7 @@ def generaMediciones(config):
                 # os.path.basename(os.path.normpath(proyectoPath)),
                 os.path.basename(filepath),
                 soluciones,
-                meta,
+                areavol,
                 eprimaria,
                 emisiones,
                 demanda,

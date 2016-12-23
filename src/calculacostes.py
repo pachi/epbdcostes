@@ -29,11 +29,15 @@ def checksum(cv, civ, cmv, crv, cop, coco2, vresidual):
 def calculacostes(config, costesdata, mediciones, escenarios):
     """Calcula costes para la configuración y los escenarios indicados"""
     reslines = []
-    reslines.append(u"variante_id, superficie, volumen, eptot, epnren, epren, escenario, tasa, periodo, costetotal, costeinicial, "
-                    u"costemantenimiento, costereposicion, costeoperacion, costeco2, vresidual,"
+    reslines.append(u"variante_id, fechacalculo, tipoedificio, usoedificio, "
+                    u"superficie, volumen, zc, peninsular, "
+                    u"eptot, epnren, epren, "
+                    u"escenario, tasa, periodo, "
+                    u"costetotal, costeinicial, costemantenimiento, costereposicion, costeoperacion, costeco2, vresidual, "
                     u"cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, "
                     u"cELECTRICIDADCEUTAMELILLA, cBIOCARBURANTE, cBIOMASA, "
-                    u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, cRED1, cRED2\n")
+                    u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, "
+                    u"cRED1, cRED2\n")
     for variante in sorted(mediciones):
         if VERBOSE:
             print(u"\n* Variante (id=%s)" % variante.id)
@@ -57,18 +61,23 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                        u"cGASNATURAL: {copv[GASNATURAL]:.2f}, cELECTRICIDAD: {copv[ELECTRICIDAD]:.2f}, "
                        u"cELECTRICIDADBALEARES: {copv[ELECTRICIDADBALEARES]:.2f}, cELECTRICIDADCANARIAS: {copv[ELECTRICIDADCANARIAS]:.2f}, "
                        u"cELECTRICIDADCEUTAMELILLA: {copv[ELECTRICIDADCEUTAMELILLA]:.2f}, "
-                       u"cBIOCARBURANTE: {copv[BIOCARBURANTE]:.2f}, cBIOMASA: {copv[BIOMASA]:.2f}, cBIOMASADENSIFICADA: {copv[BIOMASADENSIFICADA]:.2f}, "
-                       u"cCARBON: {copv[CARBON]:.2f}, cFUELOIL: {copv[FUELOIL]:.2f}, cGASOLEO: {copv[GASOLEO]:.2f}, cGLP: {copv[GLP]:.2f}, "
+                       u"cBIOCARBURANTE: {copv[BIOCARBURANTE]:.2f}, cBIOMASA: {copv[BIOMASA]:.2f}, "
+                       u"cBIOMASADENSIFICADA: {copv[BIOMASADENSIFICADA]:.2f}, cCARBON: {copv[CARBON]:.2f}, "
+                       u"cFUELOIL: {copv[FUELOIL]:.2f}, cGASOLEO: {copv[GASOLEO]:.2f}, cGLP: {copv[GLP]:.2f}, "
                        u"cRED1: {copv[RED1]:.2f}, cRED2: {copv[RED2]:.2f}"
                    ).format(escenario=escenario, ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv)
                 print(msg)
-            dataline = (u"{variante.id}, {variante.metadatos[superficie]:.2f}, {variante.metadatos[volumen]:.2f}, "
+            dataline = (u"{variante.id}, {variante.metadatos[fechacalculo]}, {variante.metadatos[tipoedificio]}, {variante.metadatos[usoedificio]}, "
+                        u"{variante.metadatos[superficie]:.2f}, {variante.metadatos[volumen]:.2f}, {variante.metadatos[zc]}, {variante.metadatos[peninsular]}, "
                         u"{variante.eprimaria[EP_tot]:.2f}, {variante.eprimaria[EP_nren]:.2f}, {variante.eprimaria[EP_ren]:.2f}, "
                         u"{escenario.tipo}, {escenario.tasa:.2f}, {escenario.periodo:d}, "
                         u"{ctotal:.2f}, {civ:.2f}, {cmv:.2f}, {crv:.2f}, {cop:.2f}, {coco2:.2f}, {vresidual:.2f}, "
-                        u"{copv[GASNATURAL]:.2f}, {copv[ELECTRICIDAD]:.2f}, {copv[ELECTRICIDADBALEARES]:.2f}, {copv[ELECTRICIDADCANARIAS]:.2f}, {copv[ELECTRICIDADCEUTAMELILLA]:.2f}, "
-                        u"{copv[BIOCARBURANTE]:.2f}, {copv[BIOMASA]:.2f}, {copv[BIOMASADENSIFICADA]:.2f}, {copv[CARBON]:.2f}, "
-                        u"{copv[FUELOIL]:.2f}, {copv[GASOLEO]:.2f}, {copv[GLP]:.2f}, {copv[RED1]:.2f}, {copv[RED2]:.2f}\n"
+                        u"{copv[GASNATURAL]:.2f}, {copv[ELECTRICIDAD]:.2f}, {copv[ELECTRICIDADBALEARES]:.2f}, {copv[ELECTRICIDADCANARIAS]:.2f}, "
+                        u"{copv[ELECTRICIDADCEUTAMELILLA]:.2f}, {copv[BIOCARBURANTE]:.2f}, {copv[BIOMASA]:.2f}, "
+                        u"{copv[BIOMASADENSIFICADA]:.2f}, {copv[CARBON]:.2f}, {copv[FUELOIL]:.2f}, {copv[GASOLEO]:.2f}, {copv[GLP]:.2f}, "
+                        u"{copv[RED1]:.2f}, {copv[RED2]:.2f}"
+                        u"\n"
+                        #TODO: demandas
             ).format (variante=variante, escenario=escenario, ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv)
             reslines.append(dataline)
 
