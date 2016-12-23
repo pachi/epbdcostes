@@ -49,7 +49,7 @@ def generaMediciones(config):
     # Genera variantes
     variantes = []
     filepaths = glob.glob(os.path.join(config.variantesdir, '*.csv'))
-    filepaths = [filepath for filepath in filepaths if 'medidasSistemas' not in filepath]
+    filepaths = [filepath for filepath in sorted(filepaths) if 'medidasSistemas' not in filepath]
     for filepath in filepaths:
         meta, data = readenergyfile(filepath)
 
@@ -61,6 +61,14 @@ def generaMediciones(config):
             if clave.startswith(u'medicion_') and not clave.startswith(u'medicion_PT_'):
                 soluciones[clave[len(u'medicion_'):]] = meta[clave][0]
 
+        # Metadatos de area y volumen
+        area = meta.get('Area_ref', 1)
+        volumen = meta.get('Vol_ref', 1)
+        meta = {'superficie': area, 'volumen': volumen}
+
+        # Demandas
+        demanda = {}
+        
         # Consumos
         balance = compute_balance(data, k_rdel)
         consumos = { carrier: balance[carrier]['annual']['grid']['input']
@@ -80,21 +88,17 @@ def generaMediciones(config):
         # co2a = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
         emisiones = { u"CO2": co2 } # , u"CO2A": co2a }
 
-        # Metadatos de area y volumen
-        area = meta.get('Area_ref', 1)
-        volumen = meta.get('Vol_ref', 1)
-        meta = {'superficie': area, 'volumen': volumen}
-
         # timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
         variantes.append(
             [ # 'timestamp': timestamp,
                 # os.path.basename(os.path.normpath(proyectoPath)),
                 os.path.basename(filepath),
                 soluciones,
-                emisiones,
-                consumos,
+                meta,
                 eprimaria,
-                meta
+                emisiones,
+                demanda,
+                consumos,
             ]
         )
     return variantes

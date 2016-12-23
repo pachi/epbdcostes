@@ -20,7 +20,7 @@ from .utils import memoize, cached_property, memoizefunc
 logger = costeslogging.setup()
 debug, info, warn, error, critical = logger.debug, logger.info, logger.warn, logger.error, logger.critical
 
-Variante = namedtuple('Variante', ['id', 'soluciones', 'emisiones', 'consumos', 'eprimaria', 'metadatos'])
+Variante = namedtuple('Variante', ['id', 'soluciones', 'metadatos', 'eprimaria', 'emisiones', 'demanda', 'consumos' ])
 
 class Solucion(object):
     """Solución constructiva
@@ -363,9 +363,9 @@ def cargamediciones(filename='mediciones.yaml', solucionesdefinidas=None):
             if solucionesdefinidas:
                 for solucion in variante.soluciones:
                     if solucion not in solucionesdefinidas:
-                        msg = (u"Solución '%s' no presupuestada en el caso %s"
+                        msg = (u"Solución '%s' no presupuestada en el caso %s."
+                               u" Puede usar util_creasolucionesfile.py para generar las soluciones del proyecto."
                                % (solucion, variante.id))
                         critical(msg)
                         raise KeyError(msg)
     return mediciones
-
