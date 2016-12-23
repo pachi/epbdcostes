@@ -171,10 +171,11 @@ def generaVariantes(config):
         datastring = codecs.open(os.path.join(config.variantesbasedir, basename + '.csv'), 'r', 'UTF8').read()
         data = readenergystring(datastring)
         for paqueteid in paquetesids:
+            vardata = copy.deepcopy(data) # deep copy needed here!
             medidaspaquete = [medida for medida in medidas if medida[0] == paqueteid.strip()]
-            data['meta'].append(u'#CTE_PaqueteSistemas: %s' % paqueteid)
-            variante = { 'meta': data['meta'],
-                         'componentes': aplicaMedidas(data['componentes'], medidaspaquete) }
+            vardata['meta'].append(u'#CTE_PaqueteSistemas: %s' % paqueteid)
+            variante = { 'meta': vardata['meta'],
+                         'componentes': aplicaMedidas(vardata['componentes'], medidaspaquete) }
             variantes.append([basename, paqueteid, variante])
 
     # Archivos de variantes
