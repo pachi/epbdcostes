@@ -37,7 +37,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                     u"cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, "
                     u"cELECTRICIDADCEUTAMELILLA, cBIOCARBURANTE, cBIOMASA, "
                     u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, "
-                    u"cRED1, cRED2\n")
+                    u"cRED1, cRED2"
+                    u"\n")
     for variante in sorted(mediciones):
         for escenario in escenarios:
             ctotal = costes.coste(variante, escenario, costesdata)
