@@ -75,7 +75,12 @@ def generaMediciones(config):
                    'zc': weatherfile[0], 'peninsular': pen }
 
         # Demandas
-        demanda = {clave: meta[clave] for clave in meta if clave.startswith('Demanda')}
+        dems = ['Demanda_calefaccion', 'Demanda_refrigeracion', 'Demanda_iluminacion_interior',
+                'Demanda_iluminacion_exterior', 'Demanda_equipos_interiores', 'Demanda_equipos_exteriores',
+                'Demanda_ventiladores', 'Demanda_bombas', 'Demanda_disipacion_calor', 'Demanda_humidificacion',
+                'Demanda_recuperacion_calor', 'Demanda_sistemas_agua', 'Demanda_equipos_frigorificos',
+                'Demanda_equipos_generacion']
+        demanda = {clave: meta.get(clave, 0.0) for clave in dems}
 
         # Consumos
         balance = compute_balance(data, k_rdel)
