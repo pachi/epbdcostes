@@ -57,14 +57,14 @@ def generaMedidas(sistemasDefs):
     # Genera definición de medidas por paquete de las variantes
     medidas = []
     for paquete in sorted(paquetes.keys()):
-        for sistema, cobertura in paquetes[paquete]:
+        for sistema, tipo, cobertura in paquetes[paquete]:
             for datos in tecnologias[sistema]:
-                # Los sistemas definidos por servicios admiten expresiones en los rendimientos
-                if datos[0] != 'BYVALUE':
+                if tipo == 'BYSERVICE':
+                    # Evaluamos expresiones para definir los rendimientos
                     rend1, rend2 = datos[4:6]
                     datos[4] = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
                     datos[5] = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
-                medidas.append([paquete, cobertura] + datos)
+                medidas.append([paquete, tipo, cobertura] + datos)
     return medidas
 
 def readenergystring(datastring):
@@ -98,9 +98,9 @@ def transformaVector(vector, medidas):
 
     string_rows = []
     for medida in medidas:
-        clave, cobertura, servicio = medida[0:3]
+        paquete, tipo, cobertura, servicio = medida[0:4]
         if servicio == servicioCubierto:
-            ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[3:]
+            ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[4:]
             valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
             cadena = u"%s, %s, %s, %s # %s, %s" % (vectordestino, ctipo, src_dst,
                                                   u", ".join([str(v) for v in valoresTransformados]),
@@ -124,9 +124,10 @@ def aplicaMedidas(componentes, medidas):
             newvectors.append(newvec)
     # Genera vectores de salida sin relación con los de entrada (p.e. generación fotovoltaica)
     for medida in medidas:
-        if medida[2] == 'BYVALUE':
-            paquete, cobertura, servicio, ctipo, src_dst, vectorDestino = medida[:6]
-            valores = [u"%s" % v for v in medida[6:-1]]
+        paquete, tipo = medida[:2]
+        if tipo == 'BYVALUE':
+            cobertura, servicio, ctipo, src_dst, vectorDestino = medida[2:7]
+            valores = [u"%s" % v for v in medida[7:-1]]
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
             newvectors.append(cadena)
