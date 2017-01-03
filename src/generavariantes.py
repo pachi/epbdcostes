@@ -56,14 +56,15 @@ def generaMedidas(sistemasDefs):
     tecnologias = sistemasDefs['tecnologias']
     # Genera definición de medidas por paquete de las variantes
     medidas = []
-    for clave in sorted(paquetes.keys()):
-        for sistema, cobertura in paquetes[clave]:
+    for paquete in sorted(paquetes.keys()):
+        for sistema, cobertura in paquetes[paquete]:
             for datos in tecnologias[sistema]:
+                # Los sistemas definidos por servicios admiten expresiones en los rendimientos
                 if datos[0] != 'BYVALUE':
                     rend1, rend2 = datos[4:6]
                     datos[4] = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
                     datos[5] = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
-                medidas.append([clave, cobertura] + datos)
+                medidas.append([paquete, cobertura] + datos)
     return medidas
 
 def readenergystring(datastring):
@@ -117,14 +118,14 @@ def transformaVector(vector, medidas):
 def aplicaMedidas(componentes, medidas):
     """Transforma componentes aplicando un conjunto de medidas"""
     newvectors = []
-    # Vectores de salida ligados a vectores de entrada
+    # Genera vectores de salida transformando vectores de entrada
     for vector in componentes:
         for newvec in transformaVector(vector, medidas):
             newvectors.append(newvec)
-    # Vectores de salida que no están ligadas a un vector de entrada (p.e. generación fotovoltaica)
+    # Genera vectores de salida sin relación con los de entrada (p.e. generación fotovoltaica)
     for medida in medidas:
         if medida[2] == 'BYVALUE':
-            clave, cobertura, servicio, ctipo, src_dst, vectorDestino = medida[:6]
+            paquete, cobertura, servicio, ctipo, src_dst, vectorDestino = medida[:6]
             valores = [u"%s" % v for v in medida[6:-1]]
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
