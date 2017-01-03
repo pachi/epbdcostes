@@ -61,7 +61,7 @@ def generaMedidas(sistemasDefs):
             for datos in tecnologias[sistema]:
                 if tipo == 'BYSERVICE':
                     # Evaluamos expresiones para definir los rendimientos
-                    rend1, rend2 = datos[3:5]
+                    ctype, originoruse, carrier, rend1, rend2 = datos[:5]
                     datos[3] = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
                     datos[4] = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
                 medidas.append([paquete, tipo, param1, param2] + datos)
