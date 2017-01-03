@@ -57,14 +57,14 @@ def generaMedidas(sistemasDefs):
     # Genera definición de medidas por paquete de las variantes
     medidas = []
     for paquete in sorted(paquetes.keys()):
-        for sistema, tipo, cobertura in paquetes[paquete]:
+        for sistema, tipo, param1, param2 in paquetes[paquete]:
             for datos in tecnologias[sistema]:
                 if tipo == 'BYSERVICE':
                     # Evaluamos expresiones para definir los rendimientos
-                    rend1, rend2 = datos[4:6]
-                    datos[4] = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
-                    datos[5] = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
-                medidas.append([paquete, tipo, cobertura] + datos)
+                    rend1, rend2 = datos[3:5]
+                    datos[3] = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
+                    datos[4] = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
+                medidas.append([paquete, tipo, param1, param2] + datos)
     return medidas
 
 def readenergystring(datastring):
@@ -98,7 +98,7 @@ def transformaVector(vector, medidas):
 
     string_rows = []
     for medida in medidas:
-        paquete, tipo, cobertura, servicio = medida[0:4]
+        paquete, tipo, servicio, cobertura = medida[0:4]
         if servicio == servicioCubierto:
             ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[4:]
             valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
@@ -126,7 +126,7 @@ def aplicaMedidas(componentes, medidas):
     for medida in medidas:
         paquete, tipo = medida[:2]
         if tipo == 'BYVALUE':
-            cobertura, servicio, ctipo, src_dst, vectorDestino = medida[2:7]
+            servicio, cobertura, ctipo, src_dst, vectorDestino = medida[2:7]
             valores = [u"%s" % v for v in medida[7:-1]]
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
