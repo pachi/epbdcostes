@@ -128,10 +128,10 @@ def aplicaMedidas(meta, componentes, medidas):
     newvectors = []
 
     # 1 - Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
-    medidas1 = [medida for medida in medidas if medida[1] in ['BYVALUE', 'PV']]
+    medidas1 = [medida for medida in medidas if medida[1] in ['VALUES', 'PV']]
     for medida in medidas1:
         paquete, tipo, params = medida[:3]
-        if tipo == 'BYVALUE':
+        if tipo == 'VALUES':
             ctipo, src_dst, vectorDestino = medida[3:6]
             valores = [u"%s" % v for v in medida[6:-1]]
             comentario = medida[-1]
