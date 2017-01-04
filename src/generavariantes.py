@@ -131,7 +131,7 @@ def aplicaMedidas(meta, componentes, medidas):
     newvectors = []
 
     # 1 - Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
-    medidas1 = [medida for medida in medidas if medida[1] in ['BYVALUE']]
+    medidas1 = [medida for medida in medidas if medida[1] in ['BYVALUE', 'PV']]
     for medida in medidas1:
         paquete, tipo, param1, param2 = medida[:4]
         if tipo == 'BYVALUE':
@@ -140,8 +140,16 @@ def aplicaMedidas(meta, componentes, medidas):
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
             newvectors.append(cadena)
+        if tipo == 'PV':
+            ctipo, src_dst, vectorDestino, superficie, rendimiento, comentario = medida[4:]
+            valoresproduccion = [(val * rendimiento * superficie) for val in RADHOR[zonaclimatica]]
+            cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst,
+                                               ', '.join('%.2f' % val for val in valoresproduccion),
+                                               comentario)
+            newvectors.append(cadena)
 
     # 2 - Medidas que modifican los componentes de entrada (p.e. PST, que reduce componente de ACS)
+    # TODO: convertir la aportación solar por fracción en este tipo, definiendo solamente la parte solar
     medidas2 = [medida for medida in medidas if medida[1] in ['PST']]
     for medida in medidas2:
         paquete, tipo, param1, param2 = medida[:4]
@@ -171,6 +179,7 @@ def aplicaMedidas(meta, componentes, medidas):
                 oldcomponentes[idemanda]['values'] = newvalues
             else:
                 del oldcomponentes[idemanda]
+
     # 3 - Medidas que son transformaciones de los componentes de entrada (incluida la identidad)
     medidas3 = [medida for medida in medidas if medida[1] in ['BYSERVICE']]
     for ii, vector in enumerate(oldcomponentes):
@@ -242,7 +251,9 @@ def generaVariantes(config):
             medidaspaquete = [medida for medida in medidas if medida[0] == paqueteid.strip()]
             variantedata['meta'].append(u'#CTE_PaqueteSistemas: %s' % paqueteid)
             variante = { 'meta': variantedata['meta'],
-                         'componentes': aplicaMedidas(variantedata['meta'], variantedata['componentes'], medidaspaquete) }
+                         'componentes': aplicaMedidas(variantedata['meta'],
+                                                      variantedata['componentes'],
+                                                      medidaspaquete) }
             variantes.append([basename, paqueteid, variante])
 
     # Archivos de variantes
