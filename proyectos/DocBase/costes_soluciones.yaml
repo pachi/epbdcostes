@@ -1,0 +1,246 @@
+# Costes de las MAE
+# directorio de proyecto: "/mnt/vegacte/03-CTE_en_curso/salaSert/git/epbdcostes/proyectos/DocBase"
+#
+# desc: descripción de la MAE
+# vutil: vida útil de la MAE (años)
+# pmant: periodicidad del mantenimiento (años)
+# COSTES:
+# Para cada coste se deben aportar los costes:
+#  - para el cálculo macroeconómico (sin impuestos ni tasas)
+#  - para el cálculo financiero/microeconómico (con impuestos y tasas)
+#
+# cinicial: coste inicial (€/ud)
+# cmant: costes de mantenimiento (€/ud·año)
+#
+
+CTE_2013_CUBIERTA_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_2013_HUECOS_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_2013_MURO_EXT_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_2013_SUELO_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_REF_CUBIERTA_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_REF_HUECOS_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_REF_MURO_EXT_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_REF_SUELO_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CUBIERTA_16CM_XPS:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CUBIERTA_20CM_XPS:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+FACHADA_14CM_XPS:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+FACHADA_16CM_XPS:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+S0:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+S1:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+S2:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+S3:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+S3PV:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+S4:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+STEST:
+  desc: Paquete de sistemas de prueba
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+SUELO_10CM_XPS_CON_TERRENO:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+VIDRIO BE4-15-6:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+

@@ -1,0 +1,11 @@
+- Calcular los casos base y ver las potencias de calefacción, refrigeración y ACS para dimensionar los equipos y ponerles precio
+
+
+Cuando falle la generación de costes suele ser porque falta algún precio de soluciones.
+Se puede regenerar un archivo de costes_soluciones-plantilla.yaml con
+el script $python util_creasolucionesfile.py -p NombreProyecto
+y ver qué falta. Además el script saca en pantalla qué se ha añadido respecto al
+costes_soluciones.yaml del proyecto.
+
+- Vida útil: elementos envolvente 50 años, ventanas 30, instalaciones 20.
+- Coste anual mantenimiento sobre coste inicial: elem. envolvente: , ventanas: 0.5%, instalaciones: 3%

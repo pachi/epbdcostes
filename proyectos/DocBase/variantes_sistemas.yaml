@@ -1,0 +1,111 @@
+# Definición de sistemas y paquetes para aplicar a variantes base
+#
+tecnologias:
+  red_cal:
+    - ['CONSUMO', 'EPB', 'RED1', 1.0, 1.0, 'Red de distrito n=1']
+  red_ref:
+    - ['CONSUMO', 'EPB', 'RED2', 1.0, 1.0, 'Red de distrito n=1']
+  red_acs:
+    - ['CONSUMO', 'EPB', 'RED1', 1.0, 1.0, 'Red de distrito n=1']
+  calderagas_ind_cal:
+    - ['CONSUMO', 'EPB', 'GASNATURAL', 0.95, 0.95, 'Caldera ind. gas n_gen=0.95 n_d+e+c=0.95']
+  calderagas_ind_acs:
+    - ['CONSUMO', 'EPB', 'GASNATURAL', 0.85, 0.88, 'Caldera ind. gas n_gen=0.85 n_d+e+c=0.88']
+  calderabio_cen_cal:
+    - ['CONSUMO', 'EPB', 'BIOMASA', 0.72, 0.90, 'Caldera cen. biomasa n_gen=0.72 n_d+e+c=0.90']
+  calderabio_cen_acs:
+    - ['CONSUMO', 'EPB', 'BIOMASA', 0.65, 0.84, 'Caldera ent. biomasa n_gen=0.65 n_d+e+c=0.84']
+  BdC_ind_ref:
+    - ['CONSUMO', 'EPB', 'ELECTRICIDAD', 2.5, 0.95, 'BdC ind. aire-agua n_gen=2.5 n_d+e+c=0.95']
+  BdC_ind_cal:
+    - ['CONSUMO', 'EPB', 'ELECTRICIDAD', 3.0, 0.95, 'BdC ind. aire-agua n_gen=3.0 n_d+e+c=0.95']
+    - ['CONSUMO', 'EPB', 'MEDIOAMBIENTE', 3.0 / (3.0 - 1.0), 0.95, 'BdC ind. aire-agua n_gen=3.0 n_d+e+c=0.95']
+  BdC_ind_acs:
+    - ['CONSUMO', 'EPB', 'ELECTRICIDAD', 3.0, 0.88, 'BdC ind. aire-agua n_gen=3.0 n_d+e+c=0.88']
+    - ['CONSUMO', 'EPB', 'MEDIOAMBIENTE', 3.0 / (3.0 - 1.0), 0.88, 'BdC ind. aire-agua n_gen=3.0 n_d+e+c=0.88']
+  cogen_cen_cal:
+    - ['CONSUMO', 'EPB', 'GASNATURAL', 0.55, 0.90, 'Cogeneración GN cen. n_th=0.55 n_el=0.25 n_d+e+c=0.90']
+    - ['PRODUCCION', 'COGENERACION', 'ELECTRICIDAD', 0.55/0.25, 0.90, 'Cogeneración GN cen. n_th=0.55 n_el=0.25 n_d+e+c=0.90'] # 2.2 = 0.55/0.25
+  cogen_cen_acs:
+    - ['CONSUMO', 'EPB', 'GASNATURAL', 0.55, 0.84, 'Cogeneración GN cen. n_th=0.55 n_el=0.25 n_d+e+c=0.84']
+    - ['PRODUCCION', 'COGENERACION', 'ELECTRICIDAD', 0.55/0.25, 0.84, 'Cogeneración GN cen. n_th=0.55 n_el=0.25 n_d+e+c=0.84'] # 2.2 = 0.55/0.25
+  PSTOLD:
+    - ['CONSUMO', 'EPB', 'MEDIOAMBIENTE', 1.0, 1.0, 'Paneles solares térmicos']
+  PV_8130:
+    - ['PRODUCCION', 'INSITU', 'ELECTRICIDAD', 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5,
+       'Paneles fotovoltaicos 50m2 (5kWp)']
+  PST:
+    # [ ctipo, origendestino, vector, superficiepaneles_m2, rendimientopaneles ]
+    - ['PRODUCCION', 'INSITU', 'MEDIOAMBIENTE', 20.0, 0.65, 'Paneles solares térmicos 20m2, n=0.65']
+  PV:
+    # [ ctipo, origendestino, vector, superficiepaneles_m2, rendimientopaneles ]
+    - ['PRODUCCION', 'INSITU', 'ELECTRICIDAD', 50.0, 0.1, 'Paneles solares fotovoltaicos 50m2 (5kWp)']
+
+#paquetes:
+#  nombrepaquete:
+#  - [tecnologia, tipo, params...]
+#
+# tipos HEATING, COOLING, WATERSYSTEMS:
+# - e.g. [red_cal, 'HEATING']
+# - cambian el vector y calculan valores según rendimientos de generación y distribución + emisión + control
+#
+# tipo VALUES:
+# - e.g. [PV_8130, 'VALUES']
+# - crean un vector con valores predefinidos
+#
+# tipo PST:
+# - [PST, 'PST', 'WATERSYSTEMS']
+# - el parámetro indica el servicio al que se aplica
+# - calcula la aportación solar a un servicio usando la zona climática
+#   una superficie de paneles y un rendimiento de los paneles
+#
+# tipo PV:
+# - [PV, 'PV']
+# - genera la aportación fotovoltaica a partir de la zona climática
+#   la superficie de paneles y un rendimiento de los paneles
+#
+# tipo PSTFRACTION:
+# - [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
+# - define la aportación solar como fracción del servicio indicado
+#
+paquetes:
+  S0:
+  - [red_cal, 'HEATING']
+  - [red_ref, 'COOLING']
+  - [red_acs, 'WATERSYSTEMS']
+  S1:
+  - [calderagas_ind_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderagas_ind_acs, 'WATERSYSTEMS']
+  - [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
+  S2:
+  - [calderabio_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderabio_cen_acs, 'WATERSYSTEMS']
+  - [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
+  S3:
+  - [BdC_ind_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [BdC_ind_acs, 'WATERSYSTEMS']
+  - [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
+  S3PV:
+  - [BdC_ind_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [BdC_ind_acs, 'WATERSYSTEMS']
+  - [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
+  - [PV_8130, 'VALUES']
+  S4:
+  - [cogen_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [cogen_cen_acs, 'WATERSYSTEMS']
+  - [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
+  STEST:
+  #- [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
+  - [PST, 'PST', 'WATERSYSTEMS']
+  - [BdC_ind_acs, 'WATERSYSTEMS']
+  - [PV, 'PV']
+  #- [PV_8130, 'VALUES']
+
+variantes:
+  - [cteEPBD, [S0, S1, S2, S3, S3PV, S4]]
+  - [cteEPBD-ResBloque01-EN0-D3, [STEST]]
