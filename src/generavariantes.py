@@ -95,9 +95,10 @@ def generaMedidas(sistemasDefs):
     medidas = []
     for paquete in sorted(paquetes.keys()):
         for sistemadef in paquetes[paquete]:
-            sistema, tipo, param1 = sistemadef
+            sistema, tipo = sistemadef[:2]
+            params = sistemadef[2:] # Los parámetros van en una lista de longitud variable
             for datos in tecnologias[sistema]:
-                medidas.append([paquete, tipo, param1] + datos)
+                medidas.append([paquete, tipo, params] + datos)
     return medidas
 
 def readenergystring(datastring):
@@ -129,7 +130,7 @@ def aplicaMedidas(meta, componentes, medidas):
     # 1 - Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
     medidas1 = [medida for medida in medidas if medida[1] in ['BYVALUE', 'PV']]
     for medida in medidas1:
-        paquete, tipo, param1 = medida[:3]
+        paquete, tipo, params = medida[:3]
         if tipo == 'BYVALUE':
             ctipo, src_dst, vectorDestino = medida[3:6]
             valores = [u"%s" % v for v in medida[6:-1]]
@@ -148,7 +149,7 @@ def aplicaMedidas(meta, componentes, medidas):
     # TODO: convertir la aportación solar por fracción en este tipo, definiendo solamente la parte solar
     medidas2 = [medida for medida in medidas if medida[1] in ['PST']]
     for medida in medidas2:
-        paquete, tipo, param1 = medida[:3]
+        paquete, tipo, params = medida[:3]
         if tipo == 'PST':
             # a) Genera producción
             ctipo, src_dst, vectorDestino, superficie, rendimiento, comentario = medida[3:]
@@ -158,7 +159,7 @@ def aplicaMedidas(meta, componentes, medidas):
                                                comentario)
             newvectors.append(cadena)
             # b) Genera consumo ('CONSUMO', 'EPB', 'MEDIOAMBIENTE')
-            servicio = param1
+            servicio = params[0]
             idemanda, vectordemanda = next((ii, vector) for (ii, vector) in enumerate(oldcomponentes)
                                            if vector['comment'].split(',')[0].strip() == servicio)
             valoresdemanda = vectordemanda['values']
@@ -183,8 +184,9 @@ def aplicaMedidas(meta, componentes, medidas):
         valores = vector['values']
         string_rows = []
         for medida in medidas3:
-            # param1 = servicio, param2 = cobertura del servicio
-            paquete, tipo, cobertura = medida[:3]
+            # params[0] = cobertura del servicio, tipo = servicio cubierto
+            paquete, tipo, params = medida[:3]
+            cobertura = params[0]
             if tipo == servicioCubierto:
                 ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[3:]
                 rend1 = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
