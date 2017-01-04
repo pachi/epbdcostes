@@ -147,7 +147,7 @@ def aplicaMedidas(meta, componentes, medidas):
 
     # 2 - Medidas que modifican los componentes de entrada (p.e. PST, que reduce componente de ACS)
     # TODO: convertir la aportación solar por fracción en este tipo, definiendo solamente la parte solar
-    medidas2 = [medida for medida in medidas if medida[1] in ['PST', 'FRACTION']]
+    medidas2 = [medida for medida in medidas if medida[1] in ['PST', 'PSTFRACTION']]
     for medida in medidas2:
         paquete, tipo, params = medida[:3]
         if tipo == 'PST':
@@ -177,13 +177,12 @@ def aplicaMedidas(meta, componentes, medidas):
             else:
                 del oldcomponentes[idemanda]
 
-        elif tipo == 'FRACTION':
+        elif tipo == 'PSTFRACTION':
             # a) Demanda original
             servicio, cobertura = params
             idemanda, vectordemanda = next((ii, vector) for (ii, vector) in enumerate(oldcomponentes)
                                            if vector['comment'].split(',')[0].strip() == servicio)
             valoresdemanda = vectordemanda['values']
-
             # b) Consumo / producción fraccional
             ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[3:]
             rend1 = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
