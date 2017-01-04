@@ -152,7 +152,7 @@ def transformaVector(vector, medidas):
                                                  DICT_ENES.get(servicioCubierto, servicioCubierto))]
     return string_rows
 
-def aplicaMedidas(componentes, medidas):
+def aplicaMedidas(meta, componentes, medidas):
     """Transforma componentes aplicando un conjunto de medidas"""
     newvectors = []
     # Genera vectores de salida transformando vectores de entrada
@@ -210,11 +210,11 @@ def generaVariantes(config):
         datastring = codecs.open(os.path.join(config.variantesbasedir, basename + '.csv'), 'r', 'UTF8').read()
         data = readenergystring(datastring)
         for paqueteid in paquetesids:
-            vardata = copy.deepcopy(data) # deep copy needed here!
+            variantedata = copy.deepcopy(data) # deep copy needed here!
             medidaspaquete = [medida for medida in medidas if medida[0] == paqueteid.strip()]
-            vardata['meta'].append(u'#CTE_PaqueteSistemas: %s' % paqueteid)
-            variante = { 'meta': vardata['meta'],
-                         'componentes': aplicaMedidas(vardata['componentes'], medidaspaquete) }
+            variantedata['meta'].append(u'#CTE_PaqueteSistemas: %s' % paqueteid)
+            variante = { 'meta': variantedata['meta'],
+                         'componentes': aplicaMedidas(variantedata['meta'], variantedata['componentes'], medidaspaquete) }
             variantes.append([basename, paqueteid, variante])
 
     # Archivos de variantes
