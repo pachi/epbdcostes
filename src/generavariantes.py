@@ -202,22 +202,22 @@ def aplicaMedidas(meta, componentes, medidas):
                 del oldcomponentes[idemanda]
 
     # 3 - Medidas que son transformaciones de los componentes de entrada (incluida la identidad)
+    #     Las transformaciones cambian el vector y aplican rendimientos de generación y dist.+em.+control
     medidas3 = [medida for medida in medidas if medida[1] in ['HEATING', 'COOLING', 'WATERSYSTEMS']]
     for ii, vector in enumerate(oldcomponentes):
         servicioCubierto = vector['comment'].split(',')[0].strip()
         valores = vector['values']
         string_rows = []
         for medida in medidas3:
-            # params[0] = cobertura del servicio, tipo = servicio cubierto
+            # params = [], tipo = servicio suministrado
             paquete, tipo, params = medida[:3]
-            cobertura = params[0]
             if tipo == servicioCubierto:
                 ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[3:]
                 rend1 = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
                 rend2 = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
-                valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
+                valoresTransformados = [1.0 * val / rend1 / rend2 for val in valores]
                 cadena = u"%s, %s, %s, %s # %s, %s" % (vectordestino, ctipo, src_dst,
-                                                      u", ".join([str(v) for v in valoresTransformados]),
+                                                      u", ".join('%.2f' % v for v in valoresTransformados),
                                                       DICT_ENES.get(servicioCubierto, servicioCubierto),
                                                       comentario)
                 string_rows.append(cadena)
