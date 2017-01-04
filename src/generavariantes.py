@@ -147,7 +147,7 @@ def aplicaMedidas(meta, componentes, medidas):
 
     # 2 - Medidas que modifican los componentes de entrada (p.e. PST, que reduce componente de ACS)
     # TODO: convertir la aportación solar por fracción en este tipo, definiendo solamente la parte solar
-    medidas2 = [medida for medida in medidas if medida[1] in ['PST']]
+    medidas2 = [medida for medida in medidas if medida[1] in ['PST', 'FRACTION']]
     for medida in medidas2:
         paquete, tipo, params = medida[:3]
         if tipo == 'PST':
@@ -171,6 +171,31 @@ def aplicaMedidas(meta, componentes, medidas):
             newvectors.append(cadena)
             # c) Modifica consumo existente del servicio
             newvalues = [(demanda - consumo) for (demanda, consumo) in zip(valoresdemanda, valoresconsumo)]
+            # eliminamos el vector si no queda demanda sin cubrir
+            if any(float(val) != 0.0 for val in newvalues):
+                oldcomponentes[idemanda]['values'] = newvalues
+            else:
+                del oldcomponentes[idemanda]
+
+        elif tipo == 'FRACTION':
+            # a) Demanda original
+            servicio, cobertura = params
+            idemanda, vectordemanda = next((ii, vector) for (ii, vector) in enumerate(oldcomponentes)
+                                           if vector['comment'].split(',')[0].strip() == servicio)
+            valoresdemanda = vectordemanda['values']
+
+            # b) Consumo / producción fraccional
+            ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[3:]
+            rend1 = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
+            rend2 = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
+            valoresTransformados = [1.0 * cobertura * val / rend1 / rend2 for val in valoresdemanda]
+            cadena = u"%s, %s, %s, %s # %s, %s" % (vectordestino, ctipo, src_dst,
+                                                   u", ".join('%.2f' % v for v in valoresTransformados),
+                                                   DICT_ENES.get(servicio, servicio),
+                                                   comentario)
+            newvectors.append(cadena)
+            # c) Demanda modificada
+            newvalues = [(1.0 - cobertura) * val for val in valoresdemanda]
             # eliminamos el vector si no queda demanda sin cubrir
             if any(float(val) != 0.0 for val in newvalues):
                 oldcomponentes[idemanda]['values'] = newvalues
