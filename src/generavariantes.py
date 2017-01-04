@@ -165,8 +165,12 @@ def aplicaMedidas(meta, componentes, medidas):
                                                                     comentario)
             newvectors.append(cadena)
             # c) Modifica consumo existente del servicio
-            oldcomponentes[idemanda]['values'] = [(demanda - consumo) for (demanda, consumo) in zip(valoresdemanda, valoresconsumo)]
-
+            newvalues = [(demanda - consumo) for (demanda, consumo) in zip(valoresdemanda, valoresconsumo)]
+            # eliminamos el vector si no queda demanda sin cubrir
+            if any(float(val) != 0.0 for val in newvalues):
+                oldcomponentes[idemanda]['values'] = newvalues
+            else:
+                del oldcomponentes[idemanda]
     # 3 - Medidas que son transformaciones de los componentes de entrada (incluida la identidad)
     medidas3 = [medida for medida in medidas if medida[1] in ['BYSERVICE']]
     for ii, vector in enumerate(oldcomponentes):
