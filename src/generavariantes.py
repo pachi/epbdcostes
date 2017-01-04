@@ -94,13 +94,9 @@ def generaMedidas(sistemasDefs):
     # Genera definición de medidas por paquete de las variantes
     medidas = []
     for paquete in sorted(paquetes.keys()):
-        for sistema, tipo, param1 in paquetes[paquete]:
+        for sistemadef in paquetes[paquete]:
+            sistema, tipo, param1 = sistemadef
             for datos in tecnologias[sistema]:
-                if tipo in ['HEATING', 'COOLING', 'WATERSYSTEMS']:
-                    # Evaluamos expresiones para definir los rendimientos
-                    ctype, originoruse, carrier, rend1, rend2 = datos[:5]
-                    datos[3] = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
-                    datos[4] = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
                 medidas.append([paquete, tipo, param1] + datos)
     return medidas
 
@@ -191,6 +187,8 @@ def aplicaMedidas(meta, componentes, medidas):
             paquete, tipo, cobertura = medida[:3]
             if tipo == servicioCubierto:
                 ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[3:]
+                rend1 = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
+                rend2 = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
                 valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
                 cadena = u"%s, %s, %s, %s # %s, %s" % (vectordestino, ctipo, src_dst,
                                                       u", ".join([str(v) for v in valoresTransformados]),
