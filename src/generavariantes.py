@@ -126,30 +126,56 @@ def readenergystring(datastring):
 
 def aplicaMedidas(meta, componentes, medidas):
     """Transforma componentes de una variante aplicándole un conjunto de medidas"""
+    zonaclimatica = next(m for m in meta if m.startswith(u'#CTE_Weather_file')).split(':')[1].strip().replace('_peninsula', '').replace('_canarias', 'c')
     oldcomponentes = componentes[:]
     newvectors = []
 
     # 1 - Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
     medidas1 = [medida for medida in medidas if medida[1] in ['BYVALUE']]
     for medida in medidas1:
-        paquete, tipo = medida[:2]
+        paquete, tipo, param1, param2 = medida[:4]
         if tipo == 'BYVALUE':
-            servicio, cobertura, ctipo, src_dst, vectorDestino = medida[2:7]
+            ctipo, src_dst, vectorDestino = medida[4:7]
             valores = [u"%s" % v for v in medida[7:-1]]
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
             newvectors.append(cadena)
 
     # 2 - Medidas que modifican los componentes de entrada (p.e. PST, que reduce componente de ACS)
+    medidas2 = [medida for medida in medidas if medida[1] in ['PST']]
+    for medida in medidas2:
+        paquete, tipo, param1, param2 = medida[:4]
+        if tipo == 'PST':
+            # a) Genera producción
+            ctipo, src_dst, vectorDestino, superficie, rendimiento, comentario = medida[4:]
+            valoresproduccion = [(val * rendimiento * superficie) for val in RADHOR[zonaclimatica]]
+            cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst,
+                                               ', '.join('%.2f' % val for val in valoresproduccion),
+                                               comentario)
+            newvectors.append(cadena)
+            # b) Genera consumo ('CONSUMO', 'EPB', 'MEDIOAMBIENTE')
+            servicio = param1
+            idemanda, vectordemanda = next((ii, vector) for (ii, vector) in enumerate(oldcomponentes)
+                                           if vector['comment'].split(',')[0].strip() == servicio)
+            valoresdemanda = vectordemanda['values']
+            valoresconsumo = [min(produccion, demanda) for (produccion, demanda)
+                              in zip(valoresproduccion, valoresdemanda)]
+            cadena = u"MEDIOAMBIENTE, CONSUMO, EPB, %s # %s, %s" % (', '.join('%.2f' % val for val in valoresconsumo),
+                                                                    DICT_ENES.get(servicio, servicio),
+                                                                    comentario)
+            newvectors.append(cadena)
+            # c) Modifica consumo existente del servicio
+            oldcomponentes[idemanda]['values'] = [(demanda - consumo) for (demanda, consumo) in zip(valoresdemanda, valoresconsumo)]
 
     # 3 - Medidas que son transformaciones de los componentes de entrada (incluida la identidad)
-    medidas3 = [medida for medida in medidas if medida[1] in ['BYSERVICE', 'BYZC']]
+    medidas3 = [medida for medida in medidas if medida[1] in ['BYSERVICE']]
     for ii, vector in enumerate(oldcomponentes):
         servicioCubierto = vector['comment'].split(',')[0].strip()
         valores = vector['values']
         string_rows = []
         for medida in medidas3:
-            paquete, tipo, servicio, cobertura = medida[0:4]
+            # param1 = servicio, param2 = cobertura del servicio
+            paquete, tipo, servicio, cobertura = medida[:4]
             if servicio == servicioCubierto:
                 ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[4:]
                 valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
