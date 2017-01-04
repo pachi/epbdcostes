@@ -129,7 +129,7 @@ def aplicaMedidas(meta, componentes, medidas):
     oldcomponentes = componentes[:]
     newvectors = []
 
-    # Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
+    # 1 - Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
     medidas1 = [medida for medida in medidas if medida[1] in ['BYVALUE']]
     for medida in medidas1:
         paquete, tipo = medida[:2]
@@ -140,15 +140,15 @@ def aplicaMedidas(meta, componentes, medidas):
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
             newvectors.append(cadena)
 
-    # Medidas que modifican los componentes de entrada (p.e. PST, que reduce componente de ACS)
+    # 2 - Medidas que modifican los componentes de entrada (p.e. PST, que reduce componente de ACS)
 
-    # Medidas que son transformaciones de los componentes de entrada (incluida la identidad)
-    medidas2 = [medida for medida in medidas if medida[1] in ['BYSERVICE', 'BYZC']]
+    # 3 - Medidas que son transformaciones de los componentes de entrada (incluida la identidad)
+    medidas3 = [medida for medida in medidas if medida[1] in ['BYSERVICE', 'BYZC']]
     for ii, vector in enumerate(oldcomponentes):
         servicioCubierto = vector['comment'].split(',')[0].strip()
         valores = vector['values']
         string_rows = []
-        for medida in medidas2:
+        for medida in medidas3:
             paquete, tipo, servicio, cobertura = medida[0:4]
             if servicio == servicioCubierto:
                 ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[4:]
