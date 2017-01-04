@@ -128,6 +128,9 @@ def aplicaMedidas(meta, componentes, medidas):
     newvectors = []
 
     # 1 - Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
+    #     Las medidas VALUES simplemente incluyen líneas con valores predefinidos
+    #     Las medidas PV generan producción fotovoltaica según zona climática, superficie de paneles
+    #     y rendimiento de los paneles (rendimiento = kWp / superficie).
     medidas1 = [medida for medida in medidas if medida[1] in ['VALUES', 'PV']]
     for medida in medidas1:
         paquete, tipo, params = medida[:3]
@@ -146,7 +149,11 @@ def aplicaMedidas(meta, componentes, medidas):
             newvectors.append(cadena)
 
     # 2 - Medidas que modifican los componentes de entrada (p.e. PST, que reduce componente de ACS)
-    # TODO: convertir la aportación solar por fracción en este tipo, definiendo solamente la parte solar
+    #     Las medidas PST calculan la aportación solar mes a mes a un servicio según la zona climática,
+    #     un rendimiento y una superficie de paneles.
+    #     Las medidas PSTFRACTION calculan la aportación solar como fracción de un servicio
+    #     Ambas descuentan de la demanda del servicio la parte solar aportada, y dejan la demanda
+    #     remanente para que pueda ser procesada posteriormente
     medidas2 = [medida for medida in medidas if medida[1] in ['PST', 'PSTFRACTION']]
     for medida in medidas2:
         paquete, tipo, params = medida[:3]
@@ -221,8 +228,8 @@ def aplicaMedidas(meta, componentes, medidas):
                                                       DICT_ENES.get(servicioCubierto, servicioCubierto),
                                                       comentario)
                 string_rows.append(cadena)
-        # Si no hay medidas definidas para el servicio cubierto por el vector se guarda intacto
-        # XXX: en el comentario solo se preserva el servicio atendido
+        # Si no hay medidas definidas para el servicio cubierto por el vector, este se guarda
+        # dejando en el comentario únicamente el servicio atendido
         if string_rows == []:
             string_rows = [u"%s, %s, %s, %s # %s" % (vector['carrier'], vector['ctype'], vector['originoruse'],
                                                      u", ".join([str(v) for v in valores]),
