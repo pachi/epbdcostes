@@ -124,43 +124,14 @@ def readenergystring(datastring):
                                 'values': values, 'comment': comment })
     return {'componentes': components, 'meta': meta}
 
-def transformaVector(vector, medidas):
-    """Transforma vector aplicando un conjunto de medidas
-
-    Si la medida se aplica al servicio del vector, se aplica
-    Si no se aplica ninguna medida, se devuelve el vector
-    """
-    servicioCubierto = vector['comment'].split(',')[0].strip()
-    valores = vector['values']
-
-    string_rows = []
-    for medida in medidas:
-        paquete, tipo, servicio, cobertura = medida[0:4]
-        if servicio == servicioCubierto:
-            ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[4:]
-            valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
-            cadena = u"%s, %s, %s, %s # %s, %s" % (vectordestino, ctipo, src_dst,
-                                                  u", ".join([str(v) for v in valoresTransformados]),
-                                                  DICT_ENES.get(servicioCubierto, servicioCubierto),
-                                                  comentario)
-            string_rows.append(cadena)
-    # No hay medidas definidas para el servicio cubierto por el vector
-    # XXX: no se preserva el comentario completo, solo el servicio
-    if string_rows == []:
-        string_rows = [u"%s, %s, %s, %s # %s" % (vector['carrier'], vector['ctype'], vector['originoruse'],
-                                                 u", ".join([str(v) for v in valores]),
-                                                 DICT_ENES.get(servicioCubierto, servicioCubierto))]
-    return string_rows
-
 def aplicaMedidas(meta, componentes, medidas):
-    """Transforma componentes aplicando un conjunto de medidas"""
+    """Transforma componentes de una variante aplicándole un conjunto de medidas"""
+    oldcomponentes = componentes[:]
     newvectors = []
-    # Genera vectores de salida transformando vectores de entrada
-    for vector in componentes:
-        for newvec in transformaVector(vector, medidas):
-            newvectors.append(newvec)
-    # Genera vectores de salida sin relación con los de entrada (p.e. generación fotovoltaica)
-    for medida in medidas:
+
+    # Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
+    medidas1 = [medida for medida in medidas if medida[1] in ['BYVALUE']]
+    for medida in medidas1:
         paquete, tipo = medida[:2]
         if tipo == 'BYVALUE':
             servicio, cobertura, ctipo, src_dst, vectorDestino = medida[2:7]
@@ -168,6 +139,33 @@ def aplicaMedidas(meta, componentes, medidas):
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
             newvectors.append(cadena)
+
+    # Medidas que modifican los componentes de entrada (p.e. PST, que reduce componente de ACS)
+
+    # Medidas que son transformaciones de los componentes de entrada (incluida la identidad)
+    medidas2 = [medida for medida in medidas if medida[1] in ['BYSERVICE', 'BYZC']]
+    for ii, vector in enumerate(oldcomponentes):
+        servicioCubierto = vector['comment'].split(',')[0].strip()
+        valores = vector['values']
+        string_rows = []
+        for medida in medidas2:
+            paquete, tipo, servicio, cobertura = medida[0:4]
+            if servicio == servicioCubierto:
+                ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[4:]
+                valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
+                cadena = u"%s, %s, %s, %s # %s, %s" % (vectordestino, ctipo, src_dst,
+                                                      u", ".join([str(v) for v in valoresTransformados]),
+                                                      DICT_ENES.get(servicioCubierto, servicioCubierto),
+                                                      comentario)
+                string_rows.append(cadena)
+        # Si no hay medidas definidas para el servicio cubierto por el vector se guarda intacto
+        # XXX: en el comentario solo se preserva el servicio atendido
+        if string_rows == []:
+            string_rows = [u"%s, %s, %s, %s # %s" % (vector['carrier'], vector['ctype'], vector['originoruse'],
+                                                     u", ".join([str(v) for v in valores]),
+                                                     DICT_ENES.get(servicioCubierto, servicioCubierto))]
+        newvectors.extend(string_rows)
+
     return newvectors
 
 def generaVariantes(config):
