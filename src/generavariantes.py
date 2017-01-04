@@ -94,14 +94,14 @@ def generaMedidas(sistemasDefs):
     # Genera definición de medidas por paquete de las variantes
     medidas = []
     for paquete in sorted(paquetes.keys()):
-        for sistema, tipo, param1, param2 in paquetes[paquete]:
+        for sistema, tipo, param1 in paquetes[paquete]:
             for datos in tecnologias[sistema]:
-                if tipo == 'BYSERVICE':
+                if tipo in ['HEATING', 'COOLING', 'WATERSYSTEMS']:
                     # Evaluamos expresiones para definir los rendimientos
                     ctype, originoruse, carrier, rend1, rend2 = datos[:5]
                     datos[3] = eval(rend1) if not isinstance(rend1, (int, float)) else rend1
                     datos[4] = eval(rend2) if not isinstance(rend2, (int, float)) else rend2
-                medidas.append([paquete, tipo, param1, param2] + datos)
+                medidas.append([paquete, tipo, param1] + datos)
     return medidas
 
 def readenergystring(datastring):
@@ -133,15 +133,15 @@ def aplicaMedidas(meta, componentes, medidas):
     # 1 - Medidas independientes de los componentes de entrada (p.e. generación fotovoltaica)
     medidas1 = [medida for medida in medidas if medida[1] in ['BYVALUE', 'PV']]
     for medida in medidas1:
-        paquete, tipo, param1, param2 = medida[:4]
+        paquete, tipo, param1 = medida[:3]
         if tipo == 'BYVALUE':
-            ctipo, src_dst, vectorDestino = medida[4:7]
-            valores = [u"%s" % v for v in medida[7:-1]]
+            ctipo, src_dst, vectorDestino = medida[3:6]
+            valores = [u"%s" % v for v in medida[6:-1]]
             comentario = medida[-1]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst, ', '.join(valores), comentario)
             newvectors.append(cadena)
         if tipo == 'PV':
-            ctipo, src_dst, vectorDestino, superficie, rendimiento, comentario = medida[4:]
+            ctipo, src_dst, vectorDestino, superficie, rendimiento, comentario = medida[3:]
             valoresproduccion = [(val * rendimiento * superficie) for val in RADHOR[zonaclimatica]]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst,
                                                ', '.join('%.2f' % val for val in valoresproduccion),
@@ -152,10 +152,10 @@ def aplicaMedidas(meta, componentes, medidas):
     # TODO: convertir la aportación solar por fracción en este tipo, definiendo solamente la parte solar
     medidas2 = [medida for medida in medidas if medida[1] in ['PST']]
     for medida in medidas2:
-        paquete, tipo, param1, param2 = medida[:4]
+        paquete, tipo, param1 = medida[:3]
         if tipo == 'PST':
             # a) Genera producción
-            ctipo, src_dst, vectorDestino, superficie, rendimiento, comentario = medida[4:]
+            ctipo, src_dst, vectorDestino, superficie, rendimiento, comentario = medida[3:]
             valoresproduccion = [(val * rendimiento * superficie) for val in RADHOR[zonaclimatica]]
             cadena = u"%s, %s, %s, %s # %s" % (vectorDestino, ctipo, src_dst,
                                                ', '.join('%.2f' % val for val in valoresproduccion),
@@ -181,16 +181,16 @@ def aplicaMedidas(meta, componentes, medidas):
                 del oldcomponentes[idemanda]
 
     # 3 - Medidas que son transformaciones de los componentes de entrada (incluida la identidad)
-    medidas3 = [medida for medida in medidas if medida[1] in ['BYSERVICE']]
+    medidas3 = [medida for medida in medidas if medida[1] in ['HEATING', 'COOLING', 'WATERSYSTEMS']]
     for ii, vector in enumerate(oldcomponentes):
         servicioCubierto = vector['comment'].split(',')[0].strip()
         valores = vector['values']
         string_rows = []
         for medida in medidas3:
             # param1 = servicio, param2 = cobertura del servicio
-            paquete, tipo, servicio, cobertura = medida[:4]
-            if servicio == servicioCubierto:
-                ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[4:]
+            paquete, tipo, cobertura = medida[:3]
+            if tipo == servicioCubierto:
+                ctipo, src_dst, vectordestino, rend1, rend2, comentario = medida[3:]
                 valoresTransformados = [round(val * cobertura / rend1 / rend2, 2) for val in valores]
                 cadena = u"%s, %s, %s, %s # %s, %s" % (vectordestino, ctipo, src_dst,
                                                       u", ".join([str(v) for v in valoresTransformados]),
