@@ -72,6 +72,7 @@ def generaMediciones(config):
             'usoedificio': meta.get('Uso_edificio', ''),
             'superficie': arearef,
             'volumen': meta.get('Vol_ref', 1.0),
+            'compacidad': meta.get('Compacidad', 0.0),
             'zc': weatherfile[0],
             'peninsular': pen,
             'sistemas': meta.get('PaqueteSistemas', ''),

@@ -31,7 +31,7 @@ def calculacostes(config, costesdata, mediciones, escenarios):
     reslines = []
     reslines.append(u"nombre_edificio, fechacalculo, tipoedificio, usoedificio, "
                     u"envolvente, phuecos, sistemas, ventdiseno, efrecup, "
-                    u"superficie, volumen, zc, peninsular, "
+                    u"superficie, volumen, compacidad, zc, peninsular, "
                     u"eptot_m2, epnren_m2, epren_m2, "
                     u"eptot, epnren, epren, "
                     u"escenario, tasa, periodo, "
@@ -65,7 +65,7 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                 raise Exception("La suma de costes no coincide con el total ctotal != civ + cmv + crv + cop + coco2 - vresidual !!")
             dataline = (u"{meta[name]}, {meta[fechacalculo]}, {meta[tipoedificio]}, {meta[usoedificio]}, "
                         u"{meta[envolvente]}, {meta[phuecos]}, {meta[sistemas]}, {meta[ventdiseno]}, {meta[efrecup]}, "
-                        u"{meta[superficie]:.2f}, {meta[volumen]:.2f}, {meta[zc]}, {meta[peninsular]}, "
+                        u"{meta[superficie]:.2f}, {meta[volumen]:.2f}, {meta[compacidad]:.2f}, {meta[zc]}, {meta[peninsular]}, "
                         u"{ep[EP_tot_m2]:.2f}, {ep[EP_nren_m2]:.2f}, {ep[EP_ren_m2]:.2f}, "
                         u"{ep[EP_tot]:.2f}, {ep[EP_nren]:.2f}, {ep[EP_ren]:.2f}, "
                         u"{escenario.tipo}, {escenario.tasa:.2f}, {escenario.periodo:d}, "
