@@ -4,6 +4,10 @@ else
 PROYECTO:=$(proy)
 endif
 
+cop:
+	@python ./generavariantes.py --cleardir -p CosteOptimo
+	@PYTHONPATH=../../epbdcalc python ./generamediciones.py -p CosteOptimo
+	@PYTHONPATH=../../epbdcalc python ./calculacostes.py -p CosteOptimo
 test:
 	@python ./generavariantes.py --cleardir -p $(PROYECTO)
 	@PYTHONPATH=../../epbdcalc python ./generamediciones.py -p $(PROYECTO)
