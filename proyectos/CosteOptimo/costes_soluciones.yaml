@@ -1,0 +1,309 @@
+# Costes de las MAE
+# =================
+# directorio de proyecto: "/mnt/vegacte/03-CTE_en_curso/salaSert/git/epbdcostes/proyectos/CosteOptimo"
+#
+# desc: descripción de la MAE
+# vutil: vida útil de la MAE (años)
+#   - elementos opacos: 50 años
+#   - huecos: 30 años
+#   - instalaciones: 20
+# pmant: periodicidad del mantenimiento (años)
+#   - elementos opacos y huecos: 10 años
+#   - instalaciones: 1 año
+#
+# COSTES
+# ======
+# Para cada coste se deben aportar los costes:
+#
+#  - para el cálculo macroeconómico (sin impuestos ni tasas)
+#   - PEM
+#  - para el cálculo financiero/microeconómico (con impuestos y tasas)
+#   - PEM +
+#       - Gastos generales 13%
+#       - Beneficio industrial 6%
+#       - IVA:
+#           - residencial nuevo y terciario: 21%
+#           - residencial rehabilitación: 10%
+#       - Honorarios: 10%
+#       - Permisos: 7%
+#
+# cinicial: coste inicial (€/ud)
+# cmant: costes de mantenimiento (€/ud·periodo)
+#   - elementos opacos: 5% coste inicial c/10 años
+#   - huecos: 10% coste inicial c/10 años
+#   - instalaciones: 7% coste inicial c/año
+#
+
+CTE_2013_CUBIERTA_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_2013_HUECOS_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_2013_MURO_EXT_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_2013_SUELO_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_REF_CUBIERTA_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_REF_HUECOS_D:
+  desc: Descripción de la solución
+  vutil: 30 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_REF_MURO_EXT_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CTE_REF_SUELO_D:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CUBIERTA_16CM_XPS:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+CUBIERTA_20CM_XPS:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+FACHADA_14CM_XPS:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+FACHADA_16CM_XPS:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+SUELO_10CM_XPS_CON_TERRENO:
+  desc: Descripción de la solución
+  vutil: 50 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+VIDRIO BE4-15-6:
+  desc: Descripción de la solución
+  vutil: 30 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+# *********************************************************************************
+# Costes de sistemas **************************************************************
+# *********************************************************************************
+
+# NR1 - Unifamiliar entre medianeras ----------------------------------------------
+
+# NR2 - Bloque entre medianeras ---------------------------------------------------
+
+NR2_S1T1:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S1T2:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S2T1:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S2T2:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S3T1:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S3T1F1:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S3T1F2:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S3T2:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S4T1:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+NR2_S4T2:
+  desc: Descripción de la solución
+  vutil: 20 #años
+  pmant: 10 #años
+  cinicial:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+  cmant:
+    macro: 0.0 # €/m2
+    micro: 0.0 # €/m2
+
+
