@@ -8,4 +8,7 @@ y ver qué falta. Además el script saca en pantalla qué se ha añadido respect
 costes_soluciones.yaml del proyecto.
 
 - Vida útil: elementos envolvente 50 años, ventanas 30, instalaciones 20.
-- Coste anual mantenimiento sobre coste inicial: elem. envolvente: , ventanas: 0.5%, instalaciones: 3%
+- Coste mantenimiento sobre coste inicial:
+    - elem. envolvente: 5% / 10 años
+    - huecos: 10% / 10 años
+    - instalaciones: 7% / año

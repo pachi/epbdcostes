@@ -12,18 +12,39 @@ plantilla de costes de soluciones.
 """
 
 solstrhdr = u"""# Costes de las MAE
+# =================
 # directorio de proyecto: "%s"
 #
 # desc: descripción de la MAE
 # vutil: vida útil de la MAE (años)
+#   - elementos opacos: 50 años
+#   - huecos: 30 años
+#   - instalaciones: 20
 # pmant: periodicidad del mantenimiento (años)
+#   - elementos opacos y huecos: 10 años
+#   - instalaciones: 1 año
+#
 # COSTES:
+# ======
 # Para cada coste se deben aportar los costes:
+#
 #  - para el cálculo macroeconómico (sin impuestos ni tasas)
+#   - PEM
 #  - para el cálculo financiero/microeconómico (con impuestos y tasas)
+#   - PEM +
+#       - Gastos generales 13%
+#       - Beneficio industrial 6%
+#       - IVA:
+#           - residencial nuevo y terciario: 21%
+#           - residencial rehabilitación: 10%
+#       - Honorarios: 10%
+#       - Permisos: 7%
 #
 # cinicial: coste inicial (€/ud)
-# cmant: costes de mantenimiento (€/ud·año)
+# cmant: costes de mantenimiento (€/ud·periodo)
+#   - elementos opacos: 5% coste inicial c/10 años
+#   - huecos: 10% coste inicial c/10 años
+#   - instalaciones: 7% coste inicial c/año
 #\n\n""" # % config.proyectoactivo
 
 solstr = u"""%s:
