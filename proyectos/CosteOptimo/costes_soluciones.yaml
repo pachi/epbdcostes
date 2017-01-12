@@ -6,304 +6,736 @@
 # vutil: vida útil de la MAE (años)
 #   - elementos opacos: 50 años
 #   - huecos: 30 años
-#   - instalaciones: 20
+#   - instalaciones: 20 años
 # pmant: periodicidad del mantenimiento (años)
-#   - elementos opacos y huecos: 10 años
-#   - instalaciones: 1 año
+#   - elementos opacos: 10 años
+#   - elementos huecos: 10 años
+#   - instalaciones: 1 años
 #
-# COSTES
+# COSTES:
 # ======
 # Para cada coste se deben aportar los costes:
 #
-#  - para el cálculo macroeconómico (sin impuestos ni tasas)
+#  - para el cálculo macroeconómico (sin impuestos ni tasas) se considera
 #   - PEM
-#  - para el cálculo financiero/microeconómico (con impuestos y tasas)
+#  - para el cálculo financiero/microeconómico (con impuestos y tasas) se considera
 #   - PEM +
-#       - Gastos generales 13%
-#       - Beneficio industrial 6%
+#       - Gastos generales 13.0%
+#       - Beneficio industrial 6.0%
 #       - IVA:
-#           - residencial nuevo y terciario: 21%
-#           - residencial rehabilitación: 10%
-#       - Honorarios: 10%
-#       - Permisos: 7%
+#           - residencial nuevo y terciario: 21.0%
+#           - residencial rehabilitación: 10.0%
+#       - Honorarios: 10.0%
+#       - Permisos: 7.0%
 #
 # cinicial: coste inicial (€/ud)
 # cmant: costes de mantenimiento (€/ud·periodo)
-#   - elementos opacos: 5% coste inicial c/10 años
-#   - huecos: 10% coste inicial c/10 años
-#   - instalaciones: 7% coste inicial c/año
+#   - elementos opacos: 0.1% coste inicial c/10.0 años
+#   - huecos: 0.1% coste inicial c/10.0 años
+#   - instalaciones: 0.1% coste inicial c1.0/año
 #
 
-CTE_2013_CUBIERTA_D:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET0_Cubierta:
+  desc: Cubierta 0cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 55.0 # €/ud
+    micro: 86.3 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 2.8 # €/ud/periodo
+    micro: 4.3 # €/ud/periodo
 
-CTE_2013_HUECOS_D:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET0_Muro:
+  desc: Muro 0cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 75.0 # €/ud
+    micro: 117.7 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 3.8 # €/ud/periodo
+    micro: 5.9 # €/ud/periodo
 
-CTE_2013_MURO_EXT_D:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET0_Suelo_Aire:
+  desc: Suelo 0cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 75.0 # €/ud
+    micro: 117.7 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 3.8 # €/ud/periodo
+    micro: 5.9 # €/ud/periodo
 
-CTE_2013_SUELO_D:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET0_Suelo_Terreno:
+  desc: Solera 0cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 55.0 # €/ud
+    micro: 86.3 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 2.8 # €/ud/periodo
+    micro: 4.3 # €/ud/periodo
 
-CTE_REF_CUBIERTA_D:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET1_Cubierta:
+  desc: Cubierta 4cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 64.0 # €/ud
+    micro: 100.5 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 3.2 # €/ud/periodo
+    micro: 5.0 # €/ud/periodo
 
-CTE_REF_HUECOS_D:
-  desc: Descripción de la solución
-  vutil: 30 #años
-  pmant: 10 #años
+ET1_Muro:
+  desc: Muro 2cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 93.0 # €/ud
+    micro: 146.0 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 4.7 # €/ud/periodo
+    micro: 7.3 # €/ud/periodo
 
-CTE_REF_MURO_EXT_D:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET1_Suelo_Aire:
+  desc: Suelo 2cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 93.0 # €/ud
+    micro: 146.0 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 4.7 # €/ud/periodo
+    micro: 7.3 # €/ud/periodo
 
-CTE_REF_SUELO_D:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET1_Suelo_Terreno:
+  desc: Solera 0cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 55.0 # €/ud
+    micro: 86.3 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 2.8 # €/ud/periodo
+    micro: 4.3 # €/ud/periodo
 
-CUBIERTA_16CM_XPS:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET2_Cubierta:
+  desc: Cubierta 6cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 67.0 # €/ud
+    micro: 105.2 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 3.4 # €/ud/periodo
+    micro: 5.3 # €/ud/periodo
 
-CUBIERTA_20CM_XPS:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET2_Muro:
+  desc: Muro 4cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 99.0 # €/ud
+    micro: 155.4 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 5.0 # €/ud/periodo
+    micro: 7.8 # €/ud/periodo
 
-FACHADA_14CM_XPS:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET2_Suelo_Aire:
+  desc: Suelo 4cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 99.0 # €/ud
+    micro: 155.4 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 5.0 # €/ud/periodo
+    micro: 7.8 # €/ud/periodo
 
-FACHADA_16CM_XPS:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET2_Suelo_Terreno:
+  desc: Solera 2cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 61.0 # €/ud
+    micro: 95.8 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 3.1 # €/ud/periodo
+    micro: 4.8 # €/ud/periodo
 
-SUELO_10CM_XPS_CON_TERRENO:
-  desc: Descripción de la solución
-  vutil: 50 #años
-  pmant: 10 #años
+ET3_Cubierta:
+  desc: Cubierta 8cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 70.0 # €/ud
+    micro: 109.9 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 3.5 # €/ud/periodo
+    micro: 5.5 # €/ud/periodo
 
-VIDRIO BE4-15-6:
-  desc: Descripción de la solución
-  vutil: 30 #años
-  pmant: 10 #años
+ET3_Muro:
+  desc: Muro 6cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 105.0 # €/ud
+    micro: 164.8 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 5.2 # €/ud/periodo
+    micro: 8.2 # €/ud/periodo
 
-# *********************************************************************************
-# Costes de sistemas **************************************************************
-# *********************************************************************************
+ET3_Suelo_Aire:
+  desc: Suelo 6cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 105.0 # €/ud
+    micro: 164.8 # €/ud
+  cmant:
+    macro: 5.2 # €/ud/periodo
+    micro: 8.2 # €/ud/periodo
 
-# NR1 - Unifamiliar entre medianeras ----------------------------------------------
+ET3_Suelo_Terreno:
+  desc: Solera 4cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 64.0 # €/ud
+    micro: 100.5 # €/ud
+  cmant:
+    macro: 3.2 # €/ud/periodo
+    micro: 5.0 # €/ud/periodo
 
-# NR2 - Bloque entre medianeras ---------------------------------------------------
+ET4_Cubierta:
+  desc: Cubierta 10cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 73.0 # €/ud
+    micro: 114.6 # €/ud
+  cmant:
+    macro: 3.7 # €/ud/periodo
+    micro: 5.7 # €/ud/periodo
+
+ET4_Muro:
+  desc: Muro 8cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 111.0 # €/ud
+    micro: 174.3 # €/ud
+  cmant:
+    macro: 5.6 # €/ud/periodo
+    micro: 8.7 # €/ud/periodo
+
+ET4_Suelo_Aire:
+  desc: Suelo 8cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 111.0 # €/ud
+    micro: 174.3 # €/ud
+  cmant:
+    macro: 5.6 # €/ud/periodo
+    micro: 8.7 # €/ud/periodo
+
+ET4_Suelo_Terreno:
+  desc: Solera 6cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 67.0 # €/ud
+    micro: 105.2 # €/ud
+  cmant:
+    macro: 3.4 # €/ud/periodo
+    micro: 5.3 # €/ud/periodo
+
+ET5_Cubierta:
+  desc: Cubierta 12cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 76.0 # €/ud
+    micro: 119.3 # €/ud
+  cmant:
+    macro: 3.8 # €/ud/periodo
+    micro: 6.0 # €/ud/periodo
+
+ET5_Muro:
+  desc: Muro 10cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 117.0 # €/ud
+    micro: 183.7 # €/ud
+  cmant:
+    macro: 5.9 # €/ud/periodo
+    micro: 9.2 # €/ud/periodo
+
+ET5_Suelo_Aire:
+  desc: Suelo 10cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 117.0 # €/ud
+    micro: 183.7 # €/ud
+  cmant:
+    macro: 5.9 # €/ud/periodo
+    micro: 9.2 # €/ud/periodo
+
+ET5_Suelo_Terreno:
+  desc: Solera 6cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 67.0 # €/ud
+    micro: 105.2 # €/ud
+  cmant:
+    macro: 3.4 # €/ud/periodo
+    micro: 5.3 # €/ud/periodo
+
+ET6_Cubierta:
+  desc: Cubierta 16cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 82.0 # €/ud
+    micro: 128.7 # €/ud
+  cmant:
+    macro: 4.1 # €/ud/periodo
+    micro: 6.4 # €/ud/periodo
+
+ET6_Muro:
+  desc: Muro 12cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 123.0 # €/ud
+    micro: 193.1 # €/ud
+  cmant:
+    macro: 6.2 # €/ud/periodo
+    micro: 9.7 # €/ud/periodo
+
+ET6_Suelo_Aire:
+  desc: Suelo 12cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 123.0 # €/ud
+    micro: 193.1 # €/ud
+  cmant:
+    macro: 6.2 # €/ud/periodo
+    micro: 9.7 # €/ud/periodo
+
+ET6_Suelo_Terreno:
+  desc: Solera 8cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 70.0 # €/ud
+    micro: 109.9 # €/ud
+  cmant:
+    macro: 3.5 # €/ud/periodo
+    micro: 5.5 # €/ud/periodo
+
+ET7_Cubierta:
+  desc: Cubierta 20cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 88.0 # €/ud
+    micro: 138.2 # €/ud
+  cmant:
+    macro: 4.4 # €/ud/periodo
+    micro: 6.9 # €/ud/periodo
+
+ET7_Muro:
+  desc: Muro 16cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 135.0 # €/ud
+    micro: 211.9 # €/ud
+  cmant:
+    macro: 6.8 # €/ud/periodo
+    micro: 10.6 # €/ud/periodo
+
+ET7_Suelo_Aire:
+  desc: Suelo 16cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 135.0 # €/ud
+    micro: 211.9 # €/ud
+  cmant:
+    macro: 6.8 # €/ud/periodo
+    micro: 10.6 # €/ud/periodo
+
+ET7_Suelo_Terreno:
+  desc: Solera 8cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 70.0 # €/ud
+    micro: 109.9 # €/ud
+  cmant:
+    macro: 3.5 # €/ud/periodo
+    micro: 5.5 # €/ud/periodo
+
+ET8_Cubierta:
+  desc: Cubierta 24cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 94.0 # €/ud
+    micro: 147.6 # €/ud
+  cmant:
+    macro: 4.7 # €/ud/periodo
+    micro: 7.4 # €/ud/periodo
+
+ET8_Muro:
+  desc: Muro 20cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 147.0 # €/ud
+    micro: 230.8 # €/ud
+  cmant:
+    macro: 7.4 # €/ud/periodo
+    micro: 11.5 # €/ud/periodo
+
+ET8_Suelo_Aire:
+  desc: Suelo 20cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 147.0 # €/ud
+    micro: 230.8 # €/ud
+  cmant:
+    macro: 7.4 # €/ud/periodo
+    micro: 11.5 # €/ud/periodo
+
+ET8_Suelo_Terreno:
+  desc: Solera 8cm XPS
+  vutil: 50.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 70.0 # €/ud
+    micro: 109.9 # €/ud
+  cmant:
+    macro: 3.5 # €/ud/periodo
+    micro: 5.5 # €/ud/periodo
+
+H0_Hueco:
+  desc: MtSRPT_6 (U=5.70)
+  vutil: 30.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 293.6 # €/ud
+    micro: 460.9 # €/ud
+  cmant:
+    macro: 29.4 # €/ud/periodo
+    micro: 46.1 # €/ud/periodo
+
+H1_Hueco:
+  desc: MtRPT_4/16/6 (U=2.42)
+  vutil: 30.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 318.6 # €/ud
+    micro: 500.2 # €/ud
+  cmant:
+    macro: 31.9 # €/ud/periodo
+    micro: 50.0 # €/ud/periodo
+
+H2_Hueco:
+  desc: MtRPT_BE 4/16/6 (U=1.14)
+  vutil: 30.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 480.1 # €/ud
+    micro: 753.8 # €/ud
+  cmant:
+    macro: 48.0 # €/ud/periodo
+    micro: 75.4 # €/ud/periodo
+
+H3_Hueco:
+  desc: MtRPT_BE_CS 4/16/6 (U=1.06)
+  vutil: 30.0 #años
+  pmant: 10.0 #años
+  cinicial:
+    macro: 490.1 # €/ud
+    micro: 769.4 # €/ud
+  cmant:
+    macro: 49.0 # €/ud/periodo
+    micro: 76.9 # €/ud/periodo
 
 NR2_S1T1:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
+  desc: Caldera GN+ 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 49750.0 # €/ud
+    micro: 78107.5 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 3482.5 # €/ud/periodo
+    micro: 5467.5 # €/ud/periodo
 
 NR2_S1T2:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
+  desc: Caldera GN + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 59500.0 # €/ud
+    micro: 93415.0 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 4165.0 # €/ud/periodo
+    micro: 6539.0 # €/ud/periodo
 
 NR2_S2T1:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
+  desc: Caldera BM + 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 138374.0 # €/ud
+    micro: 217247.2 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 9686.2 # €/ud/periodo
+    micro: 15207.3 # €/ud/periodo
 
 NR2_S2T2:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
+  desc: Caldera BM + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 148124.0 # €/ud
+    micro: 232554.7 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 10368.7 # €/ud/periodo
+    micro: 16278.8 # €/ud/periodo
 
 NR2_S3T1:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
+  desc: BdC EL + 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 97750.0 # €/ud
+    micro: 153467.5 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
-
-NR2_S3T1F1:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
-  cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
-  cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
-
-NR2_S3T1F2:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
-  cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
-  cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 6842.5 # €/ud/periodo
+    micro: 10742.7 # €/ud/periodo
 
 NR2_S3T2:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
+  desc: BdC EL + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 107500.0 # €/ud
+    micro: 168775.0 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 7525.0 # €/ud/periodo
+    micro: 11814.2 # €/ud/periodo
+
+NR2_S3T1F1:
+  desc: BdC EL + 15m2 PST + 50m2 PV
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 107750.0 # €/ud
+    micro: 169167.5 # €/ud
+  cmant:
+    macro: 7542.5 # €/ud/periodo
+    micro: 11841.7 # €/ud/periodo
+
+NR2_S3T1F2:
+  desc: BdC EL + 15m2 PST + 75m2 PV
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 112750.0 # €/ud
+    micro: 177017.5 # €/ud
+  cmant:
+    macro: 7892.5 # €/ud/periodo
+    micro: 12391.2 # €/ud/periodo
 
 NR2_S4T1:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
+  desc: Cogen GN + 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 689750.0 # €/ud
+    micro: 1082907.5 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 48282.5 # €/ud/periodo
+    micro: 75803.5 # €/ud/periodo
 
 NR2_S4T2:
-  desc: Descripción de la solución
-  vutil: 20 #años
-  pmant: 10 #años
+  desc: Cogen GN + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
   cinicial:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 699500.0 # €/ud
+    micro: 1098215.0 # €/ud
   cmant:
-    macro: 0.0 # €/m2
-    micro: 0.0 # €/m2
+    macro: 48965.0 # €/ud/periodo
+    micro: 76875.1 # €/ud/periodo
 
+CTE_2013_CUBIERTA_D:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CTE_2013_HUECOS_D:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CTE_2013_MURO_EXT_D:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CTE_2013_SUELO_D:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CTE_REF_CUBIERTA_D:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CTE_REF_HUECOS_D:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CTE_REF_MURO_EXT_D:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CTE_REF_SUELO_D:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CUBIERTA_16CM_XPS:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+CUBIERTA_20CM_XPS:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+FACHADA_14CM_XPS:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+FACHADA_16CM_XPS:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+SUELO_10CM_XPS_CON_TERRENO:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
+
+VIDRIO BE4-15-6:
+  desc: Descripción
+  vutil: 100.0 #años
+  pmant: 100.0 #años
+  cinicial:
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
+  cmant:
+    macro: 0.0 # €/ud/periodo
+    micro: 0.0 # €/ud/periodo
 
