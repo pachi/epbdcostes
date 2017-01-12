@@ -3,7 +3,7 @@
 #
 # Cálculo de costes para estudio de coste óptimo
 #
-# DB-HE 2013
+# DB-HE 2018
 #
 """Generador de archivo inicial de costes de soluciones
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         res.append(solstrhdr % projectpath)
         for solucion in sorted(solucionesmedidas):
             if solucion not in costesdict:
-                print u"Solución no encontrada: %s" % solucion
+                print(u"Solución no encontrada: %s" % solucion)
             res.append(solstr % solucion)
         ofile.writelines(res)
 
