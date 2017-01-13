@@ -31,7 +31,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
     reslines = []
     reslines.append(u"nombre_edificio, fechacalculo, tipoedificio, usoedificio, "
                     u"envolvente, phuecos, sistemas, ventdiseno, efrecup, "
-                    u"superficie, volumen, compacidad, zc, peninsular, "
+                    u"sup_util, volumen, compacidad, K, qsj, "
+                    u"zc, peninsular, zci, zcv, HDD_15, CDD_25, "
                     u"eptot_m2, epnren_m2, epren_m2, "
                     u"eptot, epnren, epren, "
                     u"escenario, tasa, periodo, "
@@ -41,6 +42,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                     u"cELECTRICIDADCEUTAMELILLA, cBIOCARBURANTE, cBIOMASA, "
                     u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, "
                     u"cRED1, cRED2, "
+                    u"termica_prod_kWh_an, termica_exp_kWh_an, termica_nepb_kWh_an, "
+                    u"electr_prod_kWh_an, electr_exp_kWh_an, electr_nepb_kWh_an, "
                     u"Demanda_calefaccion, Demanda_refrigeracion, Demanda_iluminacion_interior, "
                     u"Demanda_iluminacion_exterior, Demanda_equipos_interiores, Demanda_equipos_exteriores, "
                     u"Demanda_ventiladores, Demanda_bombas, Demanda_disipacion_calor, "
@@ -65,7 +68,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                 raise Exception("La suma de costes no coincide con el total ctotal != civ + cmv + crv + cop + coco2 - vresidual !!")
             dataline = (u"{meta[name]}, {meta[fechacalculo]}, {meta[tipoedificio]}, {meta[usoedificio]}, "
                         u"{meta[envolvente]}, {meta[phuecos]}, {meta[sistemas]}, {meta[ventdiseno]}, {meta[efrecup]}, "
-                        u"{meta[superficie]:.2f}, {meta[volumen]:.2f}, {meta[compacidad]:.2f}, {meta[zc]}, {meta[peninsular]}, "
+                        u"{meta[superficie]:.2f}, {meta[volumen]:.2f}, {meta[compacidad]:.2f}, {meta[K]:.2f}, {meta[qsj]:.2f}, "
+                        u"{meta[zc]}, {meta[peninsular]}, {meta[zci]}, {meta[zcv]}, {meta[HDD_15]}, {meta[CDD_25]}, "
                         u"{ep[EP_tot_m2]:.2f}, {ep[EP_nren_m2]:.2f}, {ep[EP_ren_m2]:.2f}, "
                         u"{ep[EP_tot]:.2f}, {ep[EP_nren]:.2f}, {ep[EP_ren]:.2f}, "
                         u"{escenario.tipo}, {escenario.tasa:.2f}, {escenario.periodo:d}, "
@@ -75,6 +79,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                         u"{copv[ELECTRICIDADCEUTAMELILLA]:.2f}, {copv[BIOCARBURANTE]:.2f}, {copv[BIOMASA]:.2f}, "
                         u"{copv[BIOMASADENSIFICADA]:.2f}, {copv[CARBON]:.2f}, {copv[FUELOIL]:.2f}, {copv[GASOLEO]:.2f}, {copv[GLP]:.2f}, "
                         u"{copv[RED1]:.2f}, {copv[RED2]:.2f}, "
+                        u"{prod[termica_prod_kWh_an]:.2f}, {prod[termica_exp_kWh_an]:.2f}, {prod[termica_nepb_kWh_an]:.2f}, "
+                        u"{prod[electr_prod_kWh_an]:.2f}, {prod[electr_exp_kWh_an]:.2f}, {prod[electr_nepb_kWh_an]:.2f}, "
                         u"{dem[Demanda_calefaccion]:.2f}, {dem[Demanda_refrigeracion]:.2f}, {dem[Demanda_iluminacion_interior]:.2f}, "
                         u"{dem[Demanda_iluminacion_exterior]:.2f}, {dem[Demanda_equipos_interiores]:.2f}, {dem[Demanda_equipos_exteriores]:.2f}, "
                         u"{dem[Demanda_ventiladores]:.2f}, {dem[Demanda_bombas]:.2f}, {dem[Demanda_disipacion_calor]:.2f}, "
@@ -84,7 +90,7 @@ def calculacostes(config, costesdata, mediciones, escenarios):
             ).format(id=variante.id, meta=variante.metadatos, ep=variante.eprimaria, escenario=escenario,
                      ctotalm2=float(ctotal / supvariante), civ_m2=float(civ / supvariante), cop_m2=float(cop / supvariante),
                      ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv,
-                     dem=variante.demanda)
+                     prod=variante.eprimaria['produccion'], dem=variante.demanda)
             reslines.append(dataline)
 
     with io.open(os.path.join(config.basedir, 'resultados-costes.csv'), 'w', encoding='utf-8') as resfile:
