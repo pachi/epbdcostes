@@ -480,44 +480,154 @@ NR2_S1T1:
   vutil: 20.0 #años
   pmant: 1.0 #años
   cinicial:
-    macro: 49750.0 # €/ud
-    micro: 78107.5 # €/ud
+    macro: 41750.0 # €/ud
+    micro: 65547.5 # €/ud
   cmant:
-    macro: 3482.5 # €/ud/periodo
-    micro: 5467.5 # €/ud/periodo
+    macro: 2922.5 # €/ud/periodo
+    micro: 4588.3 # €/ud/periodo
 
 NR2_S1T2:
   desc: Caldera GN + 30m2 PST
   vutil: 20.0 #años
   pmant: 1.0 #años
   cinicial:
-    macro: 59500.0 # €/ud
-    micro: 93415.0 # €/ud
+    macro: 51500.0 # €/ud
+    micro: 80855.0 # €/ud
   cmant:
-    macro: 4165.0 # €/ud/periodo
-    micro: 6539.0 # €/ud/periodo
+    macro: 3605.0 # €/ud/periodo
+    micro: 5659.8 # €/ud/periodo
 
-NR2_S2T1:
+NR2_S1CaT1:
+  desc: Caldera GN+ 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 15250.0 # €/ud
+    micro: 23942.5 # €/ud
+  cmant:
+    macro: 1067.5 # €/ud/periodo
+    micro: 1676.0 # €/ud/periodo
+
+NR2_S1CaT2:
+  desc: Caldera GN + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 25000.0 # €/ud
+    micro: 39250.0 # €/ud
+  cmant:
+    macro: 1750.0 # €/ud/periodo
+    micro: 2747.5 # €/ud/periodo
+
+NR2_S1CbT1:
+  desc: Caldera GN+ 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 20750.0 # €/ud
+    micro: 32577.5 # €/ud
+  cmant:
+    macro: 1452.5 # €/ud/periodo
+    micro: 2280.4 # €/ud/periodo
+
+NR2_S1CbT2:
+  desc: Caldera GN + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 30500.0 # €/ud
+    micro: 47885.0 # €/ud
+  cmant:
+    macro: 2135.0 # €/ud/periodo
+    micro: 3351.9 # €/ud/periodo
+
+NR2_S1CcT1:
+  desc: Caldera GN+ 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 26250.0 # €/ud
+    micro: 41212.5 # €/ud
+  cmant:
+    macro: 1837.5 # €/ud/periodo
+    micro: 2884.9 # €/ud/periodo
+
+NR2_S1CcT2:
+  desc: Caldera GN + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 36000.0 # €/ud
+    micro: 56520.0 # €/ud
+  cmant:
+    macro: 2520.0 # €/ud/periodo
+    micro: 3956.4 # €/ud/periodo
+
+NR2_S2CaT1:
   desc: Caldera BM + 15m2 PST
   vutil: 20.0 #años
   pmant: 1.0 #años
   cinicial:
-    macro: 138374.0 # €/ud
-    micro: 217247.2 # €/ud
+    macro: 17250.0 # €/ud
+    micro: 27082.5 # €/ud
   cmant:
-    macro: 9686.2 # €/ud/periodo
-    micro: 15207.3 # €/ud/periodo
+    macro: 1207.5 # €/ud/periodo
+    micro: 1895.8 # €/ud/periodo
 
-NR2_S2T2:
+NR2_S2CaT2:
   desc: Caldera BM + 30m2 PST
   vutil: 20.0 #años
   pmant: 1.0 #años
   cinicial:
-    macro: 148124.0 # €/ud
-    micro: 232554.7 # €/ud
+    macro: 27000.0 # €/ud
+    micro: 42390.0 # €/ud
   cmant:
-    macro: 10368.7 # €/ud/periodo
-    micro: 16278.8 # €/ud/periodo
+    macro: 1890.0 # €/ud/periodo
+    micro: 2967.3 # €/ud/periodo
+
+NR2_S2CbT1:
+  desc: Caldera BM + 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 24750.0 # €/ud
+    micro: 38857.5 # €/ud
+  cmant:
+    macro: 1732.5 # €/ud/periodo
+    micro: 2720.0 # €/ud/periodo
+
+NR2_S2CbT2:
+  desc: Caldera BM + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 34500.0 # €/ud
+    micro: 54165.0 # €/ud
+  cmant:
+    macro: 2415.0 # €/ud/periodo
+    micro: 3791.5 # €/ud/periodo
+
+NR2_S2CcT1:
+  desc: Caldera BM + 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 32250.0 # €/ud
+    micro: 50632.5 # €/ud
+  cmant:
+    macro: 2257.5 # €/ud/periodo
+    micro: 3544.3 # €/ud/periodo
+
+NR2_S2CcT2:
+  desc: Caldera BM + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 42000.0 # €/ud
+    micro: 65940.0 # €/ud
+  cmant:
+    macro: 2940.0 # €/ud/periodo
+    micro: 4615.8 # €/ud/periodo
 
 NR2_S3T1:
   desc: BdC EL + 15m2 PST
@@ -563,27 +673,71 @@ NR2_S3T1F2:
     macro: 7892.5 # €/ud/periodo
     micro: 12391.2 # €/ud/periodo
 
-NR2_S4T1:
+NR2_S4CaT1:
   desc: Cogen GN + 15m2 PST
   vutil: 20.0 #años
   pmant: 1.0 #años
   cinicial:
-    macro: 689750.0 # €/ud
-    micro: 1082907.5 # €/ud
+    macro: 56100.0 # €/ud
+    micro: 88077.0 # €/ud
   cmant:
-    macro: 48282.5 # €/ud/periodo
-    micro: 75803.5 # €/ud/periodo
+    macro: 3927.0 # €/ud/periodo
+    micro: 6165.4 # €/ud/periodo
 
-NR2_S4T2:
+NR2_S4CaT2:
   desc: Cogen GN + 30m2 PST
   vutil: 20.0 #años
   pmant: 1.0 #años
   cinicial:
-    macro: 699500.0 # €/ud
-    micro: 1098215.0 # €/ud
+    macro: 65850.0 # €/ud
+    micro: 103384.5 # €/ud
   cmant:
-    macro: 48965.0 # €/ud/periodo
-    micro: 76875.1 # €/ud/periodo
+    macro: 4609.5 # €/ud/periodo
+    micro: 7236.9 # €/ud/periodo
+
+NR2_S4CbT1:
+  desc: Cogen GN + 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 60500.0 # €/ud
+    micro: 94985.0 # €/ud
+  cmant:
+    macro: 4235.0 # €/ud/periodo
+    micro: 6648.9 # €/ud/periodo
+
+NR2_S4CbT2:
+  desc: Cogen GN + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 70250.0 # €/ud
+    micro: 110292.5 # €/ud
+  cmant:
+    macro: 4917.5 # €/ud/periodo
+    micro: 7720.5 # €/ud/periodo
+
+NR2_S4CcT1:
+  desc: Cogen GN + 15m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 63250.0 # €/ud
+    micro: 99302.5 # €/ud
+  cmant:
+    macro: 4427.5 # €/ud/periodo
+    micro: 6951.2 # €/ud/periodo
+
+NR2_S4CcT2:
+  desc: Cogen GN + 30m2 PST
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 73000.0 # €/ud
+    micro: 114610.0 # €/ud
+  cmant:
+    macro: 5110.0 # €/ud/periodo
+    micro: 8022.7 # €/ud/periodo
 
 CTE_2013_CUBIERTA_D:
   desc: Descripción
