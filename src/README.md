@@ -22,6 +22,11 @@ para ejecutarlo: ./generavariantes.py -p <nombre del proyecto>
 
 Genera las variantes en el directorio 'resultados' del proyecto.
 
+generacostes
+------------
+
+Calcula soluciones_costes.yaml a partir de precios.xml
+
 generamediciones
 ----------------
 
