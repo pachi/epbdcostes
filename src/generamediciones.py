@@ -117,7 +117,7 @@ def generaMediciones(config):
 
         # Consumos
         balance = compute_balance(data, k_rdel)
-        consumos = {carrier: balance[carrier]['annual']['grid']['input']
+        consumos = {carrier: balance[carrier]['annual']['grid'].get('input', 0.0)
                     for carrier in balance if carrier != 'MEDIOAMBIENTE'}
 
         termicaproducida = sum([balance['MEDIOAMBIENTE']['annual'][orig].get('input', 0.0)
