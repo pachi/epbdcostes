@@ -24,6 +24,7 @@
 
 from __future__ import print_function
 import codecs
+from collections import OrderedDict
 import datetime
 import glob
 import os
@@ -34,6 +35,18 @@ from pyepbd import readenergyfile, saveenergyfile, readfactors
 from pyepbd import compute_balance, weighted_energy
 
 ###############################################################
+
+# Equivalencias en grados día
+GD = {
+    'pen':  {
+        'HDD_15': {'A': 870, 'B': 1130, 'C': 1650, 'D': 2225, 'E': 2750},
+        'CDD_25': {'1': 30, '2': 75, '3': 175, '4': 250}
+    },
+    'can': {
+        'HDD_15': {'alpha': 150, 'A': 750, 'B': 1125, 'C': 1575, 'D': 2175, 'E': 2750},
+        'CDD_25': {'1': 2, '2': 10, '3': 50, '4': 125}
+    }
+}
 
 def generaMediciones(config):
     """Guarda mediciones, con indicadores energéticos y de emisiones de variantes
@@ -64,7 +77,13 @@ def generaMediciones(config):
         # Metadatos generales (fecha, area, volumen, zc, peninsularidad)
         arearef = float(meta.get('Area_ref', 1.0))
         weatherfile = meta.get('Weather_file', '').split('_')
+        zc = weatherfile[0]
         pen = 2 if len(weatherfile) < 2 else (1 if weatherfile[1].startswith('pen') else 0)
+        zcv = zc[-1]
+        zci = zc[:-1]
+        gd = GD['can'] if pen == 0 else GD['pen']
+        hdd = gd['HDD_15'].get(zci, '-')
+        cdd = gd['CDD_25'].get(zcv, '-')
         metadata = {
             'name': meta.get('Name', ''),
             'fechacalculo': meta.get('Datetime', ''),
@@ -73,8 +92,14 @@ def generaMediciones(config):
             'superficie': arearef,
             'volumen': meta.get('Vol_ref', 1.0),
             'compacidad': meta.get('Compacidad', 0.0),
-            'zc': weatherfile[0],
+            'K': meta.get('K', 0.0),
+            'qsj': meta.get('qsj', 0.0),
+            'zc': zc,
             'peninsular': pen,
+            'zci': zci,
+            'zcv': zcv,
+            'HDD_15': hdd,
+            'CDD_25': cdd,
             'sistemas': meta.get('PaqueteSistemas', ''),
             'envolvente': meta.get('ConstructionSet', ''),
             'phuecos': meta.get('Permeabilidad_ventanas', ''),
@@ -95,14 +120,52 @@ def generaMediciones(config):
         consumos = {carrier: balance[carrier]['annual']['grid']['input']
                     for carrier in balance if carrier != 'MEDIOAMBIENTE'}
 
-        # Energía primaria
+        termicaproducida = sum([balance['MEDIOAMBIENTE']['annual'][orig].get('input', 0.0)
+                                for orig in ['INSITU', 'COGENERACION']
+                                if 'MEDIOAMBIENTE' in balance])
+        termicaexportada = sum([balance['MEDIOAMBIENTE']['annual'][orig].get('to_grid', 0.0)
+                                for orig in ['INSITU', 'COGENERACION']
+                                if 'MEDIOAMBIENTE' in balance])
+        termicanepb = sum([balance['MEDIOAMBIENTE']['annual']['INSITU'].get('to_nEPB', 0.0)
+                           for orig in ['INSITU', 'COGENERACION']
+                           if 'MEDIOAMBIENTE' in balance])
+        elecproducida = sum([balance[carrier]['annual'][orig].get('input', 0.0)
+                             for orig in ['INSITU', 'COGENERACION']
+                             for carrier in balance
+                             if carrier.startswith("ELECTRICIDAD")])
+        elecexportada = sum([balance[carrier]['annual'][orig].get('to_grid', 0.0)
+                             for orig in ['INSITU', 'COGENERACION']
+                             for carrier in balance
+                             if carrier.startswith("ELECTRICIDAD")])
+        elecnepb = sum([balance[carrier]['annual']['INSITU'].get('to_nEPB', 0.0)
+                        for orig in ['INSITU', 'COGENERACION']
+                        for carrier in balance
+                        if carrier.startswith("ELECTRICIDAD")])
+
+        producciones = {
+            'termica_prod_kWh_an': termicaproducida,
+            'termica_exp_kWh_an': termicaexportada,
+            'termica_nepb_kWh_an': termicanepb,
+            'electr_prod_kWh_an': elecproducida,
+            'electr_exp_kWh_an': elecexportada,
+            'electr_nepb_kWh_an': elecnepb
+        }
+
+        # Energía primaria y energía eléctrica o térmica producida, exportada a nEPB o a la red
         EP = weighted_energy(balance, fp_ep, k_exp)
         epnren, epren = EP['EP']['nren'], EP['EP']['ren']
         #epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
-        eprimaria = {u"EP_nren": epnren, u"EP_ren": epren, u"EP_tot": epren + epnren,
-                     u"EP_nren_m2": epnren / arearef , u"EP_ren_m2": epren / arearef, u"EP_tot_m2": (epren + epnren) / arearef,
-                     #u"EPA_nren": epanren, u"EPA_ren": eparen, u"EPA_tot": eparen + epanren
-        }
+        eprimaria = {u"EP_nren": epnren,
+                     u"EP_ren": epren,
+                     u"EP_tot": epren + epnren,
+                     u"EP_nren_m2": epnren / arearef,
+                     u"EP_ren_m2": epren / arearef,
+                     u"EP_tot_m2": (epren + epnren) / arearef,
+                     #u"EPA_nren": epanren,
+                     #u"EPA_ren": eparen,
+                     #u"EPA_tot": eparen + epanren
+                     u"produccion": producciones,
+                 }
 
         # Emisiones
         CO2 = weighted_energy(balance, fp_co2, k_exp)
