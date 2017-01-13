@@ -34,12 +34,12 @@ tecnologias:
   PV_8130:
     - ['PRODUCCION', 'INSITU', 'ELECTRICIDAD', 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5, 677.5,
        'Paneles fotovoltaicos 50m2 (5kWp)']
-  PST:
+  PST30:
     # [ ctipo, origendestino, vector, superficiepaneles_m2, rendimientopaneles ]
-    - ['PRODUCCION', 'INSITU', 'MEDIOAMBIENTE', 20.0, 0.65, 'Paneles solares térmicos 20m2, n=0.65']
-  PV:
+    - ['PRODUCCION', 'INSITU', 'MEDIOAMBIENTE', 30.0, 0.30, 'Paneles solares térmicos 30m2, n=0.30']
+  PV50:
     # [ ctipo, origendestino, vector, superficiepaneles_m2, rendimientopaneles ]
-    - ['PRODUCCION', 'INSITU', 'ELECTRICIDAD', 50.0, 0.1, 'Paneles solares fotovoltaicos 50m2 (5kWp)']
+    - ['PRODUCCION', 'INSITU', 'ELECTRICIDAD', 50.0, 0.10, 'Paneles solares fotovoltaicos 50m2 (5kWp)']
 
 #paquetes:
 #  nombrepaquete:
@@ -101,9 +101,9 @@ paquetes:
   - [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
   STEST:
   #- [PSTOLD, 'PSTFRACTION', 'WATERSYSTEMS', 0.5]
-  - [PST, 'PST', 'WATERSYSTEMS']
+  - [PST30, 'PST', 'WATERSYSTEMS']
   - [BdC_ind_acs, 'WATERSYSTEMS']
-  - [PV, 'PV']
+  - [PV50, 'PV']
   #- [PV_8130, 'VALUES']
 
 variantes:

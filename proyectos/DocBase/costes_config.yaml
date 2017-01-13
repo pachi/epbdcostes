@@ -19,7 +19,7 @@ CO2:
     2050: 116.00
 
 # Precios de la energía, por combustibles. Solamente está el escenario de referencia
-# Se habló de calcular con otro escenario, con un incremento anual de precios lineal del 1.5%
+# Pendiente: Calcular con otro escenario, con un incremento anual de precios lineal del 1.5%
 # http://ec.europa.eu/eurostat/statistics-explained/index.php/Energy_price_statistics#Main_statistical_findings
 # Electricidad: (antes de impuestos) 0.195€'10/kWh hasta 2015 y 0.190€'10/kWh hasta 2050 -> 0.226€'15/kWh, 0.220€'15/kWh
 # (impuestos) 4,864% * 1,05113 impuesto electricidad + 21% -> Precio sin impuestos x 1,2718
