@@ -135,7 +135,7 @@ def getvalues(workbook):
     _rows = [sheet.row_values(ridx, 0, 5) for ridx in range(sheet.nrows)]
     return OrderedDict(
         row2tuple(row) for row in _rows
-        if any(row) and not row[0].startswith(u'nombre')
+        if any(row) and not (row[0].startswith(u'nombre') or row[0].startswith(u'#'))
     )
 
 if __name__ == "__main__":
