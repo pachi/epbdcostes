@@ -1,2 +1,6 @@
 *.log
 *.pyc
+resultados-costes.csv
+resultados_mediciones.yaml
+costes_soluciones.yaml
+variantes/
