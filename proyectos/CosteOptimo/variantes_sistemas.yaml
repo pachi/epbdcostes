@@ -103,12 +103,62 @@ paquetes:
   - [BdC_ind_ref, 'COOLING']
   - [calderagas_ind_acs, 'WATERSYSTEMS']
   - [PST30, 'PST', 'WATERSYSTEMS']
-  NR2_S2T1:
+  NR2_S1CaT1:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderagas_cen_acs, 'WATERSYSTEMS']
+  - [PST15, 'PST', 'WATERSYSTEMS']
+  NR2_S1CaT2:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderagas_cen_acs, 'WATERSYSTEMS']
+  - [PST30, 'PST', 'WATERSYSTEMS']
+  NR2_S1CbT1:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderagas_cen_acs, 'WATERSYSTEMS']
+  - [PST15, 'PST', 'WATERSYSTEMS']
+  NR2_S1CbT2:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderagas_cen_acs, 'WATERSYSTEMS']
+  - [PST30, 'PST', 'WATERSYSTEMS']
+  NR2_S1CcT1:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderagas_cen_acs, 'WATERSYSTEMS']
+  - [PST15, 'PST', 'WATERSYSTEMS']
+  NR2_S1CcT2:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderagas_cen_acs, 'WATERSYSTEMS']
+  - [PST30, 'PST', 'WATERSYSTEMS']
+  NR2_S2CaT1:
   - [calderabio_cen_cal, 'HEATING']
   - [BdC_ind_ref, 'COOLING']
   - [calderabio_cen_acs, 'WATERSYSTEMS']
   - [PST15, 'PST', 'WATERSYSTEMS']
-  NR2_S2T2:
+  NR2_S2CaT2:
+  - [calderabio_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderabio_cen_acs, 'WATERSYSTEMS']
+  - [PST30, 'PST', 'WATERSYSTEMS']
+  NR2_S2CbT1:
+  - [calderabio_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderabio_cen_acs, 'WATERSYSTEMS']
+  - [PST15, 'PST', 'WATERSYSTEMS']
+  NR2_S2CbT2:
+  - [calderabio_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderabio_cen_acs, 'WATERSYSTEMS']
+  - [PST30, 'PST', 'WATERSYSTEMS']
+  NR2_S2CcT1:
+  - [calderabio_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [calderabio_cen_acs, 'WATERSYSTEMS']
+  - [PST15, 'PST', 'WATERSYSTEMS']
+  NR2_S2CcT2:
   - [calderabio_cen_cal, 'HEATING']
   - [BdC_ind_ref, 'COOLING']
   - [calderabio_cen_acs, 'WATERSYSTEMS']
@@ -135,18 +185,43 @@ paquetes:
   - [BdC_ind_acs, 'WATERSYSTEMS']
   - [PST15, 'PST', 'WATERSYSTEMS']
   - [PV75, 'PV']
-  NR2_S4T1:
+  NR2_S4CaT1:
   - [calderagas_cen_cal, 'HEATING']
   - [BdC_ind_ref, 'COOLING']
   - [cogen_cen_acs, 'WATERSYSTEMS']
   - [PST15, 'PST', 'WATERSYSTEMS']
-  NR2_S4T2:
+  NR2_S4CaT2:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [cogen_cen_acs, 'WATERSYSTEMS']
+  - [PST30, 'PST', 'WATERSYSTEMS']
+  NR2_S4CbT1:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [cogen_cen_acs, 'WATERSYSTEMS']
+  - [PST15, 'PST', 'WATERSYSTEMS']
+  NR2_S4CbT2:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [cogen_cen_acs, 'WATERSYSTEMS']
+  - [PST30, 'PST', 'WATERSYSTEMS']
+  NR2_S4CcT1:
+  - [calderagas_cen_cal, 'HEATING']
+  - [BdC_ind_ref, 'COOLING']
+  - [cogen_cen_acs, 'WATERSYSTEMS']
+  - [PST15, 'PST', 'WATERSYSTEMS']
+  NR2_S4CcT2:
   - [calderagas_cen_cal, 'HEATING']
   - [BdC_ind_ref, 'COOLING']
   - [cogen_cen_acs, 'WATERSYSTEMS']
   - [PST30, 'PST', 'WATERSYSTEMS']
 
 variantes:
-  - [cteEPBD, [NR2_S1T1, NR2_S1T2, NR2_S2T1, NR2_S2T2, NR2_S3T1, NR2_S3T2, NR2_S3T1F1, NR2_S3T1F2, NR2_S4T1, NR2_S4T2]]
-#  - [cteEPBD-ResBloque01-EN0-D3, [STEST]]
-#
+  # Los climas alpha, A, B y C tienen equipos centralizados de calor de la mitad de potencia que en D. Heurística por Grados-dia de calefacción
+  - ['cteEPBD-.+-[alpha|A|B|C]+[1|2|3|4]_', [NR2_S1T1, NR2_S1T2, NR2_S1CaT1, NR2_S1CaT2, NR2_S2CaT1, NR2_S2CaT2, NR2_S3T1, NR2_S3T2, NR2_S3T1F1, NR2_S3T1F2, NR2_S4CaT1, NR2_S4CaT2]]
+  # Los climas D
+  - ['cteEPBD-.+-D+[1|2|3|4]_', [NR2_S1T1, NR2_S1T2, NR2_S1CbT1, NR2_S1CbT2, NR2_S2CbT1, NR2_S2CbT2, NR2_S3T1, NR2_S3T2, NR2_S3T1F1, NR2_S3T1F2, NR2_S4CbT1, NR2_S4CbT2]]
+  # Los climas E tienen equipos centralizados de calor del doble de potencia que en D. Heurística por grados día
+  - ['cteEPBD-.+-E+[1|2|3|4]_', [NR2_S1T1, NR2_S1T2, NR2_S1CcT1, NR2_S1CcT2, NR2_S2CcT1, NR2_S2CcT2, NR2_S3T1, NR2_S3T2, NR2_S3T1F1, NR2_S3T1F2, NR2_S4CcT1, NR2_S4CcT2]]
+  # todos los archivos
+  #- [cteEPBD, [NR2_S1T1, NR2_S1T2, NR2_S1CbT1, NR2_S1CbT2, NR2_S2CbT1, NR2_S2CbT2, NR2_S3T1, NR2_S3T2, NR2_S3T1F1, NR2_S3T1F2, NR2_S4CbT1, NR2_S4CbT2]]
