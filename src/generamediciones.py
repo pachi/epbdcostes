@@ -74,6 +74,12 @@ def generaMediciones(config):
             if clave.startswith(u'medicion_') and not clave.startswith(u'medicion_PT_'):
                 soluciones[clave[len(u'medicion_'):]] = meta[clave][0]
 
+        soluciones['VENT%sV%0.3iR%0.3i' % (
+            meta.get('Name','').upper(),
+            meta.get('Design_flow_rate', 0.0) * 100.0,
+            meta.get('Heat_recovery', 0.0) * 100.0)
+        ] = 1 # Recuperador de calor
+
         # Metadatos generales (fecha, area, volumen, zc, peninsularidad)
         arearef = float(meta.get('Area_ref', 1.0))
         weatherfile = meta.get('Weather_file', '').split('_')

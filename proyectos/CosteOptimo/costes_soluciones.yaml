@@ -1,6 +1,6 @@
 # Costes de las MAE
 # =================
-# directorio de proyecto: "/mnt/vegacte/03-CTE_en_curso/salaSert/git/epbdcostes/proyectos/CosteOptimo"
+# directorio de proyecto: "/mnt/win/Users/casa/Documents/programa/repos/git/epbdcostes/proyectos/CosteOptimo"
 #
 # desc: descripción de la MAE
 # vutil: vida útil de la MAE (años)
@@ -474,6 +474,28 @@ H3_HUECO:
   cmant:
     macro: 49.0 # €/ud/periodo
     micro: 76.9 # €/ud/periodo
+
+VENTRESBLOQUE01V063R000:
+  desc: Extracción simple flujo (sol. Indiv.)
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 16000.0 # €/ud
+    micro: 25120.0 # €/ud
+  cmant:
+    macro: 1120.0 # €/ud/periodo
+    micro: 1758.4 # €/ud/periodo
+
+VENTRESBLOQUE01V063R080:
+  desc: Extracción doble flujo con recuperador (sol. Indiv)
+  vutil: 20.0 #años
+  pmant: 1.0 #años
+  cinicial:
+    macro: 32000.0 # €/ud
+    micro: 50240.0 # €/ud
+  cmant:
+    macro: 2240.0 # €/ud/periodo
+    micro: 3516.8 # €/ud/periodo
 
 NR2_S1T1:
   desc: Caldera GN+ 15m2 PST
