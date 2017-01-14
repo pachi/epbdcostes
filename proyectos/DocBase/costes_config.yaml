@@ -3,20 +3,20 @@ periodo:
   base: 2015 # año base para cálculo de valor actual neto
   duracion: 30 # periodo de cálculo económico (años) 30a para residencial y 20a para el resto
 
-# Precios de CO2
+# Precios de CO2 (€/kgCO2 ya que medimos emisiones en kgCO2)
 # EU Energy, transport and GHG emissions trends to 2050
 # Actualizados a 2015 desde 2010 con infl. 3% -> k=1.16
 CO2:
   base: 2015 # año base
   precios:
-    2015: 5.80
-    2020: 11.60
-    2025: 16.24
-    2030: 40.60
-    2035: 66.12
-    2040: 90.48
-    2045: 103.24
-    2050: 116.00
+    2015: 0.00580
+    2020: 0.01160
+    2025: 0.01624
+    2030: 0.04060
+    2035: 0.06612
+    2040: 0.09048
+    2045: 0.10324
+    2050: 0.11600
 
 # Precios de la energía, por combustibles. Solamente está el escenario de referencia
 # Pendiente: Calcular con otro escenario, con un incremento anual de precios lineal del 1.5%
@@ -37,8 +37,8 @@ energia:
     micro: # con impuestos
       GASNATURAL: [0.093, 0.198, 0.198, 0.207, 0.216, 0.233, 0.242, 0.250] #
       ELECTRICIDAD: [0.237, 0.289, 0.289, 0.297, 0.297, 0.289, 0.289, 0.289] #
-      ELECTRICIDADBALEARES: [0.237, 0.289, 0.289, 0.297, 0.297, 0.289, 0.289, 0.289] #
-      ELECTRICIDADCANARIAS: [0.237, 0.289, 0.289, 0.297, 0.297, 0.289, 0.289, 0.289] #
+      ELECTRICIDADBALEARES: [0.237, 0.289, 0.289, 0.297, 0.297, 0.289, 0.289, 0.289] # IVA 21%
+      ELECTRICIDADCANARIAS: [0.196, 0.239, 0.239, 0.245, 0.245, 0.239, 0.239, 0.239] # IGIC 0%
       ELECTRICIDADCEUTAMELILLA: [0.237, 0.289, 0.289, 0.297, 0.297, 0.289, 0.289, 0.289] #
       MEDIOAMBIENTE: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] #
       BIOCARBURANTE: [0.038, 0.038, 0.038, 0.038, 0.038, 0.038, 0.038, 0.038] # BIOMASA IDAE1
