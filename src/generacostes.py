@@ -71,9 +71,9 @@ SOLSTRHDR = u"""# Costes de las MAE
 #
 # cinicial: coste inicial (€/ud)
 # cmant: costes de mantenimiento (€/ud·periodo)
-#   - elementos opacos: {params[CMANT][opaco]:.1f}% coste inicial c/{params[PMANT][opaco]:.1f} años
-#   - huecos: {params[CMANT][hueco]:.1f}% coste inicial c/{params[PMANT][hueco]:.1f} años
-#   - instalaciones: {params[CMANT][sistema]:.1f}% coste inicial c{params[PMANT][sistema]:.1f}/año
+#   - elementos opacos: {params[CMANT][opaco]:.1f}% coste base c/{params[PMANT][opaco]:.1f} años
+#   - huecos: {params[CMANT][hueco]:.1f}% coste base c/{params[PMANT][hueco]:.1f} años
+#   - instalaciones: {params[CMANT][sistema]:.1f}% coste base c/{params[PMANT][sistema]:.1f}/año
 #\n\n""" #.format(proyecto=config.proyectoactivo, params=PARAMS)
 
 SOLSTR = u"""{nombre}:
@@ -95,6 +95,8 @@ def row2yaml(row):
     tipo = row.get('tipo', None)
     pem = row.get('pem', 0.0) or 0.0
     pec = ((1.0 + fcostes) * pem)
+    pem_mant = row.get('pem_mant', 0.0) or 0.0
+    pec_mant = ((1.0 + fcostes) * pem_mant)
     fcmant = PARAMS['CMANT'].get(tipo, 0)
     return SOLSTR.format(
         nombre=row['nombre'],
@@ -103,13 +105,13 @@ def row2yaml(row):
         pmant=PARAMS['PMANT'].get(tipo, 100),
         cinicialmacro=pem,
         cinicial=pec,
-        cmantmacro=(fcmant * pem),
-        cmant=(fcmant * pec)
+        cmantmacro=(fcmant * pem_mant),
+        cmant=(fcmant * pec_mant)
     )
 
 def row2tuple(row):
     """Converte fila de datos a tupla para poder crear diccionario"""
-    nombre, tipo, rehaviv, pem, descripcion = row
+    nombre, tipo, rehaviv, pem, pem_mant, descripcion = row
     pem = float(pem) if pem else None
     rehaviv = bool(rehaviv if rehaviv else None)
     tipo = tipo if tipo in [u'opaco', u'hueco', u'sistema'] else None
@@ -118,6 +120,7 @@ def row2tuple(row):
                  'tipo': tipo or None,
                  'rehaviv': rehaviv,
                  'pem': pem,
+                 'pem_mant': pem_mant,
                  'descr': descripcion or None})
     return rowtuple
 
@@ -132,7 +135,7 @@ def getvalues(workbook):
 
     print(u"Encontrados en %s: %i filas de precios con %i columnas"
           % (sheet.name, sheet.nrows, sheet.ncols))
-    _rows = [sheet.row_values(ridx, 0, 5) for ridx in range(sheet.nrows)]
+    _rows = [sheet.row_values(ridx, 0, 6) for ridx in range(sheet.nrows)]
     return OrderedDict(
         row2tuple(row) for row in _rows
         if any(row) and not (row[0].startswith(u'nombre') or row[0].startswith(u'#'))
@@ -151,7 +154,7 @@ if __name__ == "__main__":
                         metavar='CONFIGFILE',
                         help='usa el archivo de configuración CONFIGFILE')
     args = parser.parse_args()
-    
+
     config = costes.Config(args.configfile, args.proyectoactivo)
     projectpath = config.proyectoactivo
     costespath = config.costespath
