@@ -1,6 +1,7 @@
 # Factores de paso de energía final a emsiones de CO2
 # Valores del Documento reconocido del RITE de 20/07/2014, página 17
 # "Factores de emisión de CO2 y coeficientes de paso a energía primaria de diferentes fuentes de fuentes de energía final consumidas en el sector de edificios en España", Subdirección General de Planificación Energética y Seguimiento, 16/12/2015
+# kgCO2/kWh_f
 # FpA - weighting factors accounting for the resources used to produce this energy
 # FpB - weighting factors accounting for the resources avoided by the external grid due to the export
 #  Energy carrier         origin          use         step Fpren  Fpnren
