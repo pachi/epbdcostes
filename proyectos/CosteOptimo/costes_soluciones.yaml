@@ -30,9 +30,9 @@
 #
 # cinicial: coste inicial (€/ud)
 # cmant: costes de mantenimiento (€/ud·periodo)
-#   - elementos opacos: 0.1% coste inicial c/10.0 años
-#   - huecos: 0.1% coste inicial c/10.0 años
-#   - instalaciones: 0.1% coste inicial c1.0/año
+#   - elementos opacos: 0.1% coste base c/10.0 años
+#   - huecos: 0.1% coste base c/10.0 años
+#   - instalaciones: 0.1% coste base c/1.0/año
 #
 
 ET0_CUBIERTA:
@@ -40,8 +40,8 @@ ET0_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 55.0 # €/ud
-    micro: 86.3 # €/ud
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
   cmant:
     macro: 2.8 # €/ud/periodo
     micro: 4.3 # €/ud/periodo
@@ -51,8 +51,8 @@ ET0_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 75.0 # €/ud
-    micro: 117.7 # €/ud
+    macro: 20.0 # €/ud
+    micro: 31.4 # €/ud
   cmant:
     macro: 3.8 # €/ud/periodo
     micro: 5.9 # €/ud/periodo
@@ -62,8 +62,8 @@ ET0_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 75.0 # €/ud
-    micro: 117.7 # €/ud
+    macro: 20.0 # €/ud
+    micro: 31.4 # €/ud
   cmant:
     macro: 3.8 # €/ud/periodo
     micro: 5.9 # €/ud/periodo
@@ -73,8 +73,8 @@ ET0_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 55.0 # €/ud
-    micro: 86.3 # €/ud
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
   cmant:
     macro: 2.8 # €/ud/periodo
     micro: 4.3 # €/ud/periodo
@@ -84,8 +84,8 @@ ET1_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 64.0 # €/ud
-    micro: 100.5 # €/ud
+    macro: 9.0 # €/ud
+    micro: 14.1 # €/ud
   cmant:
     macro: 3.2 # €/ud/periodo
     micro: 5.0 # €/ud/periodo
@@ -95,8 +95,8 @@ ET1_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 93.0 # €/ud
-    micro: 146.0 # €/ud
+    macro: 38.0 # €/ud
+    micro: 59.7 # €/ud
   cmant:
     macro: 4.7 # €/ud/periodo
     micro: 7.3 # €/ud/periodo
@@ -106,8 +106,8 @@ ET1_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 93.0 # €/ud
-    micro: 146.0 # €/ud
+    macro: 38.0 # €/ud
+    micro: 59.7 # €/ud
   cmant:
     macro: 4.7 # €/ud/periodo
     micro: 7.3 # €/ud/periodo
@@ -117,8 +117,8 @@ ET1_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 55.0 # €/ud
-    micro: 86.3 # €/ud
+    macro: 0.0 # €/ud
+    micro: 0.0 # €/ud
   cmant:
     macro: 2.8 # €/ud/periodo
     micro: 4.3 # €/ud/periodo
@@ -128,8 +128,8 @@ ET2_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 67.0 # €/ud
-    micro: 105.2 # €/ud
+    macro: 12.0 # €/ud
+    micro: 18.8 # €/ud
   cmant:
     macro: 3.4 # €/ud/periodo
     micro: 5.3 # €/ud/periodo
@@ -139,8 +139,8 @@ ET2_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 99.0 # €/ud
-    micro: 155.4 # €/ud
+    macro: 44.0 # €/ud
+    micro: 69.1 # €/ud
   cmant:
     macro: 5.0 # €/ud/periodo
     micro: 7.8 # €/ud/periodo
@@ -150,8 +150,8 @@ ET2_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 99.0 # €/ud
-    micro: 155.4 # €/ud
+    macro: 44.0 # €/ud
+    micro: 69.1 # €/ud
   cmant:
     macro: 5.0 # €/ud/periodo
     micro: 7.8 # €/ud/periodo
@@ -161,8 +161,8 @@ ET2_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 61.0 # €/ud
-    micro: 95.8 # €/ud
+    macro: 6.0 # €/ud
+    micro: 9.4 # €/ud
   cmant:
     macro: 3.1 # €/ud/periodo
     micro: 4.8 # €/ud/periodo
@@ -172,8 +172,8 @@ ET3_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 70.0 # €/ud
-    micro: 109.9 # €/ud
+    macro: 15.0 # €/ud
+    micro: 23.5 # €/ud
   cmant:
     macro: 3.5 # €/ud/periodo
     micro: 5.5 # €/ud/periodo
@@ -183,8 +183,8 @@ ET3_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 105.0 # €/ud
-    micro: 164.8 # €/ud
+    macro: 50.0 # €/ud
+    micro: 78.5 # €/ud
   cmant:
     macro: 5.2 # €/ud/periodo
     micro: 8.2 # €/ud/periodo
@@ -194,8 +194,8 @@ ET3_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 105.0 # €/ud
-    micro: 164.8 # €/ud
+    macro: 50.0 # €/ud
+    micro: 78.5 # €/ud
   cmant:
     macro: 5.2 # €/ud/periodo
     micro: 8.2 # €/ud/periodo
@@ -205,8 +205,8 @@ ET3_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 64.0 # €/ud
-    micro: 100.5 # €/ud
+    macro: 9.0 # €/ud
+    micro: 14.1 # €/ud
   cmant:
     macro: 3.2 # €/ud/periodo
     micro: 5.0 # €/ud/periodo
@@ -216,8 +216,8 @@ ET4_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 73.0 # €/ud
-    micro: 114.6 # €/ud
+    macro: 18.0 # €/ud
+    micro: 28.3 # €/ud
   cmant:
     macro: 3.7 # €/ud/periodo
     micro: 5.7 # €/ud/periodo
@@ -227,8 +227,8 @@ ET4_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 111.0 # €/ud
-    micro: 174.3 # €/ud
+    macro: 56.0 # €/ud
+    micro: 87.9 # €/ud
   cmant:
     macro: 5.6 # €/ud/periodo
     micro: 8.7 # €/ud/periodo
@@ -238,8 +238,8 @@ ET4_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 111.0 # €/ud
-    micro: 174.3 # €/ud
+    macro: 56.0 # €/ud
+    micro: 87.9 # €/ud
   cmant:
     macro: 5.6 # €/ud/periodo
     micro: 8.7 # €/ud/periodo
@@ -249,8 +249,8 @@ ET4_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 67.0 # €/ud
-    micro: 105.2 # €/ud
+    macro: 12.0 # €/ud
+    micro: 18.8 # €/ud
   cmant:
     macro: 3.4 # €/ud/periodo
     micro: 5.3 # €/ud/periodo
@@ -260,8 +260,8 @@ ET5_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 76.0 # €/ud
-    micro: 119.3 # €/ud
+    macro: 21.0 # €/ud
+    micro: 33.0 # €/ud
   cmant:
     macro: 3.8 # €/ud/periodo
     micro: 6.0 # €/ud/periodo
@@ -271,8 +271,8 @@ ET5_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 117.0 # €/ud
-    micro: 183.7 # €/ud
+    macro: 62.0 # €/ud
+    micro: 97.3 # €/ud
   cmant:
     macro: 5.9 # €/ud/periodo
     micro: 9.2 # €/ud/periodo
@@ -282,8 +282,8 @@ ET5_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 117.0 # €/ud
-    micro: 183.7 # €/ud
+    macro: 62.0 # €/ud
+    micro: 97.3 # €/ud
   cmant:
     macro: 5.9 # €/ud/periodo
     micro: 9.2 # €/ud/periodo
@@ -293,8 +293,8 @@ ET5_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 67.0 # €/ud
-    micro: 105.2 # €/ud
+    macro: 12.0 # €/ud
+    micro: 18.8 # €/ud
   cmant:
     macro: 3.4 # €/ud/periodo
     micro: 5.3 # €/ud/periodo
@@ -304,8 +304,8 @@ ET6_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 82.0 # €/ud
-    micro: 128.7 # €/ud
+    macro: 27.0 # €/ud
+    micro: 42.4 # €/ud
   cmant:
     macro: 4.1 # €/ud/periodo
     micro: 6.4 # €/ud/periodo
@@ -315,8 +315,8 @@ ET6_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 123.0 # €/ud
-    micro: 193.1 # €/ud
+    macro: 68.0 # €/ud
+    micro: 106.8 # €/ud
   cmant:
     macro: 6.2 # €/ud/periodo
     micro: 9.7 # €/ud/periodo
@@ -326,8 +326,8 @@ ET6_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 123.0 # €/ud
-    micro: 193.1 # €/ud
+    macro: 68.0 # €/ud
+    micro: 106.8 # €/ud
   cmant:
     macro: 6.2 # €/ud/periodo
     micro: 9.7 # €/ud/periodo
@@ -337,8 +337,8 @@ ET6_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 70.0 # €/ud
-    micro: 109.9 # €/ud
+    macro: 15.0 # €/ud
+    micro: 23.5 # €/ud
   cmant:
     macro: 3.5 # €/ud/periodo
     micro: 5.5 # €/ud/periodo
@@ -348,8 +348,8 @@ ET7_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 88.0 # €/ud
-    micro: 138.2 # €/ud
+    macro: 33.0 # €/ud
+    micro: 51.8 # €/ud
   cmant:
     macro: 4.4 # €/ud/periodo
     micro: 6.9 # €/ud/periodo
@@ -359,8 +359,8 @@ ET7_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 135.0 # €/ud
-    micro: 211.9 # €/ud
+    macro: 80.0 # €/ud
+    micro: 125.6 # €/ud
   cmant:
     macro: 6.8 # €/ud/periodo
     micro: 10.6 # €/ud/periodo
@@ -370,8 +370,8 @@ ET7_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 135.0 # €/ud
-    micro: 211.9 # €/ud
+    macro: 80.0 # €/ud
+    micro: 125.6 # €/ud
   cmant:
     macro: 6.8 # €/ud/periodo
     micro: 10.6 # €/ud/periodo
@@ -381,8 +381,8 @@ ET7_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 70.0 # €/ud
-    micro: 109.9 # €/ud
+    macro: 15.0 # €/ud
+    micro: 23.5 # €/ud
   cmant:
     macro: 3.5 # €/ud/periodo
     micro: 5.5 # €/ud/periodo
@@ -392,8 +392,8 @@ ET8_CUBIERTA:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 94.0 # €/ud
-    micro: 147.6 # €/ud
+    macro: 39.0 # €/ud
+    micro: 61.2 # €/ud
   cmant:
     macro: 4.7 # €/ud/periodo
     micro: 7.4 # €/ud/periodo
@@ -403,8 +403,8 @@ ET8_MURO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 147.0 # €/ud
-    micro: 230.8 # €/ud
+    macro: 92.0 # €/ud
+    micro: 144.4 # €/ud
   cmant:
     macro: 7.4 # €/ud/periodo
     micro: 11.5 # €/ud/periodo
@@ -414,8 +414,8 @@ ET8_SUELO_AIRE:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 147.0 # €/ud
-    micro: 230.8 # €/ud
+    macro: 92.0 # €/ud
+    micro: 144.4 # €/ud
   cmant:
     macro: 7.4 # €/ud/periodo
     micro: 11.5 # €/ud/periodo
@@ -425,8 +425,8 @@ ET8_SUELO_TERRENO:
   vutil: 50.0 #años
   pmant: 10.0 #años
   cinicial:
-    macro: 70.0 # €/ud
-    micro: 109.9 # €/ud
+    macro: 15.0 # €/ud
+    micro: 23.5 # €/ud
   cmant:
     macro: 3.5 # €/ud/periodo
     micro: 5.5 # €/ud/periodo
