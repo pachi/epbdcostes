@@ -287,7 +287,17 @@ def generaVariantes(config):
                                                       medidaspaquete) }
             variantes.append([basename, paqueteid, variante])
 
-    # Archivos de variantes
+    # Cambia vector ELECTRICIDAD a ELECTRICIDADCANARIAS si es clima canario
+
+    for (basename, paqueteid, variante) in variantes:
+        metaclima = next(meta for meta in variante['meta'] if meta.startswith(u'#CTE_Weather'))
+        if not u"canarias" in metaclima:
+            continue
+        else:
+            variante['componentes'] = [componente.replace(u'ELECTRICIDAD', u'ELECTRICIDADCANARIAS')
+                                       for componente in variante['componentes']]
+
+    # Guarda archivos de variantes
     variantesdir = config.variantesdir
     if not os.path.exists(variantesdir):
         os.makedirs(variantesdir)
