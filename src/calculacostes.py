@@ -47,7 +47,7 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                     u"Demanda_calefaccion, Demanda_refrigeracion, Demanda_iluminacion_interior, "
                     u"Demanda_iluminacion_exterior, Demanda_equipos_interiores, Demanda_equipos_exteriores, "
                     u"Demanda_ventiladores, Demanda_bombas, Demanda_disipacion_calor, "
-                    u"Demanda_humidificacion, Demanda_recuperacion_calor, Demanda_sistemas_agua, "
+                    u"Demanda_humidificacion, Demanda_recuperacion_calor, Demanda_sistemas_agua, Cobertura_ACS_pct, "
                     u"Demanda_equipos_frigorificos, Demanda_equipos_generacion, archivo"
                     u"\n")
     for variante in sorted(mediciones):
@@ -61,6 +61,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
             cop = sum(copv[combustible] for combustible in copv)
             coco2 = costes.costeco2(variante, escenario)
             vresidual = costes.valorresidual(variante, escenario, costesdata)
+            dem_acs = variante.demanda['Demanda_sistemas_agua']
+            cobsolar_pct = (100.0 * variante.eprimaria['produccion']['termica_prod_kWh_an'] / supvariante / dem_acs) if dem_acs > 0.0 else 0.0
 
             if not checksum(ctotal, civ, cmv, crv, cop, coco2, vresidual):
                 print(variante)
@@ -84,13 +86,13 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                         u"{dem[Demanda_calefaccion]:.2f}, {dem[Demanda_refrigeracion]:.2f}, {dem[Demanda_iluminacion_interior]:.2f}, "
                         u"{dem[Demanda_iluminacion_exterior]:.2f}, {dem[Demanda_equipos_interiores]:.2f}, {dem[Demanda_equipos_exteriores]:.2f}, "
                         u"{dem[Demanda_ventiladores]:.2f}, {dem[Demanda_bombas]:.2f}, {dem[Demanda_disipacion_calor]:.2f}, "
-                        u"{dem[Demanda_humidificacion]:.2f}, {dem[Demanda_recuperacion_calor]:.2f}, {dem[Demanda_sistemas_agua]:.2f}, "
+                        u"{dem[Demanda_humidificacion]:.2f}, {dem[Demanda_recuperacion_calor]:.2f}, {dem[Demanda_sistemas_agua]:.2f}, {cobsolar_pct:.2f}, "
                         u"{dem[Demanda_equipos_frigorificos]:.2f}, {dem[Demanda_equipos_generacion]:.2f}, {id}"
                         u"\n"
             ).format(id=variante.id, meta=variante.metadatos, ep=variante.eprimaria, escenario=escenario,
                      ctotalm2=float(ctotal / supvariante), civ_m2=float(civ / supvariante), cop_m2=float(cop / supvariante),
                      ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv,
-                     prod=variante.eprimaria['produccion'], dem=variante.demanda)
+                     prod=variante.eprimaria['produccion'], dem=variante.demanda, cobsolar_pct=cobsolar_pct)
             reslines.append(dataline)
 
     with io.open(os.path.join(config.basedir, 'resultados-costes.csv'), 'w', encoding='utf-8') as resfile:
