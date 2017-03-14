@@ -8,7 +8,7 @@
 #proyectoactivo: proyecto_exupery
 
 
-proyectoactivo: ../proyectos/proyectotest
+proyectoactivo: ../proyectos/DocBase
 
 escenarios:
   macro: [3, 4]
