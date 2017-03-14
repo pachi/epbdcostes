@@ -19,3 +19,5 @@ help:
 diff:
 # diff ../proyectos/DocBase/resultados ../proyectos/DocBase/resultados.bak -x '*.log' -x '*.yaml'
 	kdiff3 ../proyectos/DocBase/resultados ../proyectos/$(PROYECTO)/resultados.bak
+
+# ejecutar: make proy=<carpeta de proyecto>
