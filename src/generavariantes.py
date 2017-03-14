@@ -248,10 +248,13 @@ def generaVariantes(config):
     # Genera sistemas y medidas
     try:
         path = config.sistemaspath
+        if not os.path.exists(path):
+            print('ERROR: no se encuentra el archivo de definición de sistemas %s' % path)
+            exit()
         sistemas = yaml.load(open(path, 'r'))
-    except:
-        print('ERROR: no se encuentra el archivo de definición de sistemas %s' % path)
-        exit()
+    except (Exception) as e:
+        print('ERROR: archivo de definición de sistemas mal formado %s' % path)
+        raise e
     medidas = generaMedidas(sistemas)
 
     # Escribe registro de medidas por variante y paquete
