@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
 
     if args.proyectoactivo:
-        if VERBOSE: print("Localizando proyecto indicado")
+        if VERBOSE: print("Localizando proyecto %s" % args.proyectoactivo)
         prjlist = [args.proyectoactivo]
     elif args.is_allprojects:
         if VERBOSE: print("Localizando proyectos en directorio de susPAT")
@@ -59,11 +59,10 @@ if __name__ == '__main__':
                      if os.path.isdir(os.path.join(SUSPATPRJDIR, d)) and
                      not d.startswith('scripts')]
         prjlist = proyectos
+        print("%i proyecto(s) encontrado(s)" % len(prjlist))
     else:
         if VERBOSE: print("Localizando proyecto por defecto")
         prjlist = [config.proyectoactivo]
-
-    print("%i proyecto(s) encontrado(s)" % len(prjlist))
 
     for prj in prjlist:
         print("* Procesando proyecto \"%s\"" % prj)
