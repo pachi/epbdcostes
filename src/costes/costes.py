@@ -12,6 +12,7 @@ import yaml
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
+    print("Usando loader de YAML en Python (no acelerado). Instale libyaml-dev")
     from yaml import Loader, Dumper
 from collections import OrderedDict, defaultdict, namedtuple
 from . import costeslogging

@@ -33,7 +33,11 @@ import argparse
 import costes
 from pyepbd import readenergyfile, saveenergyfile, readfactors
 from pyepbd import compute_balance, weighted_energy
-
+try:
+    from yaml import CSafeDumper as SafeDumper
+except ImportError:
+    print("Usando loader de YAML en Python (no acelerado). Instale libyaml-dev")
+    from yaml import SafeDumper
 ###############################################################
 
 # Equivalencias en grados día
@@ -235,5 +239,5 @@ if __name__ == "__main__":
 # Generado: %s
 # Proyecto: %s
 """ % (timestamp, proyecto)
-        data = yaml.safe_dump(mediciones, default_flow_style=False)
+        data = yaml.dump(mediciones, default_flow_style=False, Dumper=SafeDumper)
         outfile.write(header + u"\n" + data)
