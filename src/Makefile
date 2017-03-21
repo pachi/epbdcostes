@@ -1,15 +1,21 @@
+# Directorio de proyectos de susPAT
 SUSPATPATH:=../../suspat/proyectos
+# Podemos seleccionar el proyecto activo usando una variable de entorno
 ifeq ($(strip $(proy)),)
 PROYECTO:=CosteOptimo
 #DocBase
 else
 PROYECTO:=$(proy)
 endif
+# Proyectos en directorio de suspat que empiezan por N_ o E_
 PROYECTOS:=$(patsubst %/,%,$(subst ${SUSPATPATH}/,,$(sort $(dir $(wildcard ${SUSPATPATH}/[NE]_*/)))))
+# Filtra proyectos de suspat con archivo 'noprocesar'
+PROYECTOS:=$(foreach dd, $(PROYECTOS), $(if $(wildcard $(SUSPATPATH)/$(dd)/noprocesar), ,$(dd)))
+# Intérprete de python, por si queremos usar pypy
 PYTHON:=python
 
 .PHONY:test
-test:
+singleproj:
 	@PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -p $(PROYECTO); \
 	@$(PYTHON) ./generavariantes.py --cleardir -p $(PROYECTO)
 	@PYTHONPATH=../../epbdcalc $(PYTHON) ./generamediciones.py -p $(PROYECTO)
@@ -49,7 +55,7 @@ help:
 	@echo 'Uso:'
 	@echo '    make proy=NombreProyecto'
 	@echo '    make all'
-	@echo 'Procesa el proyecto 'NombreProyecto' o todos los proyectos en SUSPATPATH, generando los archivos:'
+	@echo 'Procesa el proyecto 'NombreProyecto' o todos los proyectos en SUSPATPATH, excepto aquellos que contengan un archivo "noprocesar" generando los archivos:'
 	@echo '- resultados-costes.csv: archivo con costes e indicadores energéticos del proyecto'
 	@echo '- resultados_mediciones.yaml: archivo de mediciones (geométricas y energéticas) del proyecto'
 diff:
