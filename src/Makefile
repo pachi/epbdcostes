@@ -5,21 +5,46 @@ PROYECTO:=CosteOptimo
 else
 PROYECTO:=$(proy)
 endif
-PROYECTOS=$(patsubst %/,%,$(subst ${SUSPATPATH}/,,$(sort $(dir $(wildcard ${SUSPATPATH}/[NE]_*/)))))
+PROYECTOS:=$(patsubst %/,%,$(subst ${SUSPATPATH}/,,$(sort $(dir $(wildcard ${SUSPATPATH}/[NE]_*/)))))
+PYTHON:=python
 
+.PHONY:test
 test:
-	@python ./generavariantes.py --cleardir -p $(PROYECTO)
-	@PYTHONPATH=../../epbdcalc python ./generamediciones.py -p $(PROYECTO)
-	@PYTHONPATH=../../epbdcalc python ./generacostes.py -p $(PROYECTO)
-	@PYTHONPATH=../../epbdcalc python ./calculacostes.py -p $(PROYECTO)
-all:
-	@echo ${PROYECTOS}
-	@$(foreach PROJ, ${PROYECTOS}, \
-		python ./generavariantes.py --cleardir -p $(PROJ); \
-		PYTHONPATH=../../epbdcalc python ./generamediciones.py -p $(PROJ); \
-		PYTHONPATH=../../epbdcalc python ./generacostes.py -p $(PROJ); \
-		PYTHONPATH=../../epbdcalc python ./calculacostes.py -p $(PROJ) \
-	)
+	@PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -p $(PROYECTO); \
+	@$(PYTHON) ./generavariantes.py --cleardir -p $(PROYECTO)
+	@PYTHONPATH=../../epbdcalc $(PYTHON) ./generamediciones.py -p $(PROYECTO)
+	@PYTHONPATH=../../epbdcalc $(PYTHON) ./generacostes.py -p $(PROYECTO)
+	@PYTHONPATH=../../epbdcalc $(PYTHON) ./calculacostes.py -p $(PROYECTO)
+
+.PHONY:getfiles
+getfiles:
+	@echo "=========== Recogiendo archivos CSV ==========="
+	@$(foreach PROJ, ${PROYECTOS}, PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -p $(PROJ);)
+
+.PHONY:getvars
+genvars:
+	@echo "=========== Generando variantes ==========="
+	$(foreach PROJ, ${PROYECTOS}, $(PYTHON) ./generavariantes.py --cleardir -p $(PROJ);)
+
+.PHONY:genmediciones
+genmediciones:
+	@echo "=========== Generando mediciones ==========="
+	@$(foreach PROJ, ${PROYECTOS}, PYTHONPATH=../../epbdcalc $(PYTHON) ./generamediciones.py -p $(PROJ);)
+
+.PHONY:gencostes
+gencostes:
+	@echo "=========== Generando costes ==========="
+	@$(foreach PROJ, ${PROYECTOS}, PYTHONPATH=../../epbdcalc $(PYTHON) ./generacostes.py -p $(PROJ);)
+
+.PHONY:calculacostes
+calculacostes:
+	@echo "=========== Calculando costes ==========="
+	@$(foreach PROJ, ${PROYECTOS}, PYTHONPATH=../../epbdcalc $(PYTHON) ./calculacostes.py -p $(PROJ);)
+
+.PHONY:all
+all: getfiles genvars genmediciones gencostes calculacostes
+
+.PHONY:help
 help:
 	@echo 'Uso:'
 	@echo '    make proy=NombreProyecto'
