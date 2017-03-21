@@ -214,7 +214,7 @@ if __name__ == "__main__":
     # TODO: hacer a través de config
     print(u"* Generando indicadores energéticos y de emisiones de %s *" % projectpath)
     mediciones = generaMediciones(config)
-    print(u"* Revisadas %i variantes" % len(mediciones))
+    print(u"- Revisadas %i variantes" % len(mediciones))
 
     # Registro de medidas por variante y paquete
     logpath = os.path.join(config.logsdir, 'generamediciones.log')
