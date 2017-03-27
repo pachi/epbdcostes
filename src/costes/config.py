@@ -15,7 +15,7 @@ DEFAULTBASEPATH = os.path.abspath(os.path.join('..', 'proyectos'))
 
 class Config(object):
     """Objeto de configuración global"""
-    def __init__(self, filename=None, proyectoactivo=None, basepath=DEFAULTBASEPATH):
+    def __init__(self, filename=None, proyectoactivo=None, basepath=DEFAULTBASEPATH, createmissing=False):
         """Carga el archivo de configuración y fija el proyecto activo"""
         if filename:
             self.load(filename)
@@ -23,9 +23,12 @@ class Config(object):
             # permite cambiar el proyecto activo respecto al del archivo de configuración
             self.proyectoactivo = os.path.abspath(os.path.join(basepath, proyectoactivo))
         if not(os.path.isdir(self.proyectoactivo)):
-            msg = u"ERROR: No se localiza el directorio del proyecto activo: %s\n"
-            sys.stderr.write(msg % self.proyectoactivo)
-            sys.exit(1)
+            if createmissing:
+                os.mkdir(self.proyectoactivo)
+            else:
+                msg = u"ERROR: No se localiza el directorio del proyecto activo: %s\n"
+                sys.stderr.write(msg % self.proyectoactivo)
+                sys.exit(1)
 
     def load(self, filename):
         if not filename:

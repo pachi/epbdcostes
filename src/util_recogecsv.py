@@ -46,7 +46,7 @@ if __name__ == '__main__':
                         help='usa el archivo de configuración CONFIGFILE')
     args = parser.parse_args()
     VERBOSE = args.is_verbose
-    config = Config(args.configfile, args.proyectoactivo)
+    config = Config(args.configfile, args.proyectoactivo, createmissing=True)
     params = parser.parse_args()
 
 
