@@ -48,8 +48,9 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                     u"Demanda_iluminacion_exterior, Demanda_equipos_interiores, Demanda_equipos_exteriores, "
                     u"Demanda_ventiladores, Demanda_bombas, Demanda_disipacion_calor, "
                     u"Demanda_humidificacion, Demanda_recuperacion_calor, Demanda_sistemas_agua, Cobertura_ACS_pct, "
-                    u"Demanda_equipos_frigorificos, Demanda_equipos_generacion, archivo"
-                    u"\n")
+                    u"Demanda_equipos_frigorificos, Demanda_equipos_generacion, "
+                    u"Pot_cal_W, Pot_ref_W, Pot_ACS_W, "
+                    u"archivo\n")
     for variante in sorted(mediciones):
         supvariante = variante.metadatos['superficie']
         for escenario in escenarios:
@@ -87,12 +88,15 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                         u"{dem[Demanda_iluminacion_exterior]:.2f}, {dem[Demanda_equipos_interiores]:.2f}, {dem[Demanda_equipos_exteriores]:.2f}, "
                         u"{dem[Demanda_ventiladores]:.2f}, {dem[Demanda_bombas]:.2f}, {dem[Demanda_disipacion_calor]:.2f}, "
                         u"{dem[Demanda_humidificacion]:.2f}, {dem[Demanda_recuperacion_calor]:.2f}, {dem[Demanda_sistemas_agua]:.2f}, {cobsolar_pct:.2f}, "
-                        u"{dem[Demanda_equipos_frigorificos]:.2f}, {dem[Demanda_equipos_generacion]:.2f}, {id}"
+                        u"{dem[Demanda_equipos_frigorificos]:.2f}, {dem[Demanda_equipos_generacion]:.2f}, "
+                        u"{pot[pot_cal_W]:.2f}, {pot[pot_ref_W]:.2f}, {pot[pot_acs_W]:.2f}, "
+                        u"{id}"
                         u"\n"
             ).format(id=variante.id, meta=variante.metadatos, ep=variante.eprimaria, escenario=escenario,
                      ctotalm2=float(ctotal / supvariante), civ_m2=float(civ / supvariante), cop_m2=float(cop / supvariante),
                      ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv,
-                     prod=variante.eprimaria['produccion'], dem=variante.demanda, cobsolar_pct=cobsolar_pct)
+                     prod=variante.eprimaria['produccion'], dem=variante.demanda, pot=variante.demanda['potencias'],
+                     cobsolar_pct=cobsolar_pct)
             reslines.append(dataline)
 
     with io.open(os.path.join(config.basedir, 'resultados-costes.csv'), 'w', encoding='utf-8') as resfile:

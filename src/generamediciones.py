@@ -124,6 +124,15 @@ def generaMediciones(config):
                 'Demanda_equipos_generacion']
         demanda = {clave: 1.0 * meta.get(clave, 0.0) / arearef for clave in dems}
 
+        # Potencia en W de cal, ref y ACS
+        potencias = {
+            'pot_cal_W': meta.get('HEATING_DISTRICTHEATING_W', 0.0),
+            'pot_ref_W': meta.get('COOLING_DISTRICTCOOLING_W', 0.0),
+            'pot_acs_W': meta.get('WATERSYSTEMS_DISTRICTHEATING_W', 0.0),
+        }
+
+        demanda[u'potencias'] = potencias
+
         # Consumos
         balance = compute_balance(data, k_rdel)
         consumos = {carrier: balance[carrier]['annual']['grid'].get('input', 0.0)
