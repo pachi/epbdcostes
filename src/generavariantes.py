@@ -323,11 +323,11 @@ if __name__ == "__main__":
     VERBOSE = args.is_verbose
 
     config = costes.Config(args.configfile, args.proyectoactivo)
+    print(u"* Generando variantes con sistemas de %s" % config.proyectoactivo)
     if args.cleardir:
         existingfiles = [gg for gg in glob.glob(os.path.join(config.variantesdir, '*')) if os.path.isfile(gg)]
-        print(u"* Eliminando %i variantes existentes" % len(existingfiles))
+        print(u"- Eliminando %i variantes existentes" % len(existingfiles))
         for f in existingfiles:
             os.remove(f)
-    print(u"* Generando variantes con sistemas de %s" % config.proyectoactivo)
     variantes = generaVariantes(config)
-    print(u"* Guardadas %i variantes" % len(variantes))
+    print(u"- Guardadas %i variantes" % len(variantes))

@@ -165,6 +165,9 @@ if __name__ == "__main__":
 
 
     xlscostespath = os.path.join(projectpath, 'precios.xls')
+    if not os.path.exists(xlscostespath):
+        print('* AVISO: No se ha definido un archivo de precios para el proyecto')
+        exit(1)
     rows = getvalues(xlscostespath)
     found = [solucion for solucion in sorted(solucionesmedidas)
               if solucion in rows and all(rows[solucion])]

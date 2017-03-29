@@ -123,15 +123,16 @@ if __name__ == "__main__":
         config = costes.Config(args.configfile, proyectoactivo)
 
         print(u"* Cálculo de costes del proyecto %s *" % config.proyectoactivo)
-        print(u"\tCargando costes: ", config.costespath)
+        if not os.path.exists(config.costespath):
+            print(u"AVISO: No se han definido los costes del proyecto")
+            continue
+        print(u"- Cargando costes")
         costesdata = costes.cargacostes(config.costespath)
-        print(u"\tCargando mediciones: ", config.medicionespath)
+        print(u"- Cargando mediciones")
         mediciones = costes.cargamediciones(config.medicionespath, costesdata)
         escenarios = [costes.Escenario(tipo, tasa, config.costesconfigpath)
                       for tipo in config.escenarios
                       for tasa in config.escenarios[tipo]]
-        print(u"\tDefinidos %i escenarios" % len(escenarios))
-        print(u"\tCalculando costes...")
+        print(u"- Calculando costes para %i escenarios" % len(escenarios))
         numcasos = calculacostes(config, costesdata, mediciones, escenarios)
-        print(u"Calculados %i casos del proyecto activo: %s" % (numcasos,
-                                                                config.proyectoactivo))
+        print(u"- Calculados %i casos" % numcasos)

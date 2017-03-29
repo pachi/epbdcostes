@@ -47,8 +47,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     VERBOSE = args.is_verbose
     config = Config(args.configfile, args.proyectoactivo, createmissing=True)
-    params = parser.parse_args()
-
 
     if args.proyectoactivo:
         if VERBOSE: print("Localizando proyecto %s" % args.proyectoactivo)

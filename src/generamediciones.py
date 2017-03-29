@@ -24,7 +24,6 @@
 
 from __future__ import print_function
 import codecs
-from collections import OrderedDict
 import datetime
 import glob
 import os
@@ -217,6 +216,8 @@ if __name__ == "__main__":
     print(u"- Revisadas %i variantes" % len(mediciones))
 
     # Registro de medidas por variante y paquete
+    if not os.path.exists(config.logsdir):
+        os.makedirs(config.logsdir)
     logpath = os.path.join(config.logsdir, 'generamediciones.log')
     with codecs.open(logpath, 'w', 'utf-8') as ff:
         ff.write("\n".join(u"%s, %s, %s" % (timestamp, proyecto, caso[0]) for caso in mediciones))
