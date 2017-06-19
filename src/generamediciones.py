@@ -105,7 +105,7 @@ def generaMediciones(config):
         zcv = zc[-1]
         zci = zc[:-1]
         gd = GD['can'] if pen == 0 else GD['pen']
-        hdd = gd['HDD_15'].get(zci, '-')
+        hdd = gd['HDD_18'].get(zci, '-')
         cdd = gd['CDD_25'].get(zcv, '-')
         metadata = {
             'name': meta.get('Name', ''),
@@ -121,7 +121,7 @@ def generaMediciones(config):
             'peninsular': pen,
             'zci': zci,
             'zcv': zcv,
-            'HDD_15': hdd,
+            'HDD_18': hdd,
             'CDD_25': cdd,
             'sistemas': meta.get('PaqueteSistemas', ''),
             'envolvente': meta.get('ConstructionSet', ''),
