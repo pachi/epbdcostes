@@ -158,7 +158,7 @@ if __name__ == "__main__":
     config = costes.Config(args.configfile, args.proyectoactivo)
     projectpath = config.proyectoactivo
     costespath = config.costespath
-    print(u"* cargando archivo de soluciones del proyecto %s *" % projectpath)
+    print(u"* cargando archivo de soluciones del proyecto %s" % projectpath)
 
     mediciones = costes.cargamediciones(config.medicionespath)
     solucionesmedidas = set([solucion for medicion in mediciones for solucion in medicion.soluciones])

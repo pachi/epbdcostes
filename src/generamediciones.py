@@ -42,11 +42,11 @@ except ImportError:
 # Equivalencias en grados día
 GD = {
     'pen':  {
-        'HDD_15': {'A': 870, 'B': 1130, 'C': 1650, 'D': 2225, 'E': 2750},
+        'HDD_18': {'A': 870, 'B': 1130, 'C': 1650, 'D': 2225, 'E': 2750},
         'CDD_25': {'1': 30, '2': 75, '3': 175, '4': 250}
     },
     'can': {
-        'HDD_15': {'alpha': 150, 'A': 750, 'B': 1125, 'C': 1575, 'D': 2175, 'E': 2750},
+        'HDD_18': {'alpha': 150, 'A': 750, 'B': 1125, 'C': 1575, 'D': 2175, 'E': 2750},
         'CDD_25': {'1': 2, '2': 10, '3': 50, '4': 125}
     }
 }
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     proyecto = os.path.basename(os.path.normpath(projectpath))
     timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
     # TODO: hacer a través de config
-    print(u"* Generando indicadores energéticos y de emisiones de %s *" % projectpath)
+    print(u"* Generando indicadores energéticos y de emisiones de %s" % projectpath)
     mediciones = generaMediciones(config)
     print(u"- Revisadas %i variantes" % len(mediciones))
 
