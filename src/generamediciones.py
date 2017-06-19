@@ -74,11 +74,25 @@ def generaMediciones(config):
         if u'PaqueteSistemas' in meta:
             soluciones[meta[u'PaqueteSistemas']] = 1
         for clave in meta:
-            if clave.startswith(u'medicion_') and not clave.startswith(u'medicion_PT_'):
-                soluciones[clave[len(u'medicion_'):]] = meta[clave][0]
+            if (clave.startswith(u'medicion_')
+                and not clave.startswith(u'medicion_PT_')
+                and not clave.startswith(u'medicion_nor')
+                and not clave.startswith(u'medicion_sur')
+                and not clave.startswith(u'medicion_oeste_')
+                and not clave.startswith(u'medicion_este_')
+            ):
+                try:
+                    solname = clave[len(u'medicion_'):]
+                    # detecta soluciones invertidas " REVERSED"
+                    # y sustituye por medición directa
+                    if solname.endswith(u" REVERSED"):
+                        solname = solname[:-9]
+                    soluciones[solname] = soluciones.get(solname, 0.0) + meta[clave][0]
+                except:
+                    print("ERROR: archivo %s, con clave %s" % (filepath, clave))
+                    raise
 
-        soluciones['VENT%sV%0.3iR%0.3i' % (
-            meta.get('Name','').upper(),
+        soluciones['VENT_V%0.3iR%0.3i' % (
             meta.get('Design_flow_rate', 0.0) * 100.0,
             meta.get('Heat_recovery', 0.0) * 100.0)
         ] = 1 # Recuperador de calor
