@@ -16,21 +16,21 @@ PYTHON:=python
 
 .PHONY:test
 singleproj:
-	@PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -p $(PROYECTO); \
+	@PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -v -p $(PROYECTO)
 	@$(PYTHON) ./generavariantes.py --cleardir -p $(PROYECTO)
-	@PYTHONPATH=../../epbdcalc $(PYTHON) ./generamediciones.py -p $(PROYECTO)
-	@PYTHONPATH=../../epbdcalc $(PYTHON) ./generacostes.py -p $(PROYECTO)
-	@PYTHONPATH=../../epbdcalc $(PYTHON) ./calculacostes.py -p $(PROYECTO)
+	PYTHONPATH=../../epbdcalc $(PYTHON) ./generamediciones.py -p $(PROYECTO)
+	PYTHONPATH=../../epbdcalc $(PYTHON) ./generacostes.py -p $(PROYECTO)
+	PYTHONPATH=../../epbdcalc $(PYTHON) ./calculacostes.py -p $(PROYECTO)
 
 .PHONY:getfiles
 getfiles:
 	@echo "=========== Recogiendo archivos CSV ==========="
-	@$(foreach PROJ, ${PROYECTOS}, PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -p $(PROJ);)
+	@$(foreach PROJ, ${PROYECTOS}, PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -v -p $(PROJ);)
 
 .PHONY:getvars
 genvars:
 	@echo "=========== Generando variantes ==========="
-	$(foreach PROJ, ${PROYECTOS}, $(PYTHON) ./generavariantes.py --cleardir -p $(PROJ);)
+	@$(foreach PROJ, ${PROYECTOS}, $(PYTHON) ./generavariantes.py --cleardir -p $(PROJ);)
 
 .PHONY:genmediciones
 genmediciones:
