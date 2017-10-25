@@ -23,13 +23,15 @@
 # SOFTWARE.
 
 from __future__ import print_function
+import argparse
 import codecs
 import copy
 import glob
+import multiprocessing
 import os
 import re
+import shutil
 import yaml
-import argparse
 import costes
 
 ###############################################################
@@ -238,7 +240,54 @@ def aplicaMedidas(meta, componentes, medidas):
 
     return newvectors
 
-def generaVariantes(config):
+def generavarianteforbasename(item):
+    basename, paquetesids, varianteinfile, variantesoutdir, medidas, loc = item
+    variantesforbasename = []
+    datastring = codecs.open(varianteinfile, 'r', 'UTF8').read()
+    data = readenergystring(datastring)
+    for paqueteid in paquetesids:
+        variantedata = copy.deepcopy(data) # deep copy needed here!
+        medidaspaquete = [medida for medida in medidas if medida[0] == paqueteid.strip()]
+        variantedata['meta'].append(u'#CTE_PaqueteSistemas: %s' % paqueteid)
+        variante = { 'meta': variantedata['meta'],
+                        'componentes': aplicaMedidas(variantedata['meta'],
+                                                    variantedata['componentes'],
+                                                    medidaspaquete) }
+        # Cambia vector ELECTRICIDAD según criterio definido por loc
+        if loc == 'PENINSULA':
+            pass
+        elif loc == 'CANARIAS':
+            variante['componentes'] = [
+                componente.replace(u'ELECTRICIDAD', u'ELECTRICIDADCANARIAS')
+                for componente in variante['componentes']
+            ]
+        elif loc == 'CEUTAMELILLA':
+            variante['componentes'] = [
+                componente.replace(u'ELECTRICIDAD', u'ELECTRICIDADCEUTAMELILLA')
+                for componente in variante['componentes']
+            ]
+        elif loc == 'BALEARES':
+            variante['componentes'] = [
+                componente.replace(u'ELECTRICIDAD', u'ELECTRICIDADBALEARES')
+                for componente in variante['componentes']
+            ]
+        else:
+            # Cambia vector ELECTRICIDAD a ELECTRICIDADCANARIAS si es clima canario
+            metaclima = next(meta for meta in variante['meta'] if meta.startswith(u'#CTE_Weather'))
+            if not u"canarias" in metaclima:
+                continue
+            else:
+                variante['componentes'] = [
+                    componente.replace(u'ELECTRICIDAD', u'ELECTRICIDADCANARIAS')
+                    for componente in variante['componentes']
+                ]
+        # Fin de cambio de vector ELECTRICIDAD
+        variante['outfile'] = os.path.join(variantesoutdir, "%s_%s.csv" % (basename, paqueteid))
+        variante['basename'] = basename
+        variantesforbasename.append(variante)
+    return variantesforbasename
+
+def generaVariantes(config, loc=None):
     """Genera archivos con variantes a partir de definición de sistemas
 
     La definición de sistemas incluye la definición de las tecnologías,
@@ -273,40 +322,28 @@ def generaVariantes(config):
     basesypaquetes = []
     for (regexstring, paquetes) in sistemas['variantes']:
         basenames = [name for name in allfiles if re.search(regexstring, name) is not None]
-        basesypaquetes.extend([[basename, paquetes] for basename in basenames])
+        basesypaquetes.extend([
+            [basename,
+             paquetes,
+             os.path.join(config.variantesbasedir, basename + '.csv'), # varianteinfile
+             config.variantesdir,
+             medidas,
+             loc] for basename in basenames
+        ])
 
     # Aplica lista de paquetes a cada variante base
-    variantes = []
-    for (basename, paquetesids) in basesypaquetes:
-        datastring = codecs.open(os.path.join(config.variantesbasedir, basename + '.csv'), 'r', 'UTF8').read()
-        data = readenergystring(datastring)
-        for paqueteid in paquetesids:
-            variantedata = copy.deepcopy(data) # deep copy needed here!
-            medidaspaquete = [medida for medida in medidas if medida[0] == paqueteid.strip()]
-            variantedata['meta'].append(u'#CTE_PaqueteSistemas: %s' % paqueteid)
-            variante = { 'meta': variantedata['meta'],
-                         'componentes': aplicaMedidas(variantedata['meta'],
-                                                      variantedata['componentes'],
-                                                      medidaspaquete) }
-            variantes.append([basename, paqueteid, variante])
-
-    # Cambia vector ELECTRICIDAD a ELECTRICIDADCANARIAS si es clima canario
-
-    for (basename, paqueteid, variante) in variantes:
-        metaclima = next(meta for meta in variante['meta'] if meta.startswith(u'#CTE_Weather'))
-        if not u"canarias" in metaclima:
-            continue
-        else:
-            variante['componentes'] = [componente.replace(u'ELECTRICIDAD', u'ELECTRICIDADCANARIAS')
-                                       for componente in variante['componentes']]
+    # basesypaquetes: [(basename, paquetesids, varianteinfile, variantesoutdir, medidas, loc), ... ]
+    pool = multiprocessing.Pool()
+    result = pool.map(generavarianteforbasename, basesypaquetes)
+    variantes = [vv for res in result for vv in res]
+    # variantes = [vv for item in basesypaquetes for vv in generavarianteforbasename(item)]
 
     # Guarda archivos de variantes
-    variantesdir = config.variantesdir
-    if not os.path.exists(variantesdir):
-        os.makedirs(variantesdir)
-    for (basename, paqueteid, variante) in variantes:
-        with codecs.open(os.path.join(variantesdir, "%s_%s.csv" % (basename, paqueteid)),
-                         'w', 'UTF8') as ff:
+    if not os.path.exists(config.variantesdir):
+        os.makedirs(config.variantesdir)
+
+    for variante in variantes:
+        with codecs.open(variante['outfile'], 'w', 'UTF8') as ff:
             ff.writelines(u'\n'.join(variante['meta'] + ["vector,tipo,src_dst"] + variante['componentes']))
     return variantes
 
@@ -314,11 +351,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Genera variantes aplicando medidas de sistema al caso base')
     parser.add_argument('-v', action='store_true', dest='is_verbose', help='salida detallada')
     parser.add_argument('-p', '--project', action='store', dest='proyectoactivo', metavar='PROYECTO')
-    parser.add_argument('--cleardir', action='store_true', dest='cleardir', help='elimina variantes preexistentes' )
+    parser.add_argument('--cleardir', action='store_true', dest='cleardir', help='elimina variantes preexistentes')
     parser.add_argument('-c', '--config', action='store', dest='configfile',
                         default='./config.yaml',
                         metavar='CONFIGFILE',
                         help='usa el archivo de configuración CONFIGFILE')
+    parser.add_argument('--loc', action='store', dest='loc', default='CLIMA', metavar='LOCALIZACION',
+                        choices=['CLIMA', 'PENINSULA', 'CANARIAS', 'BALEARES', 'CEUTAMELILLA'],
+                        help='localización para vector ELECTRICIDAD')
     args = parser.parse_args()
     VERBOSE = args.is_verbose
 
@@ -327,7 +367,8 @@ if __name__ == "__main__":
     if args.cleardir:
         existingfiles = [gg for gg in glob.glob(os.path.join(config.variantesdir, '*')) if os.path.isfile(gg)]
         print(u"- Eliminando %i variantes existentes" % len(existingfiles))
-        for f in existingfiles:
-            os.remove(f)
-    variantes = generaVariantes(config)
+        shutil.rmtree(config.variantesdir)
+    if not os.path.exists(config.variantesdir):
+        os.makedirs(config.variantesdir)
+    variantes = generaVariantes(config, args.loc)
     print(u"- Guardadas %i variantes" % len(variantes))

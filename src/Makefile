@@ -7,6 +7,14 @@ PROYECTO:=CosteOptimo
 else
 PROYECTO:=$(proy)
 endif
+
+# Podemos forzar localización con una variable de entorno
+ifeq ($(strip $(loc)),)
+LOC:=CLIMA
+else
+LOC:=$(loc)
+endif
+
 # Proyectos en directorio de suspat que empiezan por N_ o E_
 PROYECTOS:=$(patsubst %/,%,$(subst ${SUSPATPATH}/,,$(sort $(dir $(wildcard ${SUSPATPATH}/[NE]_*/)))))
 # Filtra proyectos de suspat con archivo 'noprocesar'
@@ -14,10 +22,11 @@ PROYECTOS:=$(foreach dd, $(PROYECTOS), $(if $(wildcard $(SUSPATPATH)/$(dd)/nopro
 # Intérprete de python, por si queremos usar pypy
 PYTHON:=python
 
-.PHONY:test
+
+.PHONY:singleproj
 singleproj:
-	@PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -v -p $(PROYECTO)
-	@$(PYTHON) ./generavariantes.py --cleardir -p $(PROYECTO)
+	# @PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -v -p $(PROYECTO)
+	@$(PYTHON) ./generavariantes.py --cleardir --loc $(LOC) -p $(PROYECTO)
 	PYTHONPATH=../../epbdcalc $(PYTHON) ./generamediciones.py -p $(PROYECTO)
 	PYTHONPATH=../../epbdcalc $(PYTHON) ./generacostes.py -p $(PROYECTO)
 	PYTHONPATH=../../epbdcalc $(PYTHON) ./calculacostes.py -p $(PROYECTO)
@@ -27,10 +36,10 @@ getfiles:
 	@echo "=========== Recogiendo archivos CSV ==========="
 	@$(foreach PROJ, ${PROYECTOS}, PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -v -p $(PROJ);)
 
-.PHONY:getvars
+.PHONY:genvars
 genvars:
 	@echo "=========== Generando variantes ==========="
-	@$(foreach PROJ, ${PROYECTOS}, $(PYTHON) ./generavariantes.py --cleardir -p $(PROJ);)
+	@$(foreach PROJ, ${PROYECTOS}, $(PYTHON) ./generavariantes.py --cleardir --loc $(LOC) -p $(PROJ);)
 
 .PHONY:genmediciones
 genmediciones:
@@ -48,7 +57,7 @@ calculacostes:
 	@$(foreach PROJ, ${PROYECTOS}, PYTHONPATH=../../epbdcalc $(PYTHON) ./calculacostes.py -p $(PROJ);)
 
 .PHONY:all
-all: getfiles genvars genmediciones gencostes calculacostes
+all: genvars genmediciones gencostes calculacostes
 
 .PHONY:help
 help:
