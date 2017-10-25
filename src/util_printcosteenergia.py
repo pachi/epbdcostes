@@ -6,25 +6,36 @@
 # DB-HE 2013
 #
 
+import sys
 import os.path
 from costes import *
 
-parametrospath = '../proyectos/proyectotest/costes_config.yaml'
+if len(sys.argv) == 2:
+    parametrospath = sys.argv[1]
+else:
+    parametrospath = '../proyectos/proyectotest/costes_config.yaml'
 
+e7f = Escenario('micro', 7, parametrospath)
 e10f = Escenario('micro', 10, parametrospath)
-e10m = Escenario('macro', 10, parametrospath)
-e6f = Escenario('micro', 6, parametrospath)
+#e10m = Escenario('macro', 10, parametrospath)
 
-escenarios = [e10f, e10m, e6f]
+ESCENARIOS = [e7f, e10f]
+COMBUSTIBLES = ['GASNATURAL', 'ELECTRICIDAD', 'ELECTRICIDADBALEARES', 'ELECTRICIDADCANARIAS', 'ELECTRICIDADCEUTAMELILLA',
+                'BIOCARBURANTE', 'BIOMASA', 'BIOMASADENSIFICADA', 'CARBON', 'FUELOIL', 'GASOLEO', 'GLP']
 
-print u"Costes de la energía por escenario"
-print '-'*74
-for escenario in escenarios:
-    print '-'*6, escenario, '-'*6
-    for combustible in ('gasoleoc', 'electricidad'):
-        print u"Combustible:", combustible
-        print escenario.preciosenergia[combustible]
-        print escenario.preciosbaseenergia[escenario.tipo][combustible]
-        print u"TOTAL:", sum(escenario.preciosenergia[combustible])
+TITLE1 = u"Costes de la energía por escenario".upper()
+
+print TITLE1
+print '-' * len(TITLE1)
+print
+
+for escenario in ESCENARIOS:
+    TITLESEC = "%s" % escenario
+    print TITLESEC + "\n" + '-' * len(TITLESEC) + "\n"
+    for combustible in COMBUSTIBLES:
+        print u"Combustible: %s (escenario: %s, periodo: %s años, año base: %s)" % (combustible, escenario.tipo, escenario.periodo, escenario.base)
+        print ", ".join(["%.3f" % pp for pp in escenario.preciosenergia[combustible]])
+        #print escenario.preciosbaseenergia[escenario.tipo][combustible]
+        print u"SUMA TOTAL PERIODO: %.3f" % sum(escenario.preciosenergia[combustible])
         print
 
