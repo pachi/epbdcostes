@@ -36,7 +36,8 @@ PARAMS = {
 
     'VUTIL': {'opaco': 50, 'hueco': 30, 'sistema': 20}, # años
     'PMANT': {'opaco': 10, 'hueco': 10, 'sistema': 1}, # años/periodo
-    'CMANT': {'opaco': 5.0/100, 'hueco': 10.0/100, 'sistema': 7.0/100}, # % s/cinicial/periodo
+    #'CMANT': {'opaco': 5.0/100, 'hueco': 10.0/100, 'sistema': 7.0/100}, # % s/cinicial/periodo
+    'CMANT': {'opaco': 0.1/100, 'hueco': 0.1/100, 'sistema': 0.1/100}, # % s/cinicial/periodo
 }
 
 SOLSTRHDR = u"""# Costes de las MAE
