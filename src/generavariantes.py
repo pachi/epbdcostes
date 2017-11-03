@@ -274,9 +274,7 @@ def generavarianteforbasename(item):
         else:
             # Cambia vector ELECTRICIDAD a ELECTRICIDADCANARIAS si es clima canario
             metaclima = next(meta for meta in variante['meta'] if meta.startswith(u'#CTE_Weather'))
-            if not u"canarias" in metaclima:
-                continue
-            else:
+            if u"canarias" in metaclima:
                 variante['componentes'] = [
                     componente.replace(u'ELECTRICIDAD', u'ELECTRICIDADCANARIAS')
                     for componente in variante['componentes']
