@@ -26,10 +26,10 @@ PYTHON:=python
 .PHONY:singleproj
 singleproj:
 	# @PYTHONPATH=../../epbdcalc $(PYTHON) ./util_recogecsv.py -v -p $(PROYECTO)
-	@$(PYTHON) ./generavariantes.py --cleardir --loc $(LOC) -p $(PROYECTO)
-	PYTHONPATH=../../epbdcalc $(PYTHON) ./generamediciones.py -p $(PROYECTO)
-	PYTHONPATH=../../epbdcalc $(PYTHON) ./generacostes.py -p $(PROYECTO)
-	PYTHONPATH=../../epbdcalc $(PYTHON) ./calculacostes.py -p $(PROYECTO)
+	@time $(PYTHON) ./generavariantes.py --cleardir --loc $(LOC) -p $(PROYECTO)
+	PYTHONPATH=../../epbdcalc time $(PYTHON) ./generamediciones.py -p $(PROYECTO)
+	PYTHONPATH=../../epbdcalc time $(PYTHON) ./generacostes.py -p $(PROYECTO)
+	PYTHONPATH=../../epbdcalc time $(PYTHON) ./calculacostes.py -p $(PROYECTO)
 
 .PHONY:getfiles
 getfiles:
