@@ -363,7 +363,7 @@ if __name__ == "__main__":
     VERBOSE = args.is_verbose
 
     config = costes.Config(args.configfile, args.proyectoactivo)
-    print(u"* Generando variantes con sistemas de %s" % config.proyectoactivo)
+    print(u"* Generando variantes con sistemas de %s (loc=%s)" % (config.proyectoactivo, args.loc))
     if args.cleardir:
         existingfiles = [gg for gg in glob.glob(os.path.join(config.variantesdir, '*')) if os.path.isfile(gg)]
         print(u"- Eliminando %i variantes existentes" % len(existingfiles))
