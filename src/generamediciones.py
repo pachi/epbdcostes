@@ -26,6 +26,7 @@ from __future__ import print_function
 import codecs
 import datetime
 import glob
+import multiprocessing
 import os
 import yaml
 import argparse
@@ -51,6 +52,159 @@ GD = {
     }
 }
 
+def processFile(itemdata):
+    filepath, fp_ep, fp_co2, k_exp, k_rdel = itemdata
+    meta, data = readenergyfile(filepath)
+
+    # Soluciones constructivas y paquete de sistemas
+    soluciones = {}
+    if u'PaqueteSistemas' in meta:
+        soluciones[meta[u'PaqueteSistemas']] = 1
+    for clave in meta:
+        if (clave.startswith(u'medicion_')
+            and not clave.startswith(u'medicion_PT_')
+            and not clave.startswith(u'medicion_nor')
+            and not clave.startswith(u'medicion_sur')
+            and not clave.startswith(u'medicion_oeste_')
+            and not clave.startswith(u'medicion_este_')
+        ):
+            try:
+                solname = clave[len(u'medicion_'):]
+                # detecta soluciones invertidas " REVERSED"
+                # y sustituye por medición directa
+                if solname.endswith(u" REVERSED"):
+                    solname = solname[:-9]
+                soluciones[solname] = soluciones.get(solname, 0.0) + meta[clave][0]
+            except:
+                print("ERROR: archivo %s, con clave %s" % (filepath, clave))
+                raise
+
+    soluciones['VENT_V%0.3iR%0.3i' % (
+        meta.get('Design_flow_rate', 0.0) * 100.0,
+        meta.get('Heat_recovery', 0.0) * 100.0)
+        ] = 1 # Recuperador de calor
+
+    # Metadatos generales (fecha, area, volumen, zc, peninsularidad)
+    arearef = float(meta.get('Area_ref', 1.0))
+    weatherfile = meta.get('Weather_file', '').split('_')
+    zc = weatherfile[0]
+    pen = 2 if len(weatherfile) < 2 else (1 if weatherfile[1].startswith('pen') else 0)
+    zcv = zc[-1]
+    zci = zc[:-1]
+    gd = GD['can'] if pen == 0 else GD['pen']
+    hdd = gd['HDD_18'].get(zci, '-')
+    cdd = gd['CDD_25'].get(zcv, '-')
+    metadata = {
+        'name': meta.get('Name', ''),
+        'fechacalculo': meta.get('Datetime', ''),
+        'tipoedificio': meta.get('Tipo_edificio', ''),
+        'usoedificio': meta.get('Uso_edificio', ''),
+        'superficie': arearef,
+        'volumen': meta.get('Vol_ref', 1.0),
+        'compacidad': meta.get('Compacidad', 0.0),
+        'K': meta.get('K', 0.0),
+        'qsj': meta.get('qsj', 0.0),
+        'zc': zc,
+        'peninsular': pen,
+        'zci': zci,
+        'zcv': zcv,
+        'HDD_18': hdd,
+        'CDD_25': cdd,
+        'sistemas': meta.get('PaqueteSistemas', ''),
+        'envolvente': meta.get('ConstructionSet', ''),
+        'phuecos': meta.get('Permeabilidad_ventanas', ''),
+        'ventdiseno': meta.get('Design_flow_rate', 0.0),
+        'efrecup': meta.get('Heat_recovery', 0.0)
+    }
+
+    # Demandas, ya por m2 de superficie
+    dems = ['Demanda_calefaccion', 'Demanda_refrigeracion', 'Demanda_iluminacion_interior',
+            'Demanda_iluminacion_exterior', 'Demanda_equipos_interiores', 'Demanda_equipos_exteriores',
+            'Demanda_ventiladores', 'Demanda_bombas', 'Demanda_disipacion_calor', 'Demanda_humidificacion',
+            'Demanda_recuperacion_calor', 'Demanda_sistemas_agua', 'Demanda_equipos_frigorificos',
+            'Demanda_equipos_generacion']
+    demanda = {clave: 1.0 * meta.get(clave, 0.0) / arearef for clave in dems}
+
+    # Potencia en W de cal, ref y ACS
+    potencias = {
+        'pot_cal_W': meta.get('HEATING_DISTRICTHEATING_W', 0.0),
+        'pot_ref_W': meta.get('COOLING_DISTRICTCOOLING_W', 0.0),
+        'pot_acs_W': meta.get('WATERSYSTEMS_DISTRICTHEATING_W', 0.0),
+    }
+
+    demanda[u'potencias'] = potencias
+
+    # Consumos
+    balance = compute_balance(data, k_rdel)
+    consumos = {carrier: balance[carrier]['annual']['grid'].get('input', 0.0)
+                for carrier in balance if carrier != 'MEDIOAMBIENTE'}
+
+    termicaproducida = sum([balance['MEDIOAMBIENTE']['annual'][orig].get('input', 0.0)
+                            for orig in ['INSITU', 'COGENERACION']
+                            if 'MEDIOAMBIENTE' in balance])
+    termicaexportada = sum([balance['MEDIOAMBIENTE']['annual'][orig].get('to_grid', 0.0)
+                            for orig in ['INSITU', 'COGENERACION']
+                            if 'MEDIOAMBIENTE' in balance])
+    termicanepb = sum([balance['MEDIOAMBIENTE']['annual']['INSITU'].get('to_nEPB', 0.0)
+                        for orig in ['INSITU', 'COGENERACION']
+                        if 'MEDIOAMBIENTE' in balance])
+    elecproducida = sum([balance[carrier]['annual'][orig].get('input', 0.0)
+                            for orig in ['INSITU', 'COGENERACION']
+                            for carrier in balance
+                            if carrier.startswith("ELECTRICIDAD")])
+    elecexportada = sum([balance[carrier]['annual'][orig].get('to_grid', 0.0)
+                            for orig in ['INSITU', 'COGENERACION']
+                            for carrier in balance
+                            if carrier.startswith("ELECTRICIDAD")])
+    elecnepb = sum([balance[carrier]['annual']['INSITU'].get('to_nEPB', 0.0)
+                    for orig in ['INSITU', 'COGENERACION']
+                    for carrier in balance
+                    if carrier.startswith("ELECTRICIDAD")])
+
+    producciones = {
+        'termica_prod_kWh_an': termicaproducida,
+        'termica_exp_kWh_an': termicaexportada,
+        'termica_nepb_kWh_an': termicanepb,
+        'electr_prod_kWh_an': elecproducida,
+        'electr_exp_kWh_an': elecexportada,
+        'electr_nepb_kWh_an': elecnepb
+    }
+
+    # Energía primaria y energía eléctrica o térmica producida, exportada a nEPB o a la red
+    EP = weighted_energy(balance, fp_ep, k_exp)
+    epnren, epren = EP['EP']['nren'], EP['EP']['ren']
+    #epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
+    eprimaria = {u"EP_nren": epnren,
+                    u"EP_ren": epren,
+                    u"EP_tot": epren + epnren,
+                    u"EP_nren_m2": epnren / arearef,
+                    u"EP_ren_m2": epren / arearef,
+                    u"EP_tot_m2": (epren + epnren) / arearef,
+                    #u"EPA_nren": epanren,
+                    #u"EPA_ren": eparen,
+                    #u"EPA_tot": eparen + epanren
+                    u"produccion": producciones,
+                }
+
+    # Emisiones
+    CO2 = weighted_energy(balance, fp_co2, k_exp)
+    co2 = CO2['EP']['nren'] + CO2['EP']['ren']
+    # co2a = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
+    emisiones = {u"CO2": co2} # , u"CO2A": co2a }
+
+    # timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
+    return [ # 'timestamp': timestamp,
+        # os.path.basename(os.path.normpath(proyectoPath)),
+        os.path.basename(filepath),
+        soluciones,
+        metadata,
+        eprimaria,
+        emisiones,
+        demanda,
+        consumos,
+    ]
+
+
 def generaMediciones(config):
     """Guarda mediciones, con indicadores energéticos y de emisiones de variantes
 
@@ -65,159 +219,13 @@ def generaMediciones(config):
     # Genera variantes
     variantes = []
     filepaths = glob.glob(os.path.join(config.variantesdir, '*.csv'))
-    filepaths = [filepath for filepath in sorted(filepaths) if 'medidasSistemas' not in filepath]
-    for filepath in filepaths:
-        meta, data = readenergyfile(filepath)
-
-        # Soluciones constructivas y paquete de sistemas
-        soluciones = {}
-        if u'PaqueteSistemas' in meta:
-            soluciones[meta[u'PaqueteSistemas']] = 1
-        for clave in meta:
-            if (clave.startswith(u'medicion_')
-                and not clave.startswith(u'medicion_PT_')
-                and not clave.startswith(u'medicion_nor')
-                and not clave.startswith(u'medicion_sur')
-                and not clave.startswith(u'medicion_oeste_')
-                and not clave.startswith(u'medicion_este_')
-            ):
-                try:
-                    solname = clave[len(u'medicion_'):]
-                    # detecta soluciones invertidas " REVERSED"
-                    # y sustituye por medición directa
-                    if solname.endswith(u" REVERSED"):
-                        solname = solname[:-9]
-                    soluciones[solname] = soluciones.get(solname, 0.0) + meta[clave][0]
-                except:
-                    print("ERROR: archivo %s, con clave %s" % (filepath, clave))
-                    raise
-
-        soluciones['VENT_V%0.3iR%0.3i' % (
-            meta.get('Design_flow_rate', 0.0) * 100.0,
-            meta.get('Heat_recovery', 0.0) * 100.0)
-        ] = 1 # Recuperador de calor
-
-        # Metadatos generales (fecha, area, volumen, zc, peninsularidad)
-        arearef = float(meta.get('Area_ref', 1.0))
-        weatherfile = meta.get('Weather_file', '').split('_')
-        zc = weatherfile[0]
-        pen = 2 if len(weatherfile) < 2 else (1 if weatherfile[1].startswith('pen') else 0)
-        zcv = zc[-1]
-        zci = zc[:-1]
-        gd = GD['can'] if pen == 0 else GD['pen']
-        hdd = gd['HDD_18'].get(zci, '-')
-        cdd = gd['CDD_25'].get(zcv, '-')
-        metadata = {
-            'name': meta.get('Name', ''),
-            'fechacalculo': meta.get('Datetime', ''),
-            'tipoedificio': meta.get('Tipo_edificio', ''),
-            'usoedificio': meta.get('Uso_edificio', ''),
-            'superficie': arearef,
-            'volumen': meta.get('Vol_ref', 1.0),
-            'compacidad': meta.get('Compacidad', 0.0),
-            'K': meta.get('K', 0.0),
-            'qsj': meta.get('qsj', 0.0),
-            'zc': zc,
-            'peninsular': pen,
-            'zci': zci,
-            'zcv': zcv,
-            'HDD_18': hdd,
-            'CDD_25': cdd,
-            'sistemas': meta.get('PaqueteSistemas', ''),
-            'envolvente': meta.get('ConstructionSet', ''),
-            'phuecos': meta.get('Permeabilidad_ventanas', ''),
-            'ventdiseno': meta.get('Design_flow_rate', 0.0),
-            'efrecup': meta.get('Heat_recovery', 0.0)
-        }
-
-        # Demandas, ya por m2 de superficie
-        dems = ['Demanda_calefaccion', 'Demanda_refrigeracion', 'Demanda_iluminacion_interior',
-                'Demanda_iluminacion_exterior', 'Demanda_equipos_interiores', 'Demanda_equipos_exteriores',
-                'Demanda_ventiladores', 'Demanda_bombas', 'Demanda_disipacion_calor', 'Demanda_humidificacion',
-                'Demanda_recuperacion_calor', 'Demanda_sistemas_agua', 'Demanda_equipos_frigorificos',
-                'Demanda_equipos_generacion']
-        demanda = {clave: 1.0 * meta.get(clave, 0.0) / arearef for clave in dems}
-
-        # Potencia en W de cal, ref y ACS
-        potencias = {
-            'pot_cal_W': meta.get('HEATING_DISTRICTHEATING_W', 0.0),
-            'pot_ref_W': meta.get('COOLING_DISTRICTCOOLING_W', 0.0),
-            'pot_acs_W': meta.get('WATERSYSTEMS_DISTRICTHEATING_W', 0.0),
-        }
-
-        demanda[u'potencias'] = potencias
-
-        # Consumos
-        balance = compute_balance(data, k_rdel)
-        consumos = {carrier: balance[carrier]['annual']['grid'].get('input', 0.0)
-                    for carrier in balance if carrier != 'MEDIOAMBIENTE'}
-
-        termicaproducida = sum([balance['MEDIOAMBIENTE']['annual'][orig].get('input', 0.0)
-                                for orig in ['INSITU', 'COGENERACION']
-                                if 'MEDIOAMBIENTE' in balance])
-        termicaexportada = sum([balance['MEDIOAMBIENTE']['annual'][orig].get('to_grid', 0.0)
-                                for orig in ['INSITU', 'COGENERACION']
-                                if 'MEDIOAMBIENTE' in balance])
-        termicanepb = sum([balance['MEDIOAMBIENTE']['annual']['INSITU'].get('to_nEPB', 0.0)
-                           for orig in ['INSITU', 'COGENERACION']
-                           if 'MEDIOAMBIENTE' in balance])
-        elecproducida = sum([balance[carrier]['annual'][orig].get('input', 0.0)
-                             for orig in ['INSITU', 'COGENERACION']
-                             for carrier in balance
-                             if carrier.startswith("ELECTRICIDAD")])
-        elecexportada = sum([balance[carrier]['annual'][orig].get('to_grid', 0.0)
-                             for orig in ['INSITU', 'COGENERACION']
-                             for carrier in balance
-                             if carrier.startswith("ELECTRICIDAD")])
-        elecnepb = sum([balance[carrier]['annual']['INSITU'].get('to_nEPB', 0.0)
-                        for orig in ['INSITU', 'COGENERACION']
-                        for carrier in balance
-                        if carrier.startswith("ELECTRICIDAD")])
-
-        producciones = {
-            'termica_prod_kWh_an': termicaproducida,
-            'termica_exp_kWh_an': termicaexportada,
-            'termica_nepb_kWh_an': termicanepb,
-            'electr_prod_kWh_an': elecproducida,
-            'electr_exp_kWh_an': elecexportada,
-            'electr_nepb_kWh_an': elecnepb
-        }
-
-        # Energía primaria y energía eléctrica o térmica producida, exportada a nEPB o a la red
-        EP = weighted_energy(balance, fp_ep, k_exp)
-        epnren, epren = EP['EP']['nren'], EP['EP']['ren']
-        #epanren, eparen = EP['EPpasoA']['nren'], EP['EPpasoA']['ren']
-        eprimaria = {u"EP_nren": epnren,
-                     u"EP_ren": epren,
-                     u"EP_tot": epren + epnren,
-                     u"EP_nren_m2": epnren / arearef,
-                     u"EP_ren_m2": epren / arearef,
-                     u"EP_tot_m2": (epren + epnren) / arearef,
-                     #u"EPA_nren": epanren,
-                     #u"EPA_ren": eparen,
-                     #u"EPA_tot": eparen + epanren
-                     u"produccion": producciones,
-                 }
-
-        # Emisiones
-        CO2 = weighted_energy(balance, fp_co2, k_exp)
-        co2 = CO2['EP']['nren'] + CO2['EP']['ren']
-        # co2a = CO2['EPpasoA']['nren'] + CO2['EPpasoA']['ren']
-        emisiones = {u"CO2": co2} # , u"CO2A": co2a }
-
-        # timestamp = "{:%d/%m/%Y %H:%M}".format(datetime.datetime.today())
-        variantes.append(
-            [ # 'timestamp': timestamp,
-                # os.path.basename(os.path.normpath(proyectoPath)),
-                os.path.basename(filepath),
-                soluciones,
-                metadata,
-                eprimaria,
-                emisiones,
-                demanda,
-                consumos,
-            ]
-        )
+    items = [(filepath, fp_ep, fp_co2, k_exp, k_rdel)
+        for filepath in sorted(filepaths) if 'medidasSistemas' not in filepath]
+    # pool = multiprocessing.Pool()
+    # result = pool.map(processFile, items)
+    # variantes = [vv for vv in result]
+    for item in items:
+        variantes.append(processFile(item))
     return variantes
 
 if __name__ == "__main__":
