@@ -95,7 +95,7 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                         u"{id}"
                         u"\n"
             ).format(id=variante.id, meta=variante.metadatos, ep=variante.eprimaria, escenario=escenario,
-                     ctotalm2=float(ctotal / supvariante), civ_m2=float(civ / supvariante), cmv_m2=float(civ / supvariante), cop_m2=float(cop / supvariante), copelec_m2=float(costeopelectricidad / supvariante),
+                     ctotalm2=float(ctotal / supvariante), civ_m2=float(civ / supvariante), cmv_m2=float(cmv / supvariante), cop_m2=float(cop / supvariante), copelec_m2=float(costeopelectricidad / supvariante),
                      ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, vresidual_m2=float(vresidual / supvariante), copv=copv,
                      prod=variante.eprimaria['produccion'], dem=variante.demanda, pot=variante.demanda['potencias'],
                      cobsolar_pct=cobsolar_pct, em_m2=emisionesvariantem2)
