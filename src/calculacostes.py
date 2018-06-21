@@ -36,8 +36,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                     u"eptot_m2, epnren_m2, epren_m2, "
                     u"eptot, epnren, epren, "
                     u"escenario, tasa, periodo, "
-                    u"costetotal_m2, costeinicial_m2, costeoperacion_m2, "
-                    u"costetotal, costeinicial, costemantenimiento, costereposicion, costeoperacion, costeco2, vresidual, "
+                    u"costetotal_m2, costeinicial_m2, costemantenimiento_m2, costeoperacion_m2, costeopelectricidad_m2, "
+                    u"costetotal, costeinicial, costemantenimiento, costereposicion, costeoperacion, costeco2, vresidual, vresidual_m2, "
                     u"cGASNATURAL, cELECTRICIDAD, cELECTRICIDADBALEARES, cELECTRICIDADCANARIAS, "
                     u"cELECTRICIDADCEUTAMELILLA, cBIOCARBURANTE, cBIOMASA, "
                     u"cBIOMASADENSIFICADA, cCARBON, cFUELOIL, cGASOLEO, cGLP, "
@@ -52,7 +52,7 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                     u"Pot_cal_W, Pot_ref_W, Pot_ACS_W, CO2_kg_m2, "
                     u"archivo\n")
     for variante in sorted(mediciones):
-        supvariante = variante.metadatos['superficie']
+        supvariante = float(variante.metadatos['superficie'])
         emisionesvariantem2 = variante.emisiones['CO2'] / supvariante
         for escenario in escenarios:
             ctotal = costes.coste(variante, escenario, costesdata)
@@ -60,6 +60,7 @@ def calculacostes(config, costesdata, mediciones, escenarios):
             cmv = costes.costemantenimiento(variante, escenario, costesdata)
             crv = costes.costereposicion(variante, escenario, costesdata)
             copv = costes.costesoperacion(variante, escenario)
+            costeopelectricidad = copv['ELECTRICIDAD'] + copv['ELECTRICIDADCANARIAS'] + copv['ELECTRICIDADBALEARES'] + copv['ELECTRICIDADCEUTAMELILLA'] 
             cop = sum(copv[combustible] for combustible in copv)
             coco2 = costes.costeco2(variante, escenario)
             vresidual = costes.valorresidual(variante, escenario, costesdata)
@@ -77,8 +78,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                         u"{ep[EP_tot_m2]:.2f}, {ep[EP_nren_m2]:.2f}, {ep[EP_ren_m2]:.2f}, "
                         u"{ep[EP_tot]:.2f}, {ep[EP_nren]:.2f}, {ep[EP_ren]:.2f}, "
                         u"{escenario.tipo}, {escenario.tasa:.2f}, {escenario.periodo:d}, "
-                        u"{ctotalm2:.2f}, {civ_m2:.2f}, {cop_m2:.2f}, "
-                        u"{ctotal:.2f}, {civ:.2f}, {cmv:.2f}, {crv:.2f}, {cop:.2f}, {coco2:.2f}, {vresidual:.2f}, "
+                        u"{ctotalm2:.2f}, {civ_m2:.2f}, {cmv_m2:.2f}, {cop_m2:.2f}, {copelec_m2:.2f}, "
+                        u"{ctotal:.2f}, {civ:.2f}, {cmv:.2f}, {crv:.2f}, {cop:.2f}, {coco2:.2f}, {vresidual:.2f}, {vresidual_m2:.2f}, "
                         u"{copv[GASNATURAL]:.2f}, {copv[ELECTRICIDAD]:.2f}, {copv[ELECTRICIDADBALEARES]:.2f}, {copv[ELECTRICIDADCANARIAS]:.2f}, "
                         u"{copv[ELECTRICIDADCEUTAMELILLA]:.2f}, {copv[BIOCARBURANTE]:.2f}, {copv[BIOMASA]:.2f}, "
                         u"{copv[BIOMASADENSIFICADA]:.2f}, {copv[CARBON]:.2f}, {copv[FUELOIL]:.2f}, {copv[GASOLEO]:.2f}, {copv[GLP]:.2f}, "
@@ -94,8 +95,8 @@ def calculacostes(config, costesdata, mediciones, escenarios):
                         u"{id}"
                         u"\n"
             ).format(id=variante.id, meta=variante.metadatos, ep=variante.eprimaria, escenario=escenario,
-                     ctotalm2=float(ctotal / supvariante), civ_m2=float(civ / supvariante), cop_m2=float(cop / supvariante),
-                     ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, copv=copv,
+                     ctotalm2=float(ctotal / supvariante), civ_m2=float(civ / supvariante), cmv_m2=float(civ / supvariante), cop_m2=float(cop / supvariante), copelec_m2=float(costeopelectricidad / supvariante),
+                     ctotal=ctotal, civ=civ, cmv=cmv, crv=crv, cop=cop, coco2=coco2, vresidual=vresidual, vresidual_m2=float(vresidual / supvariante), copv=copv,
                      prod=variante.eprimaria['produccion'], dem=variante.demanda, pot=variante.demanda['potencias'],
                      cobsolar_pct=cobsolar_pct, em_m2=emisionesvariantem2)
             reslines.append(dataline)
